@@ -1,0 +1,30 @@
+vscode extension
+volar
+ESLint
+prettier
+go
+// devcontainer.json
+"extensions": ["Vue.volar", "dbaeumer.vscode-eslint", "esbenp.prettier-vscode", "golang.go"]
+
+npm install -S @fullcalendar/core @fullcalendar/daygrid @fullcalendar/interaction @fullcalendar/timegrid @fullcalendar/vue3 axios element-plus
+export NODE_OPTIONS=--max_old_space_size=4096
+
+## add main.js
+
+// main.js
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+import locale from 'element-plus/lib/locale/lang/ja'
+
+createApp(App).use(store).use(router).use(ElementPlus, {locale}).mount('#app')
+
+
+## add tsconfig.json
+
+// tsconfig.json
+{
+  "compilerOptions": {
+    // ...
+    "types": ["element-plus/global"]
+  }
+}

@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  brewing_support:
+    container_name: brewing_support
+    build: 
+      dockerfile: "Dockerfile"
+      context: "execution_environment"
+    volumes:
+      - type: bind
+        source: ../backend/build
+        target: /workspace
+    ports:
+      - "8080:8080"
+    tty: true
+    depends_on: 
+      - brewing_support_postgres_db
+      - brewing_support_couch_db
+  brewing_support_postgres_db:
+    image: postgres:11.3
+    container_name: brewing_support_postgres_db
+    environment: 
+      POSTGRES_USER: "brewing_support"
+      POSTGRES_PASSWORD: "brewing_support"
+      POSTGRES_DB: "brewing_supportdb"
+  brewing_support_couch_db:
+    image: couchdb:3.2
+    container_name: brewing_support_couch_db
+    ports: 
+      - "5984:5984"
+    environment: 
+      COUCHDB_USER: "brewing_support"
+      COUCHDB_PASSWORD: "brewing_support"
