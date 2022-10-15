@@ -11,7 +11,7 @@ export class Yeast {
   constructor(
     id = "",
     name = "",
-    attenuation: 0,
+    attenuation = 0,
     brewingUnit: Unit,
     recievingUnit: Unit,
     stockingUnit: Unit
@@ -45,7 +45,7 @@ export class Yeast {
   }
 }
 
-export interface GrainMember {
+export interface YeastMember {
   id: string;
   name: string;
   attenuation: number;

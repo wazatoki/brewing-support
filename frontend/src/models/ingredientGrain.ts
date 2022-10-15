@@ -11,7 +11,7 @@ export class Grain {
   constructor(
     id = "",
     name = "",
-    potential: 0,
+    potential = 0,
     brewingUnit: Unit,
     recievingUnit: Unit,
     stockingUnit: Unit

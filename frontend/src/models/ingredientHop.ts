@@ -11,7 +11,7 @@ export class Hop {
   constructor(
     id = "",
     name = "",
-    alphaAcid: 0,
+    alphaAcid = 0,
     brewingUnit: Unit,
     recievingUnit: Unit,
     stockingUnit: Unit
@@ -45,7 +45,7 @@ export class Hop {
   }
 }
 
-export interface GrainMember {
+export interface HopMember {
   id: string;
   name: string;
   alphaAcid: number;
