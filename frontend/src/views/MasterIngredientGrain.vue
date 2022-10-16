@@ -125,7 +125,7 @@ const fetchData = async () => {
         </el-table>
       </el-col>
     </el-row>
-    <el-dialog v-model="masterIngredientFormDialogVisible">
+    <el-dialog v-model="masterIngredientGrainFormDialogVisible">
       <MasterIngredientGrainFormVue
         :grainData="a_grainData"
         :unitMsts="unitMsts"

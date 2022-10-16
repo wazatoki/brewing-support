@@ -4,23 +4,23 @@ export class BrewPlan {
   id: string;
   batchNumber: number;
   name: string;
-  batchSize: number;
-  originalGravity: number;
+  //batchSize: number;
+  //originalGravity: number;
   events: BrewEvent[];
 
   constructor(
     id = "",
     batchNumber = 0,
     name = "",
-    batchSize = 0,
-    originalGravity = 0,
+    //batchSize = 0,
+    //originalGravity = 0,
     events = [] as BrewEvent[]
   ) {
     this.id = id;
     this.batchNumber = batchNumber;
     this.name = name;
-    this.batchSize = batchSize;
-    this.originalGravity = originalGravity;
+    //this.batchSize = batchSize;
+    //this.originalGravity = originalGravity;
     this.events = events;
   }
 }

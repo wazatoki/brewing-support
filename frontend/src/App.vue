@@ -24,6 +24,15 @@
         <el-menu-item index="6-1"
           ><router-link to="/master-ingredient">原料</router-link></el-menu-item
         >
+        <el-menu-item index="6-1"
+          ><router-link to="/master-grain">Grain</router-link></el-menu-item
+        >
+        <el-menu-item index="6-1"
+          ><router-link to="/master-hop">Hop</router-link></el-menu-item
+        >
+        <el-menu-item index="6-1"
+          ><router-link to="/master-yeast">酵母</router-link></el-menu-item
+        >
         <el-menu-item index="6-2"
           ><router-link to="/master-ingredient-classification"
             >原料種類</router-link

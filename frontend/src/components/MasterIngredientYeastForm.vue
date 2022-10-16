@@ -53,13 +53,11 @@ const onCancel = () => {
     <el-row>
       <el-col :span="24">
         <el-form-item
-          label="Attenuation"
+          label="Attenuation(%)"
           :label-width="formLabelWidth"
           prop="attenuation"
         >
-          <el-input v-model="form.attenuation" autocomplete="off" /><span
-            >%</span
-          >
+          <el-input v-model="form.attenuation" autocomplete="off" />
         </el-form-item>
       </el-col>
     </el-row>

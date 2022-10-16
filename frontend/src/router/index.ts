@@ -3,6 +3,9 @@ import HomeView from "@/views/HomeView.vue";
 import BrewingRecord from "@/views/BrewingRecord.vue";
 import MasterUnit from "@/views/MasterUnit.vue";
 import MasterIngredient from "@/views/MasterIngredient.vue";
+import MasterIngredientGrain from "@/views/MasterIngredientGrain.vue";
+import MasterIngredientHop from "@/views/MasterIngredientHop.vue";
+import MasterIngredientYeast from "@/views/MasterIngredientYeast.vue";
 import MasterIngredientClassification from "@/views/MasterIngredientClassification.vue";
 import MasterSupplier from "@/views/MasterSupplier.vue";
 import ReportIngredient from "@/views/ReportIngredient.vue";
@@ -38,6 +41,21 @@ const routes: Array<RouteRecordRaw> = [
     path: "/master-ingredient",
     name: "ingredientMaster",
     component: MasterIngredient,
+  },
+  {
+    path: "/master-grain",
+    name: "ingredientMasterGrain",
+    component: MasterIngredientGrain,
+  },
+  {
+    path: "/master-hop",
+    name: "ingredientMasterHop",
+    component: MasterIngredientHop,
+  },
+  {
+    path: "/master-yeast",
+    name: "ingredientMasterYeast",
+    component: MasterIngredientYeast,
   },
   {
     path: "/master-ingredient-classification",

@@ -53,11 +53,11 @@ const onCancel = () => {
     <el-row>
       <el-col :span="24">
         <el-form-item
-          label="α酸"
+          label="α酸(%)"
           :label-width="formLabelWidth"
           prop="alphaAcid"
         >
-          <el-input v-model="form.alphaAcid" autocomplete="off" /><span>%</span>
+          <el-input v-model="form.alphaAcid" autocomplete="off" />
         </el-form-item>
       </el-col>
     </el-row>
