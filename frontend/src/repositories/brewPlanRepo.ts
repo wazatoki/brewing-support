@@ -37,6 +37,16 @@ export async function fetchAll(): Promise<{
             item.doc.id,
             item.doc.batchNumber,
             item.doc.name,
+            item.doc.batchSize,
+            item.doc.originalGravity,
+            item.doc.finalGravity,
+            item.doc.brixLevel,
+            item.doc.abv,
+            item.doc.ibus,
+            item.doc.mashEfficienty,
+            item.doc.grains,
+            item.doc.hops,
+            item.doc.yeast,
             item.doc.events
           );
           result.push(bp);
@@ -77,6 +87,16 @@ export async function save(brewPlan: BrewPlan): Promise<{ id: string }> {
     const doc = await getDBInstance().get<BrewPlan>(id);
     doc.batchNumber = brewPlan.batchNumber;
     doc.name = brewPlan.name;
+    doc.batchSize = brewPlan.batchSize;
+    doc.originalGravity = brewPlan.originalGravity;
+    doc.finalGravity = brewPlan.finalGravity;
+    doc.brixLevel = brewPlan.brixLevel;
+    doc.abv = brewPlan.abv;
+    doc.ibus = brewPlan.ibus;
+    doc.mashEfficienty = brewPlan.mashEfficienty;
+    doc.grains = brewPlan.grains;
+    doc.hops = brewPlan.hops;
+    doc.yeast = brewPlan.yeast;
     doc.events = brewPlan.events;
     try {
       await getDBInstance().put(instanceToPlain(doc));
@@ -95,6 +115,16 @@ export async function save(brewPlan: BrewPlan): Promise<{ id: string }> {
         type: typename,
         batchNumber: brewPlan.batchNumber,
         name: brewPlan.name,
+        batchSize: brewPlan.batchSize,
+        originalGravity: brewPlan.originalGravity,
+        finalGravity: brewPlan.finalGravity,
+        brixLevel: brewPlan.brixLevel,
+        abv: brewPlan.abv,
+        ibus: brewPlan.ibus,
+        mashEfficienty: brewPlan.mashEfficienty,
+        grains: brewPlan.grains,
+        hops: brewPlan.hops,
+        yeast: brewPlan.yeast,
         events: brewPlan.events,
       };
       try {

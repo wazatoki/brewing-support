@@ -9,9 +9,21 @@ import BrewingPlanForm from "@/components/BrewingPlanForm.vue";
 import { BrewEvent } from "@/models/brewEvent";
 import { BrewPlan } from "@/models/brewPlan";
 import { reactive, ref, onMounted } from "vue";
-import { ElRow, ElCol, ElDialog } from "element-plus/dist/index.full.js";
+import {
+  ElRow,
+  ElCol,
+  ElDialog,
+  ElButton,
+} from "element-plus/dist/index.full.js";
 import * as ingredientRepo from "@/repositories/ingredientRepo";
+import * as ingredientGrainRepo from "@/repositories/ingredientGrainRepo";
+import * as ingredientHopRepo from "@/repositories/ingredientHopRepo";
+import * as ingredientYeastRepo from "@/repositories/ingredientYeastRepo";
 import * as ingredientService from "@/services/ingredient";
+import * as ingredientGrainService from "@/services/ingredientGrain";
+import * as ingredientHopService from "@/services/ingredientHop";
+import * as ingredientYeastService from "@/services/ingredientYeast";
+
 import * as brewEventRepo from "@/repositories/brewEventRepo";
 import { ElMessageBox } from "element-plus";
 import * as brewPlanRepo from "@/repositories/brewPlanRepo";
@@ -44,6 +56,9 @@ const calendarOptions = reactive({
 });
 
 const itemMsts = reactive([]);
+const grainMst = reactive([]);
+const hopMst = reactive([]);
+const yeastMst = reactive([]);
 
 const brewEventDialogVisible = ref(false);
 const brewPlanFormDialogVisible = ref(false);
@@ -168,8 +183,12 @@ const fetchBrewEvents = async () => {
 onMounted(() => {
   fetchIngredientMst();
   fetchBrewPlans();
+  fetchGrainMst();
+  fetchHopMst();
+  fetchYeastMst();
 });
 
+// TODO 削除予定
 const fetchIngredientMst = async () => {
   const fetchedData = (await ingredientRepo.fetchAll()).result;
   const sortedData =
@@ -177,6 +196,33 @@ const fetchIngredientMst = async () => {
   itemMsts.splice(0);
   sortedData.forEach((item) => {
     itemMsts.push(item);
+  });
+};
+
+const fetchGrainMst = async () => {
+  const fetchedData = (await ingredientGrainRepo.fetchAll()).result;
+  const sortedData = ingredientGrainService.sortByName(fetchedData);
+  grainMst.splice(0);
+  sortedData.forEach((item) => {
+    grainMst.push(item);
+  });
+};
+
+const fetchHopMst = async () => {
+  const fetchedData = (await ingredientHopRepo.fetchAll()).result;
+  const sortedData = ingredientHopService.sortByName(fetchedData);
+  hopMst.splice(0);
+  sortedData.forEach((item) => {
+    hopMst.push(item);
+  });
+};
+
+const fetchYeastMst = async () => {
+  const fetchedData = (await ingredientYeastRepo.fetchAll()).result;
+  const sortedData = ingredientYeastService.sortByName(fetchedData);
+  yeastMst.splice(0);
+  sortedData.forEach((item) => {
+    yeastMst.push(item);
   });
 };
 
@@ -291,6 +337,9 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
     <el-dialog v-model="brewPlanFormDialogVisible">
       <BrewingPlanForm
         :brewPlan="brewPlan"
+        :grainMst="grainMst"
+        :hopMst="hopMst"
+        :yeastMst="yeastMst"
         @cancel="onClickCancelBrewPlanForm"
         @submit="onClickSubmitBrewPlanForm"
       ></BrewingPlanForm>

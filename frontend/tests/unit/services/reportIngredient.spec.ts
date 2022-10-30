@@ -5,8 +5,9 @@ import { IngredientClassification } from "@/models/ingredientClassification";
 import { Ingredient } from "@/models/ingredient";
 import { Unit } from "@/models/unit";
 import { Supplier } from "@/models/supplier";
-import { BrewPlan } from "@/models/brewPlan";
+import { BrewPlan, GrainPlan, HopPlan } from "@/models/brewPlan";
 import { BrewEvent } from "@/models/brewEvent";
+import { Yeast } from "@/models/ingredientYeast";
 
 const unit_g = new Unit("unit-1", "g", 1, null);
 const unit_kg = new Unit("unit-2", "Kg", 1000, unit_g);
@@ -44,10 +45,42 @@ const suppliers: Supplier[] = [
   new Supplier("supplier-1", "supplier-a"),
   new Supplier("supplier-2", "supplier-b"),
 ];
-
+const grains = [] as GrainPlan[];
+const hops = [] as HopPlan[];
+const events = [] as BrewEvent[];
 const brewPlans: BrewPlan[] = [
-  new BrewPlan("brew-plan-1", 1, "brew-plan-name-1"),
-  new BrewPlan("brew-plan-2", 2, "brew-plan-name-2"),
+  new BrewPlan(
+    "brew-plan-1",
+    1,
+    "brew-plan-name-1",
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    grains,
+    hops,
+    new Yeast("yeast-1", "yeast-name-1", 70, unit_g, unit_g, unit_g),
+    events
+  ),
+  new BrewPlan(
+    "brew-plan-2",
+    2,
+    "brew-plan-name-2",
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    [],
+    [],
+    new Yeast("yeast-1", "yeast-name-1", 70, unit_g, unit_g, unit_g),
+    []
+  ),
 ];
 
 const reportingIngredients: ReportIngredient[] = [
@@ -144,12 +177,18 @@ const reportingIngredients: ReportIngredient[] = [
 ];
 describe("reportIngredient.ts", () => {
   it("comsumedQuantity", () => {
-    const result = reportIngredient.comsumedQuantity(ingredients[0].id, reportingIngredients);
-    expect(result).toBe(20)
+    const result = reportIngredient.comsumedQuantity(
+      ingredients[0].id,
+      reportingIngredients
+    );
+    expect(result).toBe(20);
   });
 
   it("recievingQuantity", () => {
-    const result = reportIngredient.recievedQuantity(ingredients[0].id, reportingIngredients);
-    expect(result).toBe(50)
+    const result = reportIngredient.recievedQuantity(
+      ingredients[0].id,
+      reportingIngredients
+    );
+    expect(result).toBe(50);
   });
 });
