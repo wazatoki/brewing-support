@@ -1,6 +1,8 @@
 <script setup>
 import { reactive, ref, computed } from "vue";
 import { BrewPlan } from "@/models/brewPlan";
+import { Grain } from "@/models/ingredientGrain";
+import { Unit } from "@/models/unit";
 
 const props = defineProps({
   brewPlan: BrewPlan,
@@ -59,12 +61,35 @@ const grainQuantitySum = computed(() => {
 });
 
 const grainRatioSum = computed(() => {
-  return form.grains
+  return Math.round(
+    form.grains
+      .map((grainPlan) => {
+        return grainPlan.ratio;
+      })
+      .reduce((acc, elem) => Number(acc) + Number(elem), 0)
+  );
+});
+
+const addGrain = () => {
+  form.grains.push({
+    grain: new Grain("", "", 0, new Unit(), new Unit(), new Unit()),
+    quantity: 0,
+    ratio: 0,
+  });
+};
+
+const onChangeGrainQuantity = () => {
+  const grainQuantitySum = form.grains
     .map((grainPlan) => {
-      return grainPlan.ratio;
+      return grainPlan.quantity;
     })
     .reduce((acc, elem) => Number(acc) + Number(elem), 0);
-});
+
+  form.grains.forEach((grainPlan) => {
+    grainPlan.ratio =
+      Math.trunc((grainPlan.quantity / grainQuantitySum) * 10000) / 100;
+  });
+};
 
 const onSubmit = async (formEl) => {
   if (!formEl) {
@@ -188,7 +213,15 @@ const onCancel = () => {
       </el-col>
     </el-row>
 
-    <p>Grains</p>
+    <el-row>
+      <el-col :span="16">
+        <span>Grains</span>
+      </el-col>
+      <el-col :span="8">
+        <el-button type="primary" @click="addGrain">Add</el-button>
+      </el-col>
+    </el-row>
+
     <el-row>
       <el-col :span="8">
         <span>名称</span>
@@ -203,9 +236,9 @@ const onCancel = () => {
     <el-row v-for="(grainPlan, index) in form.grains" :key="grainPlan.grain.id">
       <el-col :span="8">
         <el-select
-          @change="onChange"
           v-model="form.grains[index].grain"
           :teleported="false"
+          value-key="id"
         >
           <el-option
             v-for="item in grainMst"
@@ -217,10 +250,14 @@ const onCancel = () => {
         </el-select>
       </el-col>
       <el-col :span="8">
-        <el-input v-model="form.grains[index].quantity" autocomplete="off" />
+        <el-input
+          v-model="form.grains[index].quantity"
+          @change="onChangeGrainQuantity"
+          autocomplete="off"
+        />
       </el-col>
       <el-col :span="8">
-        <el-input v-model="form.grains[index].ratio" autocomplete="off" />
+        <span>{{ form.grains[index].ratio }}</span>
       </el-col>
     </el-row>
     <el-row>

@@ -24,3 +24,12 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# pouchdb
+*.ldb
+*.log
+CURRENT
+LOCK
+LOG
+LOG.old
+MANIFEST-*
