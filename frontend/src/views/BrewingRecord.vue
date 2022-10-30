@@ -334,7 +334,7 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
       >
       </BrewingRecordForm>
     </el-dialog>
-    <el-dialog v-model="brewPlanFormDialogVisible">
+    <el-dialog v-model="brewPlanFormDialogVisible" width="75%">
       <BrewingPlanForm
         :brewPlan="brewPlan"
         :grainMst="grainMst"

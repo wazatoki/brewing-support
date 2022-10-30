@@ -3,6 +3,7 @@ import { reactive, ref, computed } from "vue";
 import { BrewPlan } from "@/models/brewPlan";
 import { Grain } from "@/models/ingredientGrain";
 import { Unit } from "@/models/unit";
+import { Hop } from "@/models/ingredientHop";
 
 const props = defineProps({
   brewPlan: BrewPlan,
@@ -70,6 +71,14 @@ const grainRatioSum = computed(() => {
   );
 });
 
+const totalIBUs = computed(() => {
+  return form.hops
+    .map((hopplan) => {
+      return hopplan.ibus;
+    })
+    .reduce((acc, elem) => Number(acc) + Number(elem), 0);
+});
+
 const addGrain = () => {
   form.grains.push({
     grain: new Grain("", "", 0, new Unit(), new Unit(), new Unit()),
@@ -78,7 +87,16 @@ const addGrain = () => {
   });
 };
 
-const onChangeGrainQuantity = () => {
+const addHop = () => {
+  form.hops.push({
+    hop: new Hop("", "", 0, new Unit(), new Unit(), new Unit()),
+    quantity: 0,
+    boilTime: 0,
+    ibus: 0,
+  });
+};
+
+const onChangeGrainParams = () => {
   const grainQuantitySum = form.grains
     .map((grainPlan) => {
       return grainPlan.quantity;
@@ -88,6 +106,19 @@ const onChangeGrainQuantity = () => {
   form.grains.forEach((grainPlan) => {
     grainPlan.ratio =
       Math.trunc((grainPlan.quantity / grainQuantitySum) * 10000) / 100;
+  });
+};
+
+const onChangeHopParams = () => {
+  form.hops.forEach((hopPlan) => {
+    const fg = Math.pow(0.000125, form.originalGravity - 1) * 1.65;
+    const ft = (1 - Math.exp(-0.04 * hopPlan.boilTime)) / 4.15;
+    hopPlan.ibus =
+      Math.trunc(
+        ((hopPlan.hop.alphaAcid * hopPlan.quantity * (fg * ft) * 10) /
+          form.batchSize) *
+          10
+      ) / 10;
   });
 };
 
@@ -239,6 +270,7 @@ const onCancel = () => {
           v-model="form.grains[index].grain"
           :teleported="false"
           value-key="id"
+          @blur="onChangeGrainParams"
         >
           <el-option
             v-for="item in grainMst"
@@ -252,7 +284,7 @@ const onCancel = () => {
       <el-col :span="8">
         <el-input
           v-model="form.grains[index].quantity"
-          @change="onChangeGrainQuantity"
+          @blur="onChangeGrainParams"
           autocomplete="off"
         />
       </el-col>
@@ -267,6 +299,77 @@ const onCancel = () => {
       >
       <el-col :span="8"
         ><span>{{ grainRatioSum }}</span></el-col
+      >
+    </el-row>
+
+    <el-row>
+      <el-col :span="16">
+        <span>Hops</span>
+      </el-col>
+      <el-col :span="8">
+        <el-button type="primary" @click="addHop">Add</el-button>
+      </el-col>
+    </el-row>
+
+    <el-row>
+      <el-col :span="4">
+        <span>名称</span>
+      </el-col>
+      <el-col :span="4">
+        <span>α酸（%）</span>
+      </el-col>
+      <el-col :span="4">
+        <span>量（g）</span>
+      </el-col>
+      <el-col :span="4">
+        <span>煮込時間（分）</span>
+      </el-col>
+      <el-col :span="4">
+        <span>IBUs</span>
+      </el-col>
+    </el-row>
+    <el-row v-for="(hopPlan, index) in form.hops" :key="hopPlan.hop.id">
+      <el-col :span="4">
+        <el-select
+          v-model="form.hops[index].hop"
+          :teleported="false"
+          value-key="id"
+          @blur="onChangeHopParams"
+        >
+          <el-option
+            v-for="item in hopMst"
+            :key="item.id"
+            :label="item.name"
+            :value="item"
+          >
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="4">
+        <span>{{ form.hops[index].hop.alphaAcid }}</span>
+      </el-col>
+      <el-col :span="4">
+        <el-input
+          v-model="form.hops[index].quantity"
+          @blur="onChangeHopParams"
+          autocomplete="off"
+        />
+      </el-col>
+      <el-col :span="4">
+        <el-input
+          v-model="form.hops[index].boilTime"
+          @blur="onChangeHopParams"
+          autocomplete="off"
+        />
+      </el-col>
+      <el-col :span="4">
+        <span>{{ form.hops[index].ibus }}</span>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="16"><span>合計</span></el-col>
+      <el-col :span="4"
+        ><span>{{ totalIBUs }}</span></el-col
       >
     </el-row>
 
