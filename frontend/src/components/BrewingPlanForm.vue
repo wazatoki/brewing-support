@@ -97,15 +97,18 @@ const addHop = () => {
 };
 
 const onChangeGrainParams = () => {
-  const grainQuantitySum = form.grains
-    .map((grainPlan) => {
-      return grainPlan.quantity;
-    })
-    .reduce((acc, elem) => Number(acc) + Number(elem), 0);
+  // OG = ( (potential SG -1)  × malt size (Lb)  /  batch size (Gallon)  )+ 1
+  // OG - 1 = (potential SG -1)  × malt size (Lb)  /  batch size (Gallon)
+  // ((OG - 1) * batch size (Gallon)) / (potential SG -1) = malt size (Lb)
 
   form.grains.forEach((grainPlan) => {
-    grainPlan.ratio =
-      Math.trunc((grainPlan.quantity / grainQuantitySum) * 10000) / 100;
+    grainPlan.quantity = Math.trunc(
+      (((form.originalGravity - 1) * (form.batchSize / 3.785)) /
+        (grainPlan.grain.potential - 1) /
+        (form.mashEfficienty / 100)) *
+        (grainPlan.ratio / 100) *
+        453.6
+    );
   });
 };
 
@@ -282,14 +285,14 @@ const onCancel = () => {
         </el-select>
       </el-col>
       <el-col :span="8">
+        <span>{{ form.grains[index].quantity }}</span>
+      </el-col>
+      <el-col :span="8">
         <el-input
-          v-model="form.grains[index].quantity"
+          v-model="form.grains[index].ratio"
           @blur="onChangeGrainParams"
           autocomplete="off"
         />
-      </el-col>
-      <el-col :span="8">
-        <span>{{ form.grains[index].ratio }}</span>
       </el-col>
     </el-row>
     <el-row>
