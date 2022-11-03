@@ -55,6 +55,11 @@ const rules = reactive({
 
 const formRef = ref();
 
+const calculateAbv = () => {
+  form.abv =
+    Math.round((form.originalGravity - form.finalGravity) * 131 * 10) / 10;
+};
+
 const grainQuantitySum = computed(() => {
   return form.grains
     .map((grainPlan) => {
@@ -127,6 +132,12 @@ const onChangeHopParams = () => {
   });
 };
 
+const recalculation = () => {
+  onChangeGrainParams();
+  onChangeHopParams();
+  calculateAbv();
+};
+
 const onSubmit = async (formEl) => {
   if (!formEl) {
     return;
@@ -195,7 +206,11 @@ const onCancel = () => {
           :label-width="formLabelWidth"
           prop="batchSize"
         >
-          <el-input v-model="form.batchSize" autocomplete="off" />
+          <el-input
+            v-model="form.batchSize"
+            autocomplete="off"
+            @blur="recalculation"
+          />
         </el-form-item>
       </el-col>
     </el-row>
@@ -206,7 +221,11 @@ const onCancel = () => {
           :label-width="formLabelWidth"
           prop="originalGravity"
         >
-          <el-input v-model="form.originalGravity" autocomplete="off" />
+          <el-input
+            v-model="form.originalGravity"
+            autocomplete="off"
+            @blur="recalculation"
+          />
         </el-form-item>
       </el-col>
       <el-col :span="12">
@@ -226,7 +245,11 @@ const onCancel = () => {
           :label-width="formLabelWidth"
           prop="finalGravity"
         >
-          <el-input v-model="form.finalGravity" autocomplete="off" />
+          <el-input
+            v-model="form.finalGravity"
+            autocomplete="off"
+            @blur="recalculation"
+          />
         </el-form-item>
       </el-col>
     </el-row>
@@ -244,7 +267,11 @@ const onCancel = () => {
           :label-width="formLabelWidth"
           prop="mashEfficienty"
         >
-          <el-input v-model="form.mashEfficienty" autocomplete="off" />
+          <el-input
+            v-model="form.mashEfficienty"
+            autocomplete="off"
+            @blur="recalculation"
+          />
         </el-form-item>
       </el-col>
     </el-row>
