@@ -8,7 +8,7 @@ import BrewingRecordForm from "@/components/BrewingRecordForm.vue";
 import BrewingPlanForm from "@/components/BrewingPlanForm.vue";
 import { BrewEvent } from "@/models/brewEvent";
 import { BrewPlan } from "@/models/brewPlan";
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onMounted, computed } from "vue";
 import {
   ElRow,
   ElCol,
@@ -66,6 +66,32 @@ const brewEvents = [];
 const a_brewEvent = reactive(new BrewEvent());
 
 let calendarApi;
+
+const grainQuantitySum = computed(() => {
+  return brewPlan.grains
+    .map((grainPlan) => {
+      return grainPlan.quantity;
+    })
+    .reduce((acc, elem) => Number(acc) + Number(elem), 0);
+});
+
+const grainRatioSum = computed(() => {
+  return Math.round(
+    brewPlan.grains
+      .map((grainPlan) => {
+        return grainPlan.ratio;
+      })
+      .reduce((acc, elem) => Number(acc) + Number(elem), 0)
+  );
+});
+
+const totalIBUs = computed(() => {
+  return brewPlan.hops
+    .map((hopplan) => {
+      return hopplan.ibus;
+    })
+    .reduce((acc, elem) => Number(acc) + Number(elem), 0);
+});
 
 function onSelectCalender(info) {
   calendarApi = info.view.calendar;
@@ -227,10 +253,7 @@ const fetchYeastMst = async () => {
 };
 
 const onClickBrewPlanCreate = () => {
-  brewPlan.id = "";
-  brewPlan.batchNumber = "";
-  brewPlan.name = "";
-  brewPlan.events = [];
+  brewPlan.clear();
   brewPlanFormDialogVisible.value = true;
 };
 
@@ -245,6 +268,16 @@ const onClickSubmitBrewPlanForm = async (brewPlanData) => {
     brewPlan.id = id;
     brewPlan.batchNumber = brewPlanData.batchNumber;
     brewPlan.name = brewPlanData.name;
+    brewPlan.batchSize = brewPlanData.batchSize;
+    brewPlan.originalGravity = brewPlanData.originalGravity;
+    brewPlan.finalGravity = brewPlanData.finalGravity;
+    brewPlan.brixLevel = brewPlanData.brixLevel;
+    brewPlan.abv = brewPlanData.abv;
+    brewPlan.ibus = brewPlanData.ibus;
+    brewPlan.mashEfficienty = brewPlanData.mashEfficienty;
+    brewPlan.grains = brewPlanData.grains;
+    brewPlan.hops = brewPlanData.hops;
+    brewPlan.yeastPlan = brewPlanData.yeastPlan;
     brewPlan.events = brewPlanData.events;
     fetchBrewPlans();
     fetchBrewEvents();
@@ -275,6 +308,16 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
   brewPlan.id = selectedBrewPlan.id;
   brewPlan.batchNumber = selectedBrewPlan.batchNumber;
   brewPlan.name = selectedBrewPlan.name;
+  brewPlan.batchSize = selectedBrewPlan.batchSize;
+  brewPlan.originalGravity = selectedBrewPlan.originalGravity;
+  brewPlan.finalGravity = selectedBrewPlan.finalGravity;
+  brewPlan.brixLevel = selectedBrewPlan.brixLevel;
+  brewPlan.abv = selectedBrewPlan.abv;
+  brewPlan.ibus = selectedBrewPlan.ibus;
+  brewPlan.mashEfficienty = selectedBrewPlan.mashEfficienty;
+  brewPlan.grains = selectedBrewPlan.grains;
+  brewPlan.hops = selectedBrewPlan.hops;
+  brewPlan.yeastPlan = selectedBrewPlan.yeastPlan;
   brewPlan.events = selectedBrewPlan.events;
   brewPlanSelectFormDialogVisible.value = false;
   fetchBrewEvents();
@@ -312,8 +355,150 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
               {{ brewPlan.name }}
             </el-col>
           </el-row>
+          <el-row>
+            <el-col :span="12"> batch size </el-col>
+            <el-col :span="12">
+              {{ brewPlan.batchSize }} <span> L</span>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="6"> 初期比重 </el-col>
+            <el-col :span="6">
+              {{ brewPlan.originalGravity }}
+            </el-col>
+            <el-col :span="6"> 糖度 </el-col>
+            <el-col :span="6">
+              {{ brewPlan.brixLevel }}
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12"> 最終比重 </el-col>
+            <el-col :span="12">
+              {{ brewPlan.finalGravity }}
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12"> ABV </el-col>
+            <el-col :span="12">
+              {{ brewPlan.abv }}
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12"> Mash Efficienty </el-col>
+            <el-col :span="12">
+              {{ brewPlan.mashEfficienty }}
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <span>Grains</span>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <span>名称</span>
+            </el-col>
+            <el-col :span="8">
+              <span>量（g）</span>
+            </el-col>
+            <el-col :span="8">
+              <span>割合（％）</span>
+            </el-col>
+          </el-row>
+          <el-row
+            v-for="grainPlan in brewPlan.grains"
+            :key="grainPlan.grain.id"
+          >
+            <el-col :span="8">
+              {{ grainPlan.grain.name }}
+            </el-col>
+            <el-col :span="8">
+              <span>{{ grainPlan.quantity }}</span>
+            </el-col>
+            <el-col :span="8">
+              {{ grainPlan.ratio }}
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8"><span>合計</span></el-col>
+            <el-col :span="8"
+              ><span>{{ grainQuantitySum }}</span></el-col
+            >
+            <el-col :span="8"
+              ><span>{{ grainRatioSum }}</span></el-col
+            >
+          </el-row>
+
+          <el-row>
+            <el-col :span="24">
+              <span>Hops</span>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="4">
+              <span>名称</span>
+            </el-col>
+            <el-col :span="4">
+              <span>α酸（%）</span>
+            </el-col>
+            <el-col :span="4">
+              <span>量（g）</span>
+            </el-col>
+            <el-col :span="4">
+              <span>煮込時間（分）</span>
+            </el-col>
+            <el-col :span="4">
+              <span>IBUs</span>
+            </el-col>
+          </el-row>
+          <el-row v-for="hopPlan in brewPlan.hops" :key="hopPlan.hop.id">
+            <el-col :span="4">
+              {{ hopPlan.hop.name }}
+            </el-col>
+            <el-col :span="4">
+              <span>{{ hopPlan.hop.alphaAcid }}</span>
+            </el-col>
+            <el-col :span="4">
+              {{ hopPlan.quantity }}
+            </el-col>
+            <el-col :span="4">
+              {{ hopPlan.boilTime }}
+            </el-col>
+            <el-col :span="4">
+              <span>{{ hopPlan.ibus }}</span>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="16"><span>合計</span></el-col>
+            <el-col :span="4"
+              ><span>{{ totalIBUs }}</span></el-col
+            >
+          </el-row>
+
+          <el-row>
+            <el-col :span="24">
+              <span>酵母</span>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8"><span>名称</span></el-col>
+            <el-col :span="8"><span>量(g)</span></el-col>
+            <el-col :span="8"><span>Attenuation</span></el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              {{ brewPlan.yeastPlan.yeast.name }}
+            </el-col>
+            <el-col :span="8">
+              {{ brewPlan.yeastPlan.quantity }}
+            </el-col>
+            <el-col :span="8">
+              {{ brewPlan.yeastPlan.yeast.attenuation }}
+            </el-col>
+          </el-row>
         </div>
       </el-col>
+
       <el-col :span="12">
         <el-row>
           <el-col :span="24">brew event</el-col>
@@ -328,6 +513,9 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
         :brewEvent="a_brewEvent"
         :brewPlan="brewPlan"
         :itemMsts="itemMsts"
+        :grainMst="grainMst"
+        :hopMst="hopMst"
+        :yeastMst="yeastMst"
         @submitBrewEvent="onSubmitBrewEvent($event)"
         @clickCancel="onClickBrewingRecordFormCancel"
         @clickDelete="onClickBrewingRecordFormDelete($event)"

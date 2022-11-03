@@ -20,6 +20,33 @@ export class BrewPlan {
   yeastPlan: YeastPlan;
   events: BrewEvent[];
 
+  clear() {
+    this.id = "";
+    this.batchNumber = 0;
+    this.name = "";
+    this.batchSize = 0;
+    this.originalGravity = 1;
+    this.finalGravity = 1;
+    this.brixLevel = 0;
+    this.abv = 0;
+    this.ibus = 0;
+    this.mashEfficienty = 0;
+    this.grains = [] as GrainPlan[];
+    this.hops = [] as HopPlan[];
+    this.yeastPlan = {
+      yeast: new Yeast(
+        undefined,
+        undefined,
+        undefined,
+        new Unit(),
+        new Unit(),
+        new Unit()
+      ),
+      quantity: 0,
+    } as YeastPlan;
+    this.events = [] as BrewEvent[];
+  }
+
   constructor(
     id = "",
     batchNumber = 0,

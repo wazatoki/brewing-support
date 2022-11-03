@@ -18,17 +18,19 @@ const props = defineProps({
 const emit = defineEmits(["update:brewingItemData", "deleteItem"]);
 
 const quantity = ref(props.brewingItemData.quantity);
-const unitName = ref(props.brewingItemData.ingredient.brewingUnit.name);
-const selectedItemID = ref(props.brewingItemData.ingredient.id);
+const ingredient =
+  props.brewingItemData.ingredient ||
+  props.brewingItemData.grain ||
+  props.brewingItemData.hop ||
+  props.brewingItemData.yeast;
+const unitName = ref(ingredient.brewingUnit.name);
+const selectedItem = ref(ingredient);
 
 const onChange = () => {
-  const ingredient = props.itemMsts.find(
-    (item) => item.id === selectedItemID.value
-  );
   unitName.value = "";
 
   if (ingredient) {
-    unitName.value = ingredient.brewingUnit.name;
+    unitName.value = selectedItem.value.brewingUnit.name;
   }
 
   emitData();
@@ -39,7 +41,7 @@ const emitData = () => {
     "update:brewingItemData",
     new ConsumedIngredient(
       props.brewingItemData.id,
-      props.itemMsts.find((item) => item.id === selectedItemID.value),
+      selectedItem.value,
       quantity.value
     )
   );
@@ -55,16 +57,17 @@ const clickDelete = () => {
     <el-col :span="14">
       <el-select
         @change="onChange"
-        v-model="selectedItemID"
+        v-model="selectedItem"
         class="form-input"
         placeholder="品名"
         :teleported="false"
+        value-key="id"
       >
         <el-option
           v-for="item in itemMsts"
           :key="item.id"
           :label="item.name"
-          :value="item.id"
+          :value="item"
         >
         </el-option>
       </el-select>

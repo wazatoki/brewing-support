@@ -12,6 +12,16 @@ const rowClick = (selectedBrewPlan) => {
     selectedBrewPlan.id,
     selectedBrewPlan.batchNumber,
     selectedBrewPlan.name,
+    selectedBrewPlan.batchSize,
+    selectedBrewPlan.originalGravity,
+    selectedBrewPlan.finalGravity,
+    selectedBrewPlan.brixLevel,
+    selectedBrewPlan.abv,
+    selectedBrewPlan.ibus,
+    selectedBrewPlan.mashEfficienty,
+    selectedBrewPlan.grains,
+    selectedBrewPlan.hops,
+    selectedBrewPlan.yeastPlan,
     selectedBrewPlan.events
   );
   emit("selectBrewPlan", brewPlan);

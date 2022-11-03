@@ -4,8 +4,14 @@ import { getDBInstance } from "./pouchdb";
 import { instanceToPlain } from "class-transformer";
 import { ConsumedIngredient } from "@/models/consumedIngredient";
 import { Ingredient } from "@/models/ingredient";
+import { Grain } from "@/models/ingredientGrain";
+import { Hop } from "@/models/ingredientHop";
+import { Yeast } from "@/models/ingredientYeast";
 import { IngredientClassification } from "@/models/ingredientClassification";
 import { Unit } from "@/models/unit";
+import { ConsumedIngredientGrain } from "@/models/consumedIngredientGrain";
+import { ConsumedIngredientHop } from "@/models/consumedIngredientHop";
+import { ConsumedIngredientYeast } from "@/models/consumedIngredientYeast";
 
 const typename = "brew_event";
 const prefix = typename + "-";
@@ -74,6 +80,108 @@ export async function fetchAll(): Promise<{
               );
             });
           }
+          const grains: ConsumedIngredientGrain[] = [];
+          if (item.doc.grains) {
+            item.doc.grains.forEach((item) => {
+              grains.push(
+                new ConsumedIngredientGrain(
+                  item.id,
+                  new Grain(
+                    item.grain.id,
+                    item.grain.name,
+                    item.grain.potential,
+                    new Unit(
+                      item.grain.brewingUnit.id,
+                      item.grain.brewingUnit.name,
+                      item.grain.brewingUnit.conversionFactor,
+                      item.grain.brewingUnit.baseUnit
+                    ),
+                    new Unit(
+                      item.grain.recievingUnit.id,
+                      item.grain.recievingUnit.name,
+                      item.grain.brewingUnit.conversionFactor,
+                      item.grain.recievingUnit.baseUnit
+                    ),
+                    new Unit(
+                      item.grain.stockingUnit.id,
+                      item.grain.stockingUnit.name,
+                      item.grain.stockingUnit.conversionFactor,
+                      item.grain.stockingUnit.baseUnit
+                    )
+                  ),
+                  item.quantity
+                )
+              );
+            });
+          }
+          const hops: ConsumedIngredientHop[] = [];
+          if (item.doc.hops) {
+            item.doc.hops.forEach((item) => {
+              hops.push(
+                new ConsumedIngredientHop(
+                  item.id,
+                  new Hop(
+                    item.hop.id,
+                    item.hop.name,
+                    item.hop.alphaAcid,
+                    new Unit(
+                      item.hop.brewingUnit.id,
+                      item.hop.brewingUnit.name,
+                      item.hop.brewingUnit.conversionFactor,
+                      item.hop.brewingUnit.baseUnit
+                    ),
+                    new Unit(
+                      item.hop.recievingUnit.id,
+                      item.hop.recievingUnit.name,
+                      item.hop.brewingUnit.conversionFactor,
+                      item.hop.recievingUnit.baseUnit
+                    ),
+                    new Unit(
+                      item.hop.stockingUnit.id,
+                      item.hop.stockingUnit.name,
+                      item.hop.stockingUnit.conversionFactor,
+                      item.hop.stockingUnit.baseUnit
+                    )
+                  ),
+                  item.quantity
+                )
+              );
+            });
+          }
+          const yeasts: ConsumedIngredientYeast[] = [];
+          if (item.doc.yeasts) {
+            item.doc.yeasts.forEach((item) => {
+              yeasts.push(
+                new ConsumedIngredientYeast(
+                  item.id,
+                  new Yeast(
+                    item.yeast.id,
+                    item.yeast.name,
+                    item.yeast.attenuation,
+                    new Unit(
+                      item.yeast.brewingUnit.id,
+                      item.yeast.brewingUnit.name,
+                      item.yeast.brewingUnit.conversionFactor,
+                      item.yeast.brewingUnit.baseUnit
+                    ),
+                    new Unit(
+                      item.yeast.recievingUnit.id,
+                      item.yeast.recievingUnit.name,
+                      item.yeast.brewingUnit.conversionFactor,
+                      item.yeast.recievingUnit.baseUnit
+                    ),
+                    new Unit(
+                      item.yeast.stockingUnit.id,
+                      item.yeast.stockingUnit.name,
+                      item.yeast.stockingUnit.conversionFactor,
+                      item.yeast.stockingUnit.baseUnit
+                    )
+                  ),
+                  item.quantity
+                )
+              );
+            });
+          }
           const be = new BrewEvent(
             item.doc.id,
             item.doc.name,
@@ -81,6 +189,9 @@ export async function fetchAll(): Promise<{
             item.doc.from,
             item.doc.to,
             ingredients,
+            grains,
+            hops,
+            yeasts,
             item.doc.brewPlanID
           );
           result.push(be);
@@ -124,6 +235,9 @@ export async function save(brewEvent: BrewEvent): Promise<{ id: string }> {
     doc.from = brewEvent.from;
     doc.to = brewEvent.to;
     doc.ingredients = brewEvent.ingredients;
+    doc.grains = brewEvent.grains;
+    doc.hops = brewEvent.hops;
+    doc.yeasts = brewEvent.yeasts;
     doc.brewPlanID = brewEvent.brewPlanID;
     try {
       await getDBInstance().put(instanceToPlain(doc));
