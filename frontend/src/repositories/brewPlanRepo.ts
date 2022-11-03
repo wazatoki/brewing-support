@@ -46,7 +46,7 @@ export async function fetchAll(): Promise<{
             item.doc.mashEfficienty,
             item.doc.grains,
             item.doc.hops,
-            item.doc.yeast,
+            item.doc.yeastPlan,
             item.doc.events
           );
           result.push(bp);
@@ -96,7 +96,7 @@ export async function save(brewPlan: BrewPlan): Promise<{ id: string }> {
     doc.mashEfficienty = brewPlan.mashEfficienty;
     doc.grains = brewPlan.grains;
     doc.hops = brewPlan.hops;
-    doc.yeast = brewPlan.yeast;
+    doc.yeastPlan = brewPlan.yeastPlan;
     doc.events = brewPlan.events;
     try {
       await getDBInstance().put(instanceToPlain(doc));
@@ -124,7 +124,7 @@ export async function save(brewPlan: BrewPlan): Promise<{ id: string }> {
         mashEfficienty: brewPlan.mashEfficienty,
         grains: brewPlan.grains,
         hops: brewPlan.hops,
-        yeast: brewPlan.yeast,
+        yeastPlan: brewPlan.yeastPlan,
         events: brewPlan.events,
       };
       try {

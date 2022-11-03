@@ -5,7 +5,7 @@ import { IngredientClassification } from "@/models/ingredientClassification";
 import { Ingredient } from "@/models/ingredient";
 import { Unit } from "@/models/unit";
 import { Supplier } from "@/models/supplier";
-import { BrewPlan, GrainPlan, HopPlan } from "@/models/brewPlan";
+import { BrewPlan, GrainPlan, HopPlan, YeastPlan } from "@/models/brewPlan";
 import { BrewEvent } from "@/models/brewEvent";
 import { Yeast } from "@/models/ingredientYeast";
 
@@ -62,7 +62,10 @@ const brewPlans: BrewPlan[] = [
     0,
     grains,
     hops,
-    new Yeast("yeast-1", "yeast-name-1", 70, unit_g, unit_g, unit_g),
+    {
+      yeast: new Yeast("yeast-1", "yeast-name-1", 70, unit_g, unit_g, unit_g),
+      quantity: 50,
+    } as YeastPlan,
     events
   ),
   new BrewPlan(
@@ -78,7 +81,10 @@ const brewPlans: BrewPlan[] = [
     0,
     [],
     [],
-    new Yeast("yeast-1", "yeast-name-1", 70, unit_g, unit_g, unit_g),
+    {
+      yeast: new Yeast("yeast-1", "yeast-name-1", 70, unit_g, unit_g, unit_g),
+      quantity: 50,
+    } as YeastPlan,
     []
   ),
 ];

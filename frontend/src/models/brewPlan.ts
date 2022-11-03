@@ -2,6 +2,7 @@ import { BrewEvent } from "./brewEvent";
 import { Grain } from "./ingredientGrain";
 import { Hop } from "./ingredientHop";
 import { Yeast } from "./ingredientYeast";
+import { Unit } from "./unit";
 
 export class BrewPlan {
   id: string;
@@ -16,7 +17,7 @@ export class BrewPlan {
   mashEfficienty: number;
   grains: GrainPlan[];
   hops: HopPlan[];
-  yeast: Yeast;
+  yeastPlan: YeastPlan;
   events: BrewEvent[];
 
   constructor(
@@ -32,7 +33,17 @@ export class BrewPlan {
     mashEfficienty = 0,
     grains = [] as GrainPlan[],
     hops = [] as HopPlan[],
-    yeast: Yeast,
+    yeastPlan = {
+      yeast: new Yeast(
+        undefined,
+        undefined,
+        undefined,
+        new Unit(),
+        new Unit(),
+        new Unit()
+      ),
+      quantity: 0,
+    } as YeastPlan,
     events = [] as BrewEvent[]
   ) {
     this.id = id;
@@ -47,7 +58,7 @@ export class BrewPlan {
     this.mashEfficienty = mashEfficienty;
     this.grains = grains;
     this.hops = hops;
-    this.yeast = yeast;
+    this.yeastPlan = yeastPlan;
     this.events = events;
   }
 }
@@ -65,7 +76,7 @@ export interface BrewPlanMember {
   mashEfficienty: number;
   grains: GrainPlan[];
   hops: HopPlan[];
-  yeast: Yeast;
+  yeastPlan: YeastPlan;
   events: BrewEvent[];
 }
 
@@ -80,4 +91,9 @@ export interface HopPlan {
   quantity: number;
   boilTime: number;
   ibus: number;
+}
+
+export interface YeastPlan {
+  yeast: Yeast;
+  quantity: number;
 }

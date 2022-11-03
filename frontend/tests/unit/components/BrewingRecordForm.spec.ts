@@ -1,7 +1,7 @@
 import { shallowMount } from "@vue/test-utils";
 import BrewingRecordForm from "@/components/BrewingRecordForm.vue";
 import { BrewEvent } from "@/models/brewEvent";
-import { BrewPlan, GrainPlan, HopPlan } from "@/models/brewPlan";
+import { BrewPlan, GrainPlan, HopPlan, YeastPlan } from "@/models/brewPlan";
 import { Unit } from "@/models/unit";
 import { Yeast } from "@/models/ingredientYeast";
 
@@ -24,7 +24,10 @@ describe("BrewingRecordForm to be created", () => {
       0,
       grains,
       hops,
-      new Yeast("yeast-1", "yeast-name-1", 70, unit_g, unit_g, unit_g),
+      {
+        yeast: new Yeast("yeast-1", "yeast-name-1", 70, unit_g, unit_g, unit_g),
+        quantity: 50,
+      } as YeastPlan,
       events
     );
     const be = new BrewEvent("id123", "testname");

@@ -5,6 +5,8 @@ import { Grain } from "@/models/ingredientGrain";
 import { Unit } from "@/models/unit";
 import { Hop } from "@/models/ingredientHop";
 
+const formLabelWidth = 200;
+
 const props = defineProps({
   brewPlan: BrewPlan,
   grainMst: [],
@@ -28,7 +30,7 @@ const form = reactive(
     props.brewPlan.mashEfficienty,
     props.brewPlan.grains,
     props.brewPlan.hops,
-    props.brewPlan.yeast,
+    props.brewPlan.yeastPlan,
     props.brewPlan.events
   )
 );
@@ -146,7 +148,7 @@ const onSubmit = async (formEl) => {
           form.mashEfficienty,
           form.grains,
           form.hops,
-          form.yeast,
+          form.yeastPlan,
           form.events
         )
       );
@@ -374,6 +376,43 @@ const onCancel = () => {
       <el-col :span="4"
         ><span>{{ totalIBUs }}</span></el-col
       >
+    </el-row>
+
+    <el-row>
+      <el-col :span="24">
+        <span>酵母</span>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="8"><span>名称</span></el-col>
+      <el-col :span="8"><span>量(g)</span></el-col>
+      <el-col :span="8"><span>Attenuation</span></el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="8">
+        <el-select
+          v-model="form.yeastPlan.yeast"
+          :teleported="false"
+          value-key="id"
+        >
+          <el-option
+            v-for="item in yeastMst"
+            :key="item.id"
+            :label="item.name"
+            :value="item"
+          >
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="8">
+        <el-input v-model="form.yeastPlan.quantity" autocomplete="off" />
+      </el-col>
+      <el-col :span="8">
+        <el-input
+          v-model="form.yeastPlan.yeast.attenuation"
+          autocomplete="off"
+        />
+      </el-col>
     </el-row>
 
     <el-row>
