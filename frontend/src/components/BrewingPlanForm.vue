@@ -276,6 +276,7 @@ const onCancel = () => {
       </el-col>
     </el-row>
 
+    <el-divider />
     <el-row>
       <el-col :span="16">
         <span>Grains</span>
@@ -334,6 +335,7 @@ const onCancel = () => {
       >
     </el-row>
 
+    <el-divider />
     <el-row>
       <el-col :span="16">
         <span>Hops</span>
@@ -405,9 +407,13 @@ const onCancel = () => {
       >
     </el-row>
 
+    <el-divider />
     <el-row>
-      <el-col :span="24">
+      <el-col :span="16">
         <span>酵母</span>
+      </el-col>
+      <el-col :span="8">
+        <div></div>
       </el-col>
     </el-row>
     <el-row>
@@ -442,6 +448,7 @@ const onCancel = () => {
       </el-col>
     </el-row>
 
+    <el-divider />
     <el-row>
       <el-col>
         <el-button type="primary" @click="onSubmit(formRef)">確定</el-button>

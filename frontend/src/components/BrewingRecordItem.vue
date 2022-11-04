@@ -9,6 +9,9 @@ import {
   ElInput,
   ElButton,
 } from "element-plus/dist/index.full.js";
+import { ConsumedIngredientGrain } from "@/models/consumedIngredientGrain";
+import { ConsumedIngredientHop } from "@/models/consumedIngredientHop";
+import { ConsumedIngredientYeast } from "@/models/consumedIngredientYeast";
 
 const props = defineProps({
   brewingItemData: ConsumedIngredient,
@@ -37,14 +40,46 @@ const onChange = () => {
 };
 
 const emitData = () => {
-  emit(
-    "update:brewingItemData",
-    new ConsumedIngredient(
-      props.brewingItemData.id,
-      selectedItem.value,
-      quantity.value
-    )
-  );
+  if (props.brewingItemData.ingredient) {
+    emit(
+      "update:brewingItemData",
+      new ConsumedIngredient(
+        props.brewingItemData.id,
+        selectedItem.value,
+        quantity.value
+      )
+    );
+  }
+  if (props.brewingItemData.grain) {
+    emit(
+      "update:brewingItemData",
+      new ConsumedIngredientGrain(
+        props.brewingItemData.id,
+        selectedItem.value,
+        quantity.value
+      )
+    );
+  }
+  if (props.brewingItemData.hop) {
+    emit(
+      "update:brewingItemData",
+      new ConsumedIngredientHop(
+        props.brewingItemData.id,
+        selectedItem.value,
+        quantity.value
+      )
+    );
+  }
+  if (props.brewingItemData.yeast) {
+    emit(
+      "update:brewingItemData",
+      new ConsumedIngredientYeast(
+        props.brewingItemData.id,
+        selectedItem.value,
+        quantity.value
+      )
+    );
+  }
 };
 
 const clickDelete = () => {

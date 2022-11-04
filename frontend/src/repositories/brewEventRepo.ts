@@ -46,140 +46,148 @@ export async function fetchAll(): Promise<{
           const ingredients: ConsumedIngredient[] = [];
           if (item.doc.ingredients) {
             item.doc.ingredients.forEach((item) => {
-              ingredients.push(
-                new ConsumedIngredient(
-                  item.id,
-                  new Ingredient(
-                    item.ingredient.id,
-                    item.ingredient.name,
-                    new IngredientClassification(
-                      item.ingredient.ingredientClassification.id,
-                      item.ingredient.ingredientClassification.name
+              if (item.ingredient) {
+                ingredients.push(
+                  new ConsumedIngredient(
+                    item.id,
+                    new Ingredient(
+                      item.ingredient.id,
+                      item.ingredient.name,
+                      new IngredientClassification(
+                        item.ingredient.ingredientClassification.id,
+                        item.ingredient.ingredientClassification.name
+                      ),
+                      new Unit(
+                        item.ingredient.brewingUnit.id,
+                        item.ingredient.brewingUnit.name,
+                        item.ingredient.brewingUnit.conversionFactor,
+                        item.ingredient.brewingUnit.baseUnit
+                      ),
+                      new Unit(
+                        item.ingredient.recievingUnit.id,
+                        item.ingredient.recievingUnit.name,
+                        item.ingredient.brewingUnit.conversionFactor,
+                        item.ingredient.recievingUnit.baseUnit
+                      ),
+                      new Unit(
+                        item.ingredient.stockingUnit.id,
+                        item.ingredient.stockingUnit.name,
+                        item.ingredient.stockingUnit.conversionFactor,
+                        item.ingredient.stockingUnit.baseUnit
+                      )
                     ),
-                    new Unit(
-                      item.ingredient.brewingUnit.id,
-                      item.ingredient.brewingUnit.name,
-                      item.ingredient.brewingUnit.conversionFactor,
-                      item.ingredient.brewingUnit.baseUnit
-                    ),
-                    new Unit(
-                      item.ingredient.recievingUnit.id,
-                      item.ingredient.recievingUnit.name,
-                      item.ingredient.brewingUnit.conversionFactor,
-                      item.ingredient.recievingUnit.baseUnit
-                    ),
-                    new Unit(
-                      item.ingredient.stockingUnit.id,
-                      item.ingredient.stockingUnit.name,
-                      item.ingredient.stockingUnit.conversionFactor,
-                      item.ingredient.stockingUnit.baseUnit
-                    )
-                  ),
-                  item.quantity
-                )
-              );
+                    item.quantity
+                  )
+                );
+              }
             });
           }
           const grains: ConsumedIngredientGrain[] = [];
           if (item.doc.grains) {
             item.doc.grains.forEach((item) => {
-              grains.push(
-                new ConsumedIngredientGrain(
-                  item.id,
-                  new Grain(
-                    item.grain.id,
-                    item.grain.name,
-                    item.grain.potential,
-                    new Unit(
-                      item.grain.brewingUnit.id,
-                      item.grain.brewingUnit.name,
-                      item.grain.brewingUnit.conversionFactor,
-                      item.grain.brewingUnit.baseUnit
+              if (item.grain) {
+                grains.push(
+                  new ConsumedIngredientGrain(
+                    item.id,
+                    new Grain(
+                      item.grain.id,
+                      item.grain.name,
+                      item.grain.potential,
+                      new Unit(
+                        item.grain.brewingUnit.id,
+                        item.grain.brewingUnit.name,
+                        item.grain.brewingUnit.conversionFactor,
+                        item.grain.brewingUnit.baseUnit
+                      ),
+                      new Unit(
+                        item.grain.recievingUnit.id,
+                        item.grain.recievingUnit.name,
+                        item.grain.brewingUnit.conversionFactor,
+                        item.grain.recievingUnit.baseUnit
+                      ),
+                      new Unit(
+                        item.grain.stockingUnit.id,
+                        item.grain.stockingUnit.name,
+                        item.grain.stockingUnit.conversionFactor,
+                        item.grain.stockingUnit.baseUnit
+                      )
                     ),
-                    new Unit(
-                      item.grain.recievingUnit.id,
-                      item.grain.recievingUnit.name,
-                      item.grain.brewingUnit.conversionFactor,
-                      item.grain.recievingUnit.baseUnit
-                    ),
-                    new Unit(
-                      item.grain.stockingUnit.id,
-                      item.grain.stockingUnit.name,
-                      item.grain.stockingUnit.conversionFactor,
-                      item.grain.stockingUnit.baseUnit
-                    )
-                  ),
-                  item.quantity
-                )
-              );
+                    item.quantity
+                  )
+                );
+              }
             });
           }
           const hops: ConsumedIngredientHop[] = [];
           if (item.doc.hops) {
             item.doc.hops.forEach((item) => {
-              hops.push(
-                new ConsumedIngredientHop(
-                  item.id,
-                  new Hop(
-                    item.hop.id,
-                    item.hop.name,
-                    item.hop.alphaAcid,
-                    new Unit(
-                      item.hop.brewingUnit.id,
-                      item.hop.brewingUnit.name,
-                      item.hop.brewingUnit.conversionFactor,
-                      item.hop.brewingUnit.baseUnit
+              if (item.hop) {
+                hops.push(
+                  new ConsumedIngredientHop(
+                    item.id,
+                    new Hop(
+                      item.hop.id,
+                      item.hop.name,
+                      item.hop.alphaAcid,
+                      new Unit(
+                        item.hop.brewingUnit.id,
+                        item.hop.brewingUnit.name,
+                        item.hop.brewingUnit.conversionFactor,
+                        item.hop.brewingUnit.baseUnit
+                      ),
+                      new Unit(
+                        item.hop.recievingUnit.id,
+                        item.hop.recievingUnit.name,
+                        item.hop.brewingUnit.conversionFactor,
+                        item.hop.recievingUnit.baseUnit
+                      ),
+                      new Unit(
+                        item.hop.stockingUnit.id,
+                        item.hop.stockingUnit.name,
+                        item.hop.stockingUnit.conversionFactor,
+                        item.hop.stockingUnit.baseUnit
+                      )
                     ),
-                    new Unit(
-                      item.hop.recievingUnit.id,
-                      item.hop.recievingUnit.name,
-                      item.hop.brewingUnit.conversionFactor,
-                      item.hop.recievingUnit.baseUnit
-                    ),
-                    new Unit(
-                      item.hop.stockingUnit.id,
-                      item.hop.stockingUnit.name,
-                      item.hop.stockingUnit.conversionFactor,
-                      item.hop.stockingUnit.baseUnit
-                    )
-                  ),
-                  item.quantity
-                )
-              );
+                    item.quantity
+                  )
+                );
+              }
             });
           }
           const yeasts: ConsumedIngredientYeast[] = [];
           if (item.doc.yeasts) {
             item.doc.yeasts.forEach((item) => {
-              yeasts.push(
-                new ConsumedIngredientYeast(
-                  item.id,
-                  new Yeast(
-                    item.yeast.id,
-                    item.yeast.name,
-                    item.yeast.attenuation,
-                    new Unit(
-                      item.yeast.brewingUnit.id,
-                      item.yeast.brewingUnit.name,
-                      item.yeast.brewingUnit.conversionFactor,
-                      item.yeast.brewingUnit.baseUnit
+              if (item.yeast) {
+                yeasts.push(
+                  new ConsumedIngredientYeast(
+                    item.id,
+                    new Yeast(
+                      item.yeast.id,
+                      item.yeast.name,
+                      item.yeast.attenuation,
+                      new Unit(
+                        item.yeast.brewingUnit.id,
+                        item.yeast.brewingUnit.name,
+                        item.yeast.brewingUnit.conversionFactor,
+                        item.yeast.brewingUnit.baseUnit
+                      ),
+                      new Unit(
+                        item.yeast.recievingUnit.id,
+                        item.yeast.recievingUnit.name,
+                        item.yeast.brewingUnit.conversionFactor,
+                        item.yeast.recievingUnit.baseUnit
+                      ),
+                      new Unit(
+                        item.yeast.stockingUnit.id,
+                        item.yeast.stockingUnit.name,
+                        item.yeast.stockingUnit.conversionFactor,
+                        item.yeast.stockingUnit.baseUnit
+                      )
                     ),
-                    new Unit(
-                      item.yeast.recievingUnit.id,
-                      item.yeast.recievingUnit.name,
-                      item.yeast.brewingUnit.conversionFactor,
-                      item.yeast.recievingUnit.baseUnit
-                    ),
-                    new Unit(
-                      item.yeast.stockingUnit.id,
-                      item.yeast.stockingUnit.name,
-                      item.yeast.stockingUnit.conversionFactor,
-                      item.yeast.stockingUnit.baseUnit
-                    )
-                  ),
-                  item.quantity
-                )
-              );
+                    item.quantity
+                  )
+                );
+              }
             });
           }
           const be = new BrewEvent(
@@ -228,6 +236,7 @@ export async function remove(brewEvent: BrewEvent) {
 export async function save(brewEvent: BrewEvent): Promise<{ id: string }> {
   const id = brewEvent.id || prefix + createUUID();
 
+  console.log(brewEvent);
   try {
     const doc = await getDBInstance().get<BrewEvent>(id);
     doc.name = brewEvent.name;

@@ -160,6 +160,7 @@ const onDelete = () => {
       </el-col>
     </el-row>
 
+    <el-divider />
     <el-row>
       <el-col :span="20"><span>Grains</span></el-col>
       <el-col :span="4">
@@ -175,6 +176,7 @@ const onDelete = () => {
       @deleteItem="removeBrewingItemDataGrain(index)"
     ></BrewingRecordItem>
 
+    <el-divider />
     <el-row>
       <el-col :span="20"><span>Hops</span></el-col>
       <el-col :span="4">
@@ -190,8 +192,9 @@ const onDelete = () => {
       @deleteItem="removeBrewingItemDataHop(index)"
     ></BrewingRecordItem>
 
+    <el-divider />
     <el-row>
-      <el-col :span="20"><span>Yeasts</span></el-col>
+      <el-col :span="20"><span>酵母</span></el-col>
       <el-col :span="4">
         <el-button type="primary" @click="addIngredientYeast">Add</el-button>
       </el-col>
@@ -205,7 +208,9 @@ const onDelete = () => {
       @deleteItem="removeBrewingItemDataYeast(index)"
     ></BrewingRecordItem>
 
+    <el-divider />
     <el-row>
+      <el-col :span="20"><span>その他</span></el-col>
       <el-col :span="4">
         <el-button type="primary" @click="addIngredient">Add</el-button>
       </el-col>

@@ -126,6 +126,9 @@ async function onClickCalenderEvent(info) {
     a_brewEvent.from = brewEvent.from;
     a_brewEvent.to = brewEvent.to;
     a_brewEvent.ingredients = brewEvent.ingredients;
+    a_brewEvent.grains = brewEvent.grains;
+    a_brewEvent.hops = brewEvent.hops;
+    a_brewEvent.yeasts = brewEvent.yeasts;
     a_brewEvent.brewPlanID = brewEvent.brewPlanID;
     brewEventDialogVisible.value = true;
   }
@@ -133,7 +136,7 @@ async function onClickCalenderEvent(info) {
 
 async function onSubmitBrewEvent(submitedBrewEvent) {
   brewEventDialogVisible.value = false; // 編集用ダイアログを閉じる
-
+  console.log(submitedBrewEvent);
   try {
     // db送信
     await brewEventRepo.save(submitedBrewEvent);
@@ -389,6 +392,7 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
               {{ brewPlan.mashEfficienty }}
             </el-col>
           </el-row>
+          <el-divider />
           <el-row>
             <el-col :span="24">
               <span>Grains</span>
@@ -429,6 +433,7 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
             >
           </el-row>
 
+          <el-divider />
           <el-row>
             <el-col :span="24">
               <span>Hops</span>
@@ -475,6 +480,7 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
             >
           </el-row>
 
+          <el-divider />
           <el-row>
             <el-col :span="24">
               <span>酵母</span>
