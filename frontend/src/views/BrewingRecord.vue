@@ -347,21 +347,23 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
 
         <div>
           <el-row>
-            <el-col :span="12"> batch number </el-col>
-            <el-col :span="12">
+            <el-col :span="6"> batch number </el-col>
+            <el-col :span="6">
               {{ brewPlan.batchNumber }}
             </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12"> batch name </el-col>
-            <el-col :span="12">
+            <el-col :span="6"> batch name </el-col>
+            <el-col :span="6">
               {{ brewPlan.name }}
             </el-col>
           </el-row>
           <el-row>
-            <el-col :span="12"> batch size </el-col>
-            <el-col :span="12">
+            <el-col :span="6"> batch size </el-col>
+            <el-col :span="6">
               {{ brewPlan.batchSize }} <span> L</span>
+            </el-col>
+            <el-col :span="6"> Mash Efficienty </el-col>
+            <el-col :span="6">
+              {{ brewPlan.mashEfficienty }}
             </el-col>
           </el-row>
           <el-row>
@@ -375,21 +377,13 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
             </el-col>
           </el-row>
           <el-row>
-            <el-col :span="12"> 最終比重 </el-col>
-            <el-col :span="12">
+            <el-col :span="6"> 最終比重 </el-col>
+            <el-col :span="6">
               {{ brewPlan.finalGravity }}
             </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12"> ABV </el-col>
-            <el-col :span="12">
+            <el-col :span="6"> ABV </el-col>
+            <el-col :span="6">
               {{ brewPlan.abv }}
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12"> Mash Efficienty </el-col>
-            <el-col :span="12">
-              {{ brewPlan.mashEfficienty }}
             </el-col>
           </el-row>
           <el-divider />

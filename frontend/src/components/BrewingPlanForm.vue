@@ -195,7 +195,7 @@ const onCancel = () => {
 <template>
   <el-form :model="form" :rules="rules" ref="formRef">
     <el-row>
-      <el-col :span="24">
+      <el-col :span="12">
         <el-form-item
           label="batch numbre"
           :label-width="formLabelWidth"
@@ -204,9 +204,7 @@ const onCancel = () => {
           <el-input v-model.number="form.batchNumber" autocomplete="off" />
         </el-form-item>
       </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="24">
+      <el-col :span="12">
         <el-form-item
           label="batch name"
           :label-width="formLabelWidth"
@@ -217,7 +215,7 @@ const onCancel = () => {
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="24">
+      <el-col :span="12">
         <el-form-item
           label="batch size(L)"
           :label-width="formLabelWidth"
@@ -225,6 +223,19 @@ const onCancel = () => {
         >
           <el-input
             v-model="form.batchSize"
+            autocomplete="off"
+            @blur="recalculation"
+          />
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item
+          label="Mash Efficienty"
+          :label-width="formLabelWidth"
+          prop="mashEfficienty"
+        >
+          <el-input
+            v-model="form.mashEfficienty"
             autocomplete="off"
             @blur="recalculation"
           />
@@ -252,7 +263,7 @@ const onCancel = () => {
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="24">
+      <el-col :span="12">
         <el-form-item
           label="最終比重"
           :label-width="formLabelWidth"
@@ -265,26 +276,9 @@ const onCancel = () => {
           />
         </el-form-item>
       </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="24">
+      <el-col :span="12">
         <el-form-item label="ABV" :label-width="formLabelWidth" prop="abv">
           <el-input v-model="form.abv" autocomplete="off" @blur="onChangeAbv" />
-        </el-form-item>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="24">
-        <el-form-item
-          label="Mash Efficienty"
-          :label-width="formLabelWidth"
-          prop="mashEfficienty"
-        >
-          <el-input
-            v-model="form.mashEfficienty"
-            autocomplete="off"
-            @blur="recalculation"
-          />
         </el-form-item>
       </el-col>
     </el-row>
