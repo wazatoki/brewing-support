@@ -455,7 +455,7 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
               {{ hopPlan.hop.name }}
             </el-col>
             <el-col :span="4">
-              <span>{{ hopPlan.hop.alphaAcid }}</span>
+              <span>{{ hopPlan.alphaAcid }}</span>
             </el-col>
             <el-col :span="4">
               {{ hopPlan.quantity }}

@@ -67,7 +67,7 @@ const calculateIBUs = () => {
     const ft = (1 - Math.exp(-0.04 * hopPlan.boilTime)) / 4.15;
     hopPlan.ibus =
       Math.trunc(
-        ((hopPlan.hop.alphaAcid * hopPlan.quantity * (fg * ft) * 10) /
+        ((hopPlan.alphaAcid * hopPlan.quantity * (fg * ft) * 10) /
           form.batchSize) *
           10
       ) / 10;
@@ -128,6 +128,7 @@ const addHop = () => {
   form.hops.push({
     hop: new Hop("", "", 0, new Unit(), new Unit(), new Unit()),
     quantity: 0,
+    alphaAcid: 0,
     boilTime: 0,
     ibus: 0,
   });
@@ -137,7 +138,8 @@ const onChangeGrainParams = () => {
   calculateGrainQuantity();
 };
 
-const onChangeHopParams = () => {
+const onChangeHopParams = (index) => {
+  form.hops[index].alphaAcid = form.hops[index].hop.alphaAcid;
   calculateIBUs();
 };
 
@@ -310,7 +312,7 @@ const onCancel = () => {
           v-model="form.grains[index].grain"
           :teleported="false"
           value-key="id"
-          @blur="onChangeGrainParams"
+          @change="onChangeGrainParams"
         >
           <el-option
             v-for="item in grainMst"
@@ -375,7 +377,7 @@ const onCancel = () => {
           v-model="form.hops[index].hop"
           :teleported="false"
           value-key="id"
-          @blur="onChangeHopParams"
+          @change="onChangeHopParams(index)"
         >
           <el-option
             v-for="item in hopMst"
@@ -387,19 +389,23 @@ const onCancel = () => {
         </el-select>
       </el-col>
       <el-col :span="4">
-        <span>{{ form.hops[index].hop.alphaAcid }}</span>
+        <el-input
+          v-model="form.hops[index].alphaAcid"
+          @blur="onChangeHopParams(index)"
+          autocomplete="off"
+        />
       </el-col>
       <el-col :span="4">
         <el-input
           v-model="form.hops[index].quantity"
-          @blur="onChangeHopParams"
+          @blur="onChangeHopParams(index)"
           autocomplete="off"
         />
       </el-col>
       <el-col :span="4">
         <el-input
           v-model="form.hops[index].boilTime"
-          @blur="onChangeHopParams"
+          @blur="onChangeHopParams(index)"
           autocomplete="off"
         />
       </el-col>

@@ -116,6 +116,7 @@ export interface GrainPlan {
 export interface HopPlan {
   hop: Hop;
   quantity: number;
+  alphaAcid: number;
   boilTime: number;
   ibus: number;
 }
