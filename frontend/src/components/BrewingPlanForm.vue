@@ -55,9 +55,39 @@ const rules = reactive({
 
 const formRef = ref();
 
-const calculateAbv = () => {
-  form.abv =
-    Math.round((form.originalGravity - form.finalGravity) * 131 * 10) / 10;
+const calculateOG = () => {
+  form.originalGravity =
+    Math.round((Number(form.abv) / 131 + Number(form.finalGravity)) * 1000) /
+    1000;
+};
+
+const calculateIBUs = () => {
+  form.hops.forEach((hopPlan) => {
+    const fg = Math.pow(0.000125, form.originalGravity - 1) * 1.65;
+    const ft = (1 - Math.exp(-0.04 * hopPlan.boilTime)) / 4.15;
+    hopPlan.ibus =
+      Math.trunc(
+        ((hopPlan.hop.alphaAcid * hopPlan.quantity * (fg * ft) * 10) /
+          form.batchSize) *
+          10
+      ) / 10;
+  });
+};
+
+const calculateGrainQuantity = () => {
+  // OG = ( (potential SG -1)  × malt size (Lb)  /  batch size (Gallon)  )+ 1
+  // OG - 1 = (potential SG -1)  × malt size (Lb)  /  batch size (Gallon)
+  // ((OG - 1) * batch size (Gallon)) / (potential SG -1) = malt size (Lb)
+
+  form.grains.forEach((grainPlan) => {
+    grainPlan.quantity = Math.trunc(
+      (((form.originalGravity - 1) * (form.batchSize / 3.785)) /
+        (grainPlan.grain.potential - 1) /
+        (form.mashEfficienty / 100)) *
+        (grainPlan.ratio / 100) *
+        453.6
+    );
+  });
 };
 
 const grainQuantitySum = computed(() => {
@@ -104,38 +134,25 @@ const addHop = () => {
 };
 
 const onChangeGrainParams = () => {
-  // OG = ( (potential SG -1)  × malt size (Lb)  /  batch size (Gallon)  )+ 1
-  // OG - 1 = (potential SG -1)  × malt size (Lb)  /  batch size (Gallon)
-  // ((OG - 1) * batch size (Gallon)) / (potential SG -1) = malt size (Lb)
-
-  form.grains.forEach((grainPlan) => {
-    grainPlan.quantity = Math.trunc(
-      (((form.originalGravity - 1) * (form.batchSize / 3.785)) /
-        (grainPlan.grain.potential - 1) /
-        (form.mashEfficienty / 100)) *
-        (grainPlan.ratio / 100) *
-        453.6
-    );
-  });
+  calculateGrainQuantity();
 };
 
 const onChangeHopParams = () => {
-  form.hops.forEach((hopPlan) => {
-    const fg = Math.pow(0.000125, form.originalGravity - 1) * 1.65;
-    const ft = (1 - Math.exp(-0.04 * hopPlan.boilTime)) / 4.15;
-    hopPlan.ibus =
-      Math.trunc(
-        ((hopPlan.hop.alphaAcid * hopPlan.quantity * (fg * ft) * 10) /
-          form.batchSize) *
-          10
-      ) / 10;
-  });
+  calculateIBUs();
+};
+
+const onChangeAbv = () => {
+  calculateOG();
+};
+
+const onChangeFinalGravity = () => {
+  calculateOG();
 };
 
 const recalculation = () => {
-  onChangeGrainParams();
-  onChangeHopParams();
-  calculateAbv();
+  calculateOG();
+  calculateGrainQuantity();
+  calculateIBUs();
 };
 
 const onSubmit = async (formEl) => {
@@ -221,11 +238,7 @@ const onCancel = () => {
           :label-width="formLabelWidth"
           prop="originalGravity"
         >
-          <el-input
-            v-model="form.originalGravity"
-            autocomplete="off"
-            @blur="recalculation"
-          />
+          <span>{{ form.originalGravity }}</span>
         </el-form-item>
       </el-col>
       <el-col :span="12">
@@ -248,7 +261,7 @@ const onCancel = () => {
           <el-input
             v-model="form.finalGravity"
             autocomplete="off"
-            @blur="recalculation"
+            @blur="onChangeFinalGravity"
           />
         </el-form-item>
       </el-col>
@@ -256,7 +269,7 @@ const onCancel = () => {
     <el-row>
       <el-col :span="24">
         <el-form-item label="ABV" :label-width="formLabelWidth" prop="abv">
-          <el-input v-model="form.abv" autocomplete="off" />
+          <el-input v-model="form.abv" autocomplete="off" @blur="onChangeAbv" />
         </el-form-item>
       </el-col>
     </el-row>
