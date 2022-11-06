@@ -49,7 +49,6 @@ const onClickDelete = async (index) => {
 
 const onClickEdit = (index) => {
   const item = tableData[index];
-  console.log(item);
   inventoryData.id = item.id;
   inventoryData.onDate = item.onDate;
   inventoryData.ingredients = item.ingredients;
@@ -72,7 +71,7 @@ const onSubmitInventoryForm = async (inventoryData) => {
     ElMessageBox.alert("データの保存に成功しました。", {
       confirmButtonText: "OK",
     });
-    fetchData();
+    await fetchData();
   } catch (error) {
     ElMessageBox.alert("データの保存に失敗しました。" + error.message, {
       confirmButtonText: "OK",

@@ -97,17 +97,61 @@ const onChange = () => {
 };
 
 const emitData = () => {
-  emit(
-    "update:inventoryItemData",
-    new InventoryIngredient(
-      props.inventoryItemData.id,
-      selectedItem.value,
-      resultValue.value,
-      calculatedValue.value,
-      adjustedValue.value,
-      note.value
-    )
-  );
+  if (inventoryItemData.ingredient) {
+    emit(
+      "update:inventoryItemData",
+      new InventoryIngredient(
+        props.inventoryItemData.id,
+        selectedItem.value,
+        resultValue.value,
+        calculatedValue.value,
+        adjustedValue.value,
+        note.value
+      )
+    );
+  }
+
+  if (inventoryItemData.grain) {
+    emit(
+      "update:inventoryItemData",
+      new InventoryIngredientGrain(
+        props.inventoryItemData.id,
+        selectedItem.value,
+        resultValue.value,
+        calculatedValue.value,
+        adjustedValue.value,
+        note.value
+      )
+    );
+  }
+
+  if (inventoryItemData.hop) {
+    emit(
+      "update:inventoryItemData",
+      new InventoryIngredientHop(
+        props.inventoryItemData.id,
+        selectedItem.value,
+        resultValue.value,
+        calculatedValue.value,
+        adjustedValue.value,
+        note.value
+      )
+    );
+  }
+
+  if (inventoryItemData.yeast) {
+    emit(
+      "update:inventoryItemData",
+      new InventoryIngredientYeast(
+        props.inventoryItemData.id,
+        selectedItem.value,
+        resultValue.value,
+        calculatedValue.value,
+        adjustedValue.value,
+        note.value
+      )
+    );
+  }
 };
 
 const clickDelete = () => {
