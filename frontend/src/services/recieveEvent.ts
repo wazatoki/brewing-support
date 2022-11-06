@@ -1,5 +1,8 @@
 import { RecieveEvent } from "@/models/recieveEvent";
 import { RecievedIngredient } from "@/models/recievedIngredient";
+import { RecievedIngredientGrain } from "@/models/recievedIngredientGrain";
+import { RecievedIngredientHop } from "@/models/recievedIngredientHop";
+import { RecievedIngredientYeast } from "@/models/recievedIngredientYeast";
 
 export function sortBySupplierNameAndRecieveDate(
   recieveEvents: RecieveEvent[]
@@ -30,7 +33,69 @@ export const recievedIngredientSum = (
   const buffer = [] as RecievedIngredient[];
   recieveEvents.forEach((item) => {
     const filteredRecievedIngredients = item.ingredients.filter(
-      (recievedIngredient) => recievedIngredient.ingredient.id === ingredientID
+      (recievedIngredient) =>
+        recievedIngredient.ingredient &&
+        recievedIngredient.ingredient.id === ingredientID
+    );
+    filteredRecievedIngredients.forEach((item) => buffer.push(item));
+  });
+
+  const result = buffer
+    .map((item) => Number(item.convertToBaseUnit.quantity))
+    .reduce((acc, elem) => acc + elem, 0);
+
+  return result;
+};
+
+export const recievedIngredientGrainSum = (
+  ingredientID: string,
+  recieveEvents = [] as RecieveEvent[]
+) => {
+  const buffer = [] as RecievedIngredientGrain[];
+  recieveEvents.forEach((item) => {
+    const filteredRecievedIngredients = item.grains.filter(
+      (recievedIngredient) =>
+        recievedIngredient.grain && recievedIngredient.grain.id === ingredientID
+    );
+    filteredRecievedIngredients.forEach((item) => buffer.push(item));
+  });
+
+  const result = buffer
+    .map((item) => Number(item.convertToBaseUnit.quantity))
+    .reduce((acc, elem) => acc + elem, 0);
+
+  return result;
+};
+
+export const recievedIngredientHopSum = (
+  ingredientID: string,
+  recieveEvents = [] as RecieveEvent[]
+) => {
+  const buffer = [] as RecievedIngredientHop[];
+  recieveEvents.forEach((item) => {
+    const filteredRecievedIngredients = item.hops.filter(
+      (recievedIngredient) =>
+        recievedIngredient.hop && recievedIngredient.hop.id === ingredientID
+    );
+    filteredRecievedIngredients.forEach((item) => buffer.push(item));
+  });
+
+  const result = buffer
+    .map((item) => Number(item.convertToBaseUnit.quantity))
+    .reduce((acc, elem) => acc + elem, 0);
+
+  return result;
+};
+
+export const recievedIngredientYeastSum = (
+  ingredientID: string,
+  recieveEvents = [] as RecieveEvent[]
+) => {
+  const buffer = [] as RecievedIngredientYeast[];
+  recieveEvents.forEach((item) => {
+    const filteredRecievedIngredients = item.yeasts.filter(
+      (recievedIngredient) =>
+        recievedIngredient.yeast && recievedIngredient.yeast.id === ingredientID
     );
     filteredRecievedIngredients.forEach((item) => buffer.push(item));
   });

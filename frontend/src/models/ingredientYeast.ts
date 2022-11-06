@@ -12,9 +12,9 @@ export class Yeast {
     id = "",
     name = "",
     attenuation = 0,
-    brewingUnit: Unit,
-    recievingUnit: Unit,
-    stockingUnit: Unit
+    brewingUnit = new Unit(),
+    recievingUnit = new Unit(),
+    stockingUnit = new Unit()
   ) {
     this.id = id;
     this.name = name;

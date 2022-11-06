@@ -12,9 +12,9 @@ export class Grain {
     id = "",
     name = "",
     potential = 0,
-    brewingUnit: Unit,
-    recievingUnit: Unit,
-    stockingUnit: Unit
+    brewingUnit = new Unit(),
+    recievingUnit = new Unit(),
+    stockingUnit = new Unit()
   ) {
     this.id = id;
     this.name = name;

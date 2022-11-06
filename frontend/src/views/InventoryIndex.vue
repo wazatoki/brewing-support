@@ -3,18 +3,25 @@ import { reactive, ref, onMounted } from "vue";
 import { ElMessageBox } from "element-plus";
 import { fetchAll, save, remove } from "@/repositories/inventoryRepo";
 import * as ingredientRepo from "@/repositories/ingredientRepo";
+import * as ingredientGrainRepo from "@/repositories/ingredientGrainRepo";
+import * as ingredientHopRepo from "@/repositories/ingredientHopRepo";
+import * as ingredientYeastRepo from "@/repositories/ingredientYeastRepo";
 import * as brewEventRepo from "@/repositories/brewEventRepo";
 import * as recieveEventRepo from "@/repositories/recieveEventRepo";
 import * as inventoryService from "@/services/inventory";
 import * as ingredientService from "@/services/ingredient";
-import * as brewEventService from "@/services/brewEvent";
-import * as recieveEventService from "@/services/recieveEvent";
+import * as ingredientGrainService from "@/services/ingredientGrain";
+import * as ingredientHopService from "@/services/ingredientHop";
+import * as ingredientYeastService from "@/services/ingredientYeast";
 import * as utils from "@/services/utils";
 import InventoryForm from "@/components/InventoryForm.vue";
 import { Inventory } from "@/models/inventory";
 
 const tableData = reactive([]);
 const itemMsts = reactive([]);
+const grainMst = reactive([]);
+const hopMst = reactive([]);
+const yeastMst = reactive([]);
 const brewEvents = reactive([]);
 const recieveEvents = reactive([]);
 const inventoryData = reactive(new Inventory("", new Date(), 0, 0, 0, ""));
@@ -44,7 +51,11 @@ const onClickEdit = (index) => {
   const item = tableData[index];
   console.log(item);
   inventoryData.id = item.id;
+  inventoryData.onDate = item.onDate;
   inventoryData.ingredients = item.ingredients;
+  inventoryData.grains = item.grains;
+  inventoryData.hops = item.hops;
+  inventoryData.yeasts = item.yeasts;
   inventoryData.note = item.note;
   InventoryFormDialogVisible.value = true;
 };
@@ -76,8 +87,11 @@ const onClickInventoryFormCancel = () => {
 onMounted(() => {
   fetchData();
   fetchItemMsts();
-  fetchBrewEbents();
-  fetchRecieveEbents();
+  fetchGrainMst();
+  fetchHopMst();
+  fetchYeastMst();
+  fetchBrewEvents();
+  fetchRecieveEvents();
 });
 
 const fetchData = async () => {
@@ -99,14 +113,43 @@ const fetchItemMsts = async () => {
     itemMsts.push(item);
   });
 };
-const fetchBrewEbents = async () => {
+
+const fetchGrainMst = async () => {
+  const data = await ingredientGrainRepo.fetchAll();
+  const sortedData = ingredientGrainService.sortByName(data.result);
+  grainMst.splice(0);
+  sortedData.forEach((item) => {
+    grainMst.push(item);
+  });
+};
+
+const fetchHopMst = async () => {
+  const data = await ingredientHopRepo.fetchAll();
+  const sortedData = ingredientHopService.sortByName(data.result);
+  hopMst.splice(0);
+  sortedData.forEach((item) => {
+    hopMst.push(item);
+  });
+};
+
+const fetchYeastMst = async () => {
+  const data = await ingredientYeastRepo.fetchAll();
+  const sortedData = ingredientYeastService.sortByName(data.result);
+  yeastMst.splice(0);
+  sortedData.forEach((item) => {
+    yeastMst.push(item);
+  });
+};
+
+const fetchBrewEvents = async () => {
   const data = await brewEventRepo.fetchAll();
   brewEvents.splice(0);
   data.result.forEach((item) => {
     brewEvents.push(item);
   });
 };
-const fetchRecieveEbents = async () => {
+
+const fetchRecieveEvents = async () => {
   const data = await recieveEventRepo.fetchAll();
   recieveEvents.splice(0);
   data.result.forEach((item) => {
@@ -152,6 +195,9 @@ const formatDate = (row, column, cellValue) => utils.formatDateTime(cellValue);
       <InventoryForm
         :inventory="inventoryData"
         :itemMsts="itemMsts"
+        :grainMst="grainMst"
+        :hopMst="hopMst"
+        :yeastMst="yeastMst"
         :inventories="tableData"
         :brewEvents="brewEvents"
         :recieveEvents="recieveEvents"

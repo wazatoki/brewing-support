@@ -12,9 +12,9 @@ export class Hop {
     id = "",
     name = "",
     alphaAcid = 0,
-    brewingUnit: Unit,
-    recievingUnit: Unit,
-    stockingUnit: Unit
+    brewingUnit = new Unit(),
+    recievingUnit = new Unit(),
+    stockingUnit = new Unit()
   ) {
     this.id = id;
     this.name = name;

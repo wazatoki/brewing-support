@@ -12,10 +12,10 @@ export class Ingredient {
   constructor(
     id = "",
     name = "",
-    ingredientClassification: IngredientClassification,
-    brewingUnit: Unit,
-    recievingUnit: Unit,
-    stockingUnit: Unit
+    ingredientClassification = new IngredientClassification(),
+    brewingUnit = new Unit(),
+    recievingUnit = new Unit(),
+    stockingUnit = new Unit()
   ) {
     this.id = id;
     this.name = name;

@@ -1,5 +1,8 @@
 import { Supplier } from "@/models/supplier";
 import { RecievedIngredient } from "@/models/recievedIngredient";
+import { RecievedIngredientGrain } from "@/models/recievedIngredientGrain";
+import { RecievedIngredientHop } from "@/models/recievedIngredientHop";
+import { RecievedIngredientYeast } from "@/models/recievedIngredientYeast";
 
 export class RecieveEvent {
   id: string;
@@ -8,6 +11,9 @@ export class RecieveEvent {
   supplier: Supplier;
   recieveDate: Date;
   ingredients: RecievedIngredient[];
+  grains: RecievedIngredientGrain[];
+  hops: RecievedIngredientHop[];
+  yeasts: RecievedIngredientYeast[];
   footNote: string;
 
   constructor(
@@ -17,6 +23,9 @@ export class RecieveEvent {
     supplier = new Supplier(),
     recieveDate = new Date(),
     ingredients = [] as RecievedIngredient[],
+    grains = [] as RecievedIngredientGrain[],
+    hops = [] as RecievedIngredientHop[],
+    yeasts = [] as RecievedIngredientYeast[],
     footNote = ""
   ) {
     this.id = id;
@@ -25,6 +34,9 @@ export class RecieveEvent {
     this.supplier = supplier;
     this.recieveDate = recieveDate;
     this.ingredients = ingredients;
+    this.grains = grains;
+    this.hops = hops;
+    this.yeasts = yeasts;
     this.footNote = footNote;
   }
 
@@ -35,6 +47,9 @@ export class RecieveEvent {
     this.supplier = new Supplier();
     this.recieveDate = new Date();
     this.ingredients = [] as RecievedIngredient[];
+    this.grains = [] as RecievedIngredientGrain[];
+    this.hops = [] as RecievedIngredientHop[];
+    this.yeasts = [] as RecievedIngredientYeast[];
     this.footNote = "";
   }
 }
@@ -46,5 +61,8 @@ export interface RecieveEventMember {
   supplier: Supplier;
   recieveDate: Date;
   ingredients: RecievedIngredient[];
+  grains: RecievedIngredientGrain[];
+  hops: RecievedIngredientHop[];
+  yeasts: RecievedIngredientYeast[];
   footNote: string;
 }

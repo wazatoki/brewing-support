@@ -1,5 +1,8 @@
 <script setup>
 import { InventoryIngredient } from "@/models/inventoryIngredient";
+import { InventoryIngredientGrain } from "@/models/inventoryIngredientGrain";
+import { InventoryIngredientHop } from "@/models/inventoryIngredientHop";
+import { InventoryIngredientYeast } from "@/models/inventoryIngredientYeast";
 import { ref } from "vue";
 import {
   ElRow,
@@ -9,10 +12,20 @@ import {
   ElInput,
   ElButton,
 } from "element-plus/dist/index.full.js";
-import { inventoryCalculatedValue } from "@/services/inventory";
+import {
+  inventoryCalculatedValue,
+  inventoryGrainCalculatedValue,
+  inventoryHopCalculatedValue,
+  inventoryYeastCalculatedValue,
+} from "@/services/inventory";
 
 const props = defineProps({
-  inventoryItemData: InventoryIngredient,
+  inventoryItemData:
+    // eslint-disable-next-line vue/require-prop-type-constructor
+    InventoryIngredient |
+    InventoryIngredientGrain |
+    InventoryIngredientHop |
+    InventoryIngredientYeast,
   itemMsts: [],
   inventories: [],
   brewEvents: [],
@@ -20,28 +33,64 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:inventoryItemData", "deleteItem"]);
-
+// eslint-disable-next-line vue/no-setup-props-destructure
+const inventoryItemData = props.inventoryItemData;
 const calculatedValue = ref(props.inventoryItemData.calculatedValue);
 const resultValue = ref(props.inventoryItemData.resultValue);
 const adjustedValue = ref(props.inventoryItemData.adjustedValue);
 const note = ref(props.inventoryItemData.note);
-const unitName = ref(props.inventoryItemData.ingredient.stockingUnit.name);
-const selectedItemID = ref(props.inventoryItemData.ingredient.id);
+const ingredient =
+  props.inventoryItemData.ingredient ||
+  props.inventoryItemData.grain ||
+  props.inventoryItemData.hop ||
+  props.inventoryItemData.yeast;
+const unitName = ref("");
+if (ingredient) {
+  unitName.value = ingredient.stockingUnit.name;
+}
+
+const selectedItem = ref(ingredient);
 
 const onChange = () => {
-  const ingredient = props.itemMsts.find(
-    (item) => item.id === selectedItemID.value
-  );
   unitName.value = "";
+  if (selectedItem.value) {
+    unitName.value = selectedItem.value.stockingUnit.name;
 
-  if (ingredient) {
-    unitName.value = ingredient.stockingUnit.name;
-    calculatedValue.value = inventoryCalculatedValue(
-      ingredient.id,
-      props.inventories,
-      props.brewEvents,
-      props.recieveEvents
-    );
+    if (inventoryItemData.ingredient) {
+      calculatedValue.value = inventoryCalculatedValue(
+        selectedItem.value.id,
+        props.inventories,
+        props.brewEvents,
+        props.recieveEvents
+      );
+    }
+
+    if (inventoryItemData.grain) {
+      calculatedValue.value = inventoryGrainCalculatedValue(
+        selectedItem.value.id,
+        props.inventories,
+        props.brewEvents,
+        props.recieveEvents
+      );
+    }
+
+    if (inventoryItemData.hop) {
+      calculatedValue.value = inventoryHopCalculatedValue(
+        selectedItem.value.id,
+        props.inventories,
+        props.brewEvents,
+        props.recieveEvents
+      );
+    }
+
+    if (inventoryItemData.yeast) {
+      calculatedValue.value = inventoryYeastCalculatedValue(
+        selectedItem.value.id,
+        props.inventories,
+        props.brewEvents,
+        props.recieveEvents
+      );
+    }
   }
 
   emitData();
@@ -52,7 +101,7 @@ const emitData = () => {
     "update:inventoryItemData",
     new InventoryIngredient(
       props.inventoryItemData.id,
-      props.itemMsts.find((item) => item.id === selectedItemID.value),
+      selectedItem.value,
       resultValue.value,
       calculatedValue.value,
       adjustedValue.value,
@@ -75,16 +124,17 @@ const calculateAdjustedValue = () => {
     <el-col :span="6">
       <el-select
         @change="onChange"
-        v-model="selectedItemID"
+        v-model="selectedItem"
         class="form-input"
         placeholder="品名"
         :teleported="false"
+        value-key="id"
       >
         <el-option
           v-for="item in itemMsts"
           :key="item.id"
           :label="item.name"
-          :value="item.id"
+          :value="item"
         >
         </el-option>
       </el-select>
@@ -95,7 +145,7 @@ const calculateAdjustedValue = () => {
     <el-col :span="1">{{ unitName }}</el-col>
     <el-col :span="2">
       <el-input
-        @keypress="calculateAdjustedValue"
+        @keyup="calculateAdjustedValue"
         @blur="emitData"
         v-model="resultValue"
         class="form-input"

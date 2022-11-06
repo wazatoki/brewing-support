@@ -14,7 +14,12 @@ import { ConsumedIngredientHop } from "@/models/consumedIngredientHop";
 import { ConsumedIngredientYeast } from "@/models/consumedIngredientYeast";
 
 const props = defineProps({
-  brewingItemData: ConsumedIngredient,
+  brewingItemData:
+    // eslint-disable-next-line vue/require-prop-type-constructor
+    ConsumedIngredient |
+    ConsumedIngredientGrain |
+    ConsumedIngredientHop |
+    ConsumedIngredientYeast,
   itemMsts: [],
 });
 
@@ -32,7 +37,7 @@ const selectedItem = ref(ingredient);
 const onChange = () => {
   unitName.value = "";
 
-  if (ingredient) {
+  if (selectedItem.value) {
     unitName.value = selectedItem.value.brewingUnit.name;
   }
 
