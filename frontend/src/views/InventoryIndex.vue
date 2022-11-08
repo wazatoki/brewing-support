@@ -24,7 +24,7 @@ const hopMst = reactive([]);
 const yeastMst = reactive([]);
 const brewEvents = reactive([]);
 const recieveEvents = reactive([]);
-const inventoryData = reactive(new Inventory("", new Date(), 0, 0, 0, ""));
+const inventoryData = reactive(new Inventory("", new Date(), [], [], [], ""));
 const InventoryFormDialogVisible = ref(false);
 
 const onClickDelete = async (index) => {

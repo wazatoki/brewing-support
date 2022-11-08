@@ -2,6 +2,7 @@ import { Grain, GrainMember } from "@/models/ingredientGrain";
 import { createUUID } from "@/services/utils";
 import { getDBInstance } from "./pouchdb";
 import { instanceToPlain } from "class-transformer";
+import { Unit } from "@/models/unit";
 
 const typename = "grain";
 const prefix = typename + "-";
@@ -37,9 +38,24 @@ export async function fetchAll(): Promise<{
             item.doc.id,
             item.doc.name,
             item.doc.potential,
-            item.doc.brewingUnit,
-            item.doc.recievingUnit,
-            item.doc.stockingUnit
+            new Unit(
+              item.doc.brewingUnit.id,
+              item.doc.brewingUnit.name,
+              item.doc.brewingUnit.conversionFactor,
+              item.doc.brewingUnit.baseUnit
+            ),
+            new Unit(
+              item.doc.recievingUnit.id,
+              item.doc.recievingUnit.name,
+              item.doc.recievingUnit.conversionFactor,
+              item.doc.recievingUnit.baseUnit
+            ),
+            new Unit(
+              item.doc.stockingUnit.id,
+              item.doc.stockingUnit.name,
+              item.doc.stockingUnit.conversionFactor,
+              item.doc.stockingUnit.baseUnit
+            )
           );
           u.brewingUnit = item.doc.brewingUnit;
           result.push(u);
