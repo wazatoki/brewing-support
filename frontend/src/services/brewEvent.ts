@@ -6,7 +6,8 @@ import { ConsumedIngredientYeast } from "@/models/consumedIngredientYeast";
 
 export const consumedIngredientSum = (
   ingredientID: string,
-  brewEvents = [] as BrewEvent[]
+  brewEvents = [] as BrewEvent[],
+  onDate = new Date()
 ) => {
   const buffer = [] as ConsumedIngredient[];
   brewEvents.forEach((item) => {
@@ -27,7 +28,8 @@ export const consumedIngredientSum = (
 
 export const consumedIngredientGrainSum = (
   ingredientID: string,
-  brewEvents = [] as BrewEvent[]
+  brewEvents = [] as BrewEvent[],
+  onDate = new Date()
 ) => {
   const buffer = [] as ConsumedIngredientGrain[];
   brewEvents.forEach((item) => {
@@ -47,15 +49,18 @@ export const consumedIngredientGrainSum = (
 
 export const consumedIngredientHopSum = (
   ingredientID: string,
-  brewEvents = [] as BrewEvent[]
+  brewEvents = [] as BrewEvent[],
+  onDate = new Date()
 ) => {
   const buffer = [] as ConsumedIngredientHop[];
   brewEvents.forEach((item) => {
-    const filteredConsumedIngredients = item.hops.filter(
-      (consumedIngredient) =>
-        consumedIngredient.hop && consumedIngredient.hop.id === ingredientID
-    );
-    filteredConsumedIngredients.forEach((item) => buffer.push(item));
+    if (item.from < onDate) {
+      const filteredConsumedIngredients = item.hops.filter(
+        (consumedIngredient) =>
+          consumedIngredient.hop && consumedIngredient.hop.id === ingredientID
+      );
+      filteredConsumedIngredients.forEach((item) => buffer.push(item));
+    }
   });
 
   const result = buffer
@@ -67,15 +72,19 @@ export const consumedIngredientHopSum = (
 
 export const consumedIngredientYeastSum = (
   ingredientID: string,
-  brewEvents = [] as BrewEvent[]
+  brewEvents = [] as BrewEvent[],
+  onDate = new Date()
 ) => {
   const buffer = [] as ConsumedIngredientYeast[];
   brewEvents.forEach((item) => {
-    const filteredConsumedIngredients = item.yeasts.filter(
-      (consumedIngredient) =>
-        consumedIngredient.yeast && consumedIngredient.yeast.id === ingredientID
-    );
-    filteredConsumedIngredients.forEach((item) => buffer.push(item));
+    if (item.from < onDate) {
+      const filteredConsumedIngredients = item.yeasts.filter(
+        (consumedIngredient) =>
+          consumedIngredient.yeast &&
+          consumedIngredient.yeast.id === ingredientID
+      );
+      filteredConsumedIngredients.forEach((item) => buffer.push(item));
+    }
   });
 
   const result = buffer

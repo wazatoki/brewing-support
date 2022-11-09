@@ -30,16 +30,19 @@ export function sortByDate(inventories: Inventory[]): Inventory[] {
 
 export const inventoryIngredientSum = (
   ingredientID: string,
-  inventories = [] as Inventory[]
+  inventories = [] as Inventory[],
+  onDate = new Date()
 ) => {
   const buffer = [] as InventoryIngredient[];
   inventories.forEach((item) => {
-    const filteredInventoryIngredients = item.ingredients.filter(
-      (inventoryIngredient) =>
-        inventoryIngredient.ingredient &&
-        inventoryIngredient.ingredient.id === ingredientID
-    );
-    filteredInventoryIngredients.forEach((item) => buffer.push(item));
+    if (item.onDate < onDate) {
+      const filteredInventoryIngredients = item.ingredients.filter(
+        (inventoryIngredient) =>
+          inventoryIngredient.ingredient &&
+          inventoryIngredient.ingredient.id === ingredientID
+      );
+      filteredInventoryIngredients.forEach((item) => buffer.push(item));
+    }
   });
 
   const result = buffer
@@ -51,16 +54,19 @@ export const inventoryIngredientSum = (
 
 export const inventoryIngredientGrainSum = (
   ingredientID: string,
-  inventories = [] as Inventory[]
+  inventories = [] as Inventory[],
+  onDate = new Date()
 ) => {
   const buffer = [] as InventoryIngredientGrain[];
   inventories.forEach((item) => {
-    const filteredInventoryIngredients = item.grains.filter(
-      (inventoryIngredient) =>
-        inventoryIngredient.grain &&
-        inventoryIngredient.grain.id === ingredientID
-    );
-    filteredInventoryIngredients.forEach((item) => buffer.push(item));
+    if (item.onDate < onDate) {
+      const filteredInventoryIngredients = item.grains.filter(
+        (inventoryIngredient) =>
+          inventoryIngredient.grain &&
+          inventoryIngredient.grain.id === ingredientID
+      );
+      filteredInventoryIngredients.forEach((item) => buffer.push(item));
+    }
   });
 
   const result = buffer
@@ -72,15 +78,18 @@ export const inventoryIngredientGrainSum = (
 
 export const inventoryIngredientHopSum = (
   ingredientID: string,
-  inventories = [] as Inventory[]
+  inventories = [] as Inventory[],
+  onDate = new Date()
 ) => {
   const buffer = [] as InventoryIngredientHop[];
   inventories.forEach((item) => {
-    const filteredInventoryIngredients = item.hops.filter(
-      (inventoryIngredient) =>
-        inventoryIngredient.hop && inventoryIngredient.hop.id === ingredientID
-    );
-    filteredInventoryIngredients.forEach((item) => buffer.push(item));
+    if (item.onDate < onDate) {
+      const filteredInventoryIngredients = item.hops.filter(
+        (inventoryIngredient) =>
+          inventoryIngredient.hop && inventoryIngredient.hop.id === ingredientID
+      );
+      filteredInventoryIngredients.forEach((item) => buffer.push(item));
+    }
   });
 
   const result = buffer
@@ -92,16 +101,19 @@ export const inventoryIngredientHopSum = (
 
 export const inventoryIngredientYeastSum = (
   ingredientID: string,
-  inventories = [] as Inventory[]
+  inventories = [] as Inventory[],
+  onDate = new Date()
 ) => {
   const buffer = [] as InventoryIngredientYeast[];
   inventories.forEach((item) => {
-    const filteredInventoryIngredients = item.yeasts.filter(
-      (inventoryIngredient) =>
-        inventoryIngredient.yeast &&
-        inventoryIngredient.yeast.id === ingredientID
-    );
-    filteredInventoryIngredients.forEach((item) => buffer.push(item));
+    if (item.onDate < onDate) {
+      const filteredInventoryIngredients = item.yeasts.filter(
+        (inventoryIngredient) =>
+          inventoryIngredient.yeast &&
+          inventoryIngredient.yeast.id === ingredientID
+      );
+      filteredInventoryIngredients.forEach((item) => buffer.push(item));
+    }
   });
 
   const result = buffer
@@ -113,52 +125,56 @@ export const inventoryIngredientYeastSum = (
 
 export const inventoryCalculatedValue = (
   ingredientID: string,
+  onDate: Date,
   inventories: Inventory[],
   brewEvents: BrewEvent[],
   recieveEvents: RecieveEvent[]
 ) => {
   return (
-    inventoryIngredientSum(ingredientID, inventories) +
-    recievedIngredientSum(ingredientID, recieveEvents) -
-    consumedIngredientSum(ingredientID, brewEvents)
+    inventoryIngredientSum(ingredientID, inventories, onDate) +
+    recievedIngredientSum(ingredientID, recieveEvents, onDate) -
+    consumedIngredientSum(ingredientID, brewEvents, onDate)
   );
 };
 
 export const inventoryGrainCalculatedValue = (
   ingredientID: string,
+  onDate: Date,
   inventories: Inventory[],
   brewEvents: BrewEvent[],
   recieveEvents: RecieveEvent[]
 ) => {
   return (
-    inventoryIngredientGrainSum(ingredientID, inventories) +
-    recievedIngredientGrainSum(ingredientID, recieveEvents) -
-    consumedIngredientGrainSum(ingredientID, brewEvents)
+    inventoryIngredientGrainSum(ingredientID, inventories, onDate) +
+    recievedIngredientGrainSum(ingredientID, recieveEvents, onDate) -
+    consumedIngredientGrainSum(ingredientID, brewEvents, onDate)
   );
 };
 
 export const inventoryHopCalculatedValue = (
   ingredientID: string,
+  onDate: Date,
   inventories: Inventory[],
   brewEvents: BrewEvent[],
   recieveEvents: RecieveEvent[]
 ) => {
   return (
-    inventoryIngredientHopSum(ingredientID, inventories) +
-    recievedIngredientHopSum(ingredientID, recieveEvents) -
-    consumedIngredientHopSum(ingredientID, brewEvents)
+    inventoryIngredientHopSum(ingredientID, inventories, onDate) +
+    recievedIngredientHopSum(ingredientID, recieveEvents, onDate) -
+    consumedIngredientHopSum(ingredientID, brewEvents, onDate)
   );
 };
 
 export const inventoryYeastCalculatedValue = (
   ingredientID: string,
+  onDate: Date,
   inventories: Inventory[],
   brewEvents: BrewEvent[],
   recieveEvents: RecieveEvent[]
 ) => {
   return (
-    inventoryIngredientYeastSum(ingredientID, inventories) +
-    recievedIngredientYeastSum(ingredientID, recieveEvents) -
-    consumedIngredientYeastSum(ingredientID, brewEvents)
+    inventoryIngredientYeastSum(ingredientID, inventories, onDate) +
+    recievedIngredientYeastSum(ingredientID, recieveEvents, onDate) -
+    consumedIngredientYeastSum(ingredientID, brewEvents, onDate)
   );
 };

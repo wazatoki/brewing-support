@@ -26,6 +26,7 @@ const props = defineProps({
     InventoryIngredientGrain |
     InventoryIngredientHop |
     InventoryIngredientYeast,
+  onDate: Date,
   itemMsts: [],
   inventories: [],
   brewEvents: [],
@@ -59,6 +60,7 @@ const onChange = () => {
     if (inventoryItemData.ingredient) {
       calculatedValue.value = inventoryCalculatedValue(
         selectedItem.value.id,
+        props.onDate,
         props.inventories,
         props.brewEvents,
         props.recieveEvents
@@ -68,6 +70,7 @@ const onChange = () => {
     if (inventoryItemData.grain) {
       calculatedValue.value = inventoryGrainCalculatedValue(
         selectedItem.value.id,
+        props.onDate,
         props.inventories,
         props.brewEvents,
         props.recieveEvents
@@ -77,6 +80,7 @@ const onChange = () => {
     if (inventoryItemData.hop) {
       calculatedValue.value = inventoryHopCalculatedValue(
         selectedItem.value.id,
+        props.onDate,
         props.inventories,
         props.brewEvents,
         props.recieveEvents
@@ -86,6 +90,7 @@ const onChange = () => {
     if (inventoryItemData.yeast) {
       calculatedValue.value = inventoryYeastCalculatedValue(
         selectedItem.value.id,
+        props.onDate,
         props.inventories,
         props.brewEvents,
         props.recieveEvents

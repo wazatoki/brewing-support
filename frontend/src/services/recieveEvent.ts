@@ -28,16 +28,19 @@ export function sortBySupplierNameAndRecieveDate(
 
 export const recievedIngredientSum = (
   ingredientID: string,
-  recieveEvents = [] as RecieveEvent[]
+  recieveEvents = [] as RecieveEvent[],
+  onDate = new Date()
 ) => {
   const buffer = [] as RecievedIngredient[];
   recieveEvents.forEach((item) => {
-    const filteredRecievedIngredients = item.ingredients.filter(
-      (recievedIngredient) =>
-        recievedIngredient.ingredient &&
-        recievedIngredient.ingredient.id === ingredientID
-    );
-    filteredRecievedIngredients.forEach((item) => buffer.push(item));
+    if (item.recieveDate < onDate) {
+      const filteredRecievedIngredients = item.ingredients.filter(
+        (recievedIngredient) =>
+          recievedIngredient.ingredient &&
+          recievedIngredient.ingredient.id === ingredientID
+      );
+      filteredRecievedIngredients.forEach((item) => buffer.push(item));
+    }
   });
 
   const result = buffer
@@ -49,15 +52,19 @@ export const recievedIngredientSum = (
 
 export const recievedIngredientGrainSum = (
   ingredientID: string,
-  recieveEvents = [] as RecieveEvent[]
+  recieveEvents = [] as RecieveEvent[],
+  onDate = new Date()
 ) => {
   const buffer = [] as RecievedIngredientGrain[];
   recieveEvents.forEach((item) => {
-    const filteredRecievedIngredients = item.grains.filter(
-      (recievedIngredient) =>
-        recievedIngredient.grain && recievedIngredient.grain.id === ingredientID
-    );
-    filteredRecievedIngredients.forEach((item) => buffer.push(item));
+    if (item.recieveDate < onDate) {
+      const filteredRecievedIngredients = item.grains.filter(
+        (recievedIngredient) =>
+          recievedIngredient.grain &&
+          recievedIngredient.grain.id === ingredientID
+      );
+      filteredRecievedIngredients.forEach((item) => buffer.push(item));
+    }
   });
 
   const result = buffer
@@ -69,15 +76,18 @@ export const recievedIngredientGrainSum = (
 
 export const recievedIngredientHopSum = (
   ingredientID: string,
-  recieveEvents = [] as RecieveEvent[]
+  recieveEvents = [] as RecieveEvent[],
+  onDate = new Date()
 ) => {
   const buffer = [] as RecievedIngredientHop[];
   recieveEvents.forEach((item) => {
-    const filteredRecievedIngredients = item.hops.filter(
-      (recievedIngredient) =>
-        recievedIngredient.hop && recievedIngredient.hop.id === ingredientID
-    );
-    filteredRecievedIngredients.forEach((item) => buffer.push(item));
+    if (item.recieveDate < onDate) {
+      const filteredRecievedIngredients = item.hops.filter(
+        (recievedIngredient) =>
+          recievedIngredient.hop && recievedIngredient.hop.id === ingredientID
+      );
+      filteredRecievedIngredients.forEach((item) => buffer.push(item));
+    }
   });
 
   const result = buffer
@@ -89,15 +99,19 @@ export const recievedIngredientHopSum = (
 
 export const recievedIngredientYeastSum = (
   ingredientID: string,
-  recieveEvents = [] as RecieveEvent[]
+  recieveEvents = [] as RecieveEvent[],
+  onDate = new Date()
 ) => {
   const buffer = [] as RecievedIngredientYeast[];
   recieveEvents.forEach((item) => {
-    const filteredRecievedIngredients = item.yeasts.filter(
-      (recievedIngredient) =>
-        recievedIngredient.yeast && recievedIngredient.yeast.id === ingredientID
-    );
-    filteredRecievedIngredients.forEach((item) => buffer.push(item));
+    if (item.recieveDate < onDate) {
+      const filteredRecievedIngredients = item.yeasts.filter(
+        (recievedIngredient) =>
+          recievedIngredient.yeast &&
+          recievedIngredient.yeast.id === ingredientID
+      );
+      filteredRecievedIngredients.forEach((item) => buffer.push(item));
+    }
   });
 
   const result = buffer
