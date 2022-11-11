@@ -202,7 +202,7 @@ export async function fetchAll(): Promise<{
             item.doc.noteNO,
             item.doc.noteDate,
             supplier,
-            item.doc.recieveDate,
+            new Date(item.doc.recieveDate),
             ingredients,
             grains,
             hops,

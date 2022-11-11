@@ -204,7 +204,7 @@ export async function fetchAll(): Promise<{
           }
           const inventory = new Inventory(
             item.doc.id,
-            item.doc.onDate,
+            new Date(item.doc.onDate),
             ingredients,
             grains,
             hops,
