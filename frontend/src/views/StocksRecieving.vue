@@ -1,6 +1,9 @@
 <script setup>
 import { fetchAll, save, remove } from "@/repositories/recieveEventRepo";
 import * as ingredientRepo from "@/repositories/ingredientRepo";
+import * as ingredientGrainRepo from "@/repositories/ingredientGrainRepo";
+import * as ingredientHopRepo from "@/repositories/ingredientHopRepo";
+import * as ingredientYeastRepo from "@/repositories/ingredientYeastRepo";
 import * as supplierRepo from "@/repositories/supplierRepo";
 import { reactive, ref, onMounted } from "vue";
 import StocksRecievingForm from "@/components/StocksRecievingForm.vue";
@@ -8,11 +11,17 @@ import { RecieveEvent } from "@/models/recieveEvent";
 import { sortBySupplierNameAndRecieveDate } from "@/services/recieveEvent";
 import * as supplierServices from "@/services/supplier";
 import * as ingredientService from "@/services/ingredient";
+import * as ingredientGrainService from "@/services/ingredientGrain";
+import * as ingredientHopService from "@/services/ingredientHop";
+import * as ingredientYeastService from "@/services/ingredientYeast";
 import * as utils from "@/services/utils";
 import { ElMessageBox } from "element-plus";
 
 const suppliers = reactive([]);
 const ingredientMsts = reactive([]);
+const grainMst = reactive([]);
+const hopMst = reactive([]);
+const yeastMst = reactive([]);
 const tableData = reactive([]);
 const recieveEventData = reactive(new RecieveEvent());
 const StocksRecievingFormDialogVisible = ref(false);
@@ -45,6 +54,9 @@ const onClickEdit = (index) => {
   recieveEventData.supplier = item.supplier;
   recieveEventData.recieveDate = item.recieveDate;
   recieveEventData.ingredients = item.ingredients;
+  recieveEventData.grains = item.grains;
+  recieveEventData.hops = item.hops;
+  recieveEventData.yeasts = item.yeasts;
   recieveEventData.footNote = item.footNote;
   StocksRecievingFormDialogVisible.value = true;
 };
@@ -91,6 +103,9 @@ onMounted(() => {
   fetchData();
   fetchSupplieres();
   fetchIngredientMsts();
+  fetchGrainMst();
+  fetchHopMst();
+  fetchYeastMst();
 });
 
 const fetchData = async () => {
@@ -119,6 +134,33 @@ const fetchIngredientMsts = async () => {
   ingredientMsts.splice(0);
   sortedData.forEach((item) => {
     ingredientMsts.push(item);
+  });
+};
+
+const fetchGrainMst = async () => {
+  const fetchedData = (await ingredientGrainRepo.fetchAll()).result;
+  const sortedData = ingredientGrainService.sortByName(fetchedData);
+  grainMst.splice(0);
+  sortedData.forEach((item) => {
+    grainMst.push(item);
+  });
+};
+
+const fetchHopMst = async () => {
+  const fetchedData = (await ingredientHopRepo.fetchAll()).result;
+  const sortedData = ingredientHopService.sortByName(fetchedData);
+  hopMst.splice(0);
+  sortedData.forEach((item) => {
+    hopMst.push(item);
+  });
+};
+
+const fetchYeastMst = async () => {
+  const fetchedData = (await ingredientYeastRepo.fetchAll()).result;
+  const sortedData = ingredientYeastService.sortByName(fetchedData);
+  yeastMst.splice(0);
+  sortedData.forEach((item) => {
+    yeastMst.push(item);
   });
 };
 
@@ -162,6 +204,9 @@ const formatDate = (row, column, cellValue) => utils.formatDate(cellValue);
         :recieveEventData="recieveEventData"
         :suppliers="suppliers"
         :ingredientMsts="ingredientMsts"
+        :grainMst="grainMst"
+        :hopMst="hopMst"
+        :yeastMst="yeastMst"
         @clickSubmit="onSubmitRecieveEvent($event)"
         @clickCancel="onClickStocksRecievingFormCancel"
         @clickDelete="onClickStocksRecievingFormDelete($event)"

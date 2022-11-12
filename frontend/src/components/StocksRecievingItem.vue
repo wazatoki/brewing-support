@@ -1,5 +1,4 @@
 <script setup>
-import { RecievedIngredient } from "@/models/recievedIngredient";
 import { ref } from "vue";
 import {
   ElRow,
@@ -9,42 +8,83 @@ import {
   ElInput,
   ElButton,
 } from "element-plus/dist/index.full.js";
+import { RecievedIngredient } from "@/models/recievedIngredient";
+import { RecievedIngredientGrain } from "@/models/recievedIngredientGrain";
+import { RecievedIngredientHop } from "@/models/recievedIngredientHop";
+import { RecievedIngredientYeast } from "@/models/recievedIngredientYeast";
 
 const props = defineProps({
-  stockRecievingItemData: RecievedIngredient,
+  stockRecievingItemData:
+    // eslint-disable-next-line vue/require-prop-type-constructor
+    RecievedIngredient |
+    RecievedIngredientGrain |
+    RecievedIngredientHop |
+    RecievedIngredientYeast,
   itemMsts: [],
 });
 
 const emit = defineEmits(["update:stockRecievingItemData", "deleteItem"]);
 
 const quantity = ref(props.stockRecievingItemData.quantity);
-const unitName = ref(
-  props.stockRecievingItemData.ingredient.recievingUnit.name
-);
-const selectedItemID = ref(props.stockRecievingItemData.ingredient.id);
+const ingredient =
+  props.stockRecievingItemData.ingredient ||
+  props.stockRecievingItemData.grain ||
+  props.stockRecievingItemData.hop ||
+  props.stockRecievingItemData.yeast;
+const unitName = ref(ingredient.recievingUnit.name);
+const selectedItem = ref(ingredient);
 
 const onChange = () => {
-  const ingredient = props.itemMsts.find(
-    (item) => item.id === selectedItemID.value
-  );
   unitName.value = "";
 
-  if (ingredient) {
-    unitName.value = ingredient.recievingUnit.name;
+  if (selectedItem.value) {
+    unitName.value = selectedItem.value.recievingUnit.name;
   }
 
   emitData();
 };
 
 const emitData = () => {
-  emit(
-    "update:stockRecievingItemData",
-    new RecievedIngredient(
-      props.stockRecievingItemData.id,
-      props.itemMsts.find((item) => item.id === selectedItemID.value),
-      quantity.value
-    )
-  );
+  if (props.stockRecievingItemData.ingredient) {
+    emit(
+      "update:stockRecievingItemData",
+      new RecievedIngredient(
+        props.stockRecievingItemData.id,
+        selectedItem.value,
+        quantity.value
+      )
+    );
+  }
+  if (props.stockRecievingItemData.grain) {
+    emit(
+      "update:stockRecievingItemData",
+      new RecievedIngredientGrain(
+        props.stockRecievingItemData.id,
+        selectedItem.value,
+        quantity.value
+      )
+    );
+  }
+  if (props.stockRecievingItemData.hop) {
+    emit(
+      "update:stockRecievingItemData",
+      new RecievedIngredientHop(
+        props.stockRecievingItemData.id,
+        selectedItem.value,
+        quantity.value
+      )
+    );
+  }
+  if (props.stockRecievingItemData.yeast) {
+    emit(
+      "update:stockRecievingItemData",
+      new RecievedIngredientYeast(
+        props.stockRecievingItemData.id,
+        selectedItem.value,
+        quantity.value
+      )
+    );
+  }
 };
 
 const clickDelete = () => {
@@ -57,16 +97,17 @@ const clickDelete = () => {
     <el-col :span="14">
       <el-select
         @change="onChange"
-        v-model="selectedItemID"
+        v-model="selectedItem"
         class="form-input"
         placeholder="品名"
         :teleported="false"
+        value-key="id"
       >
         <el-option
           v-for="item in itemMsts"
           :key="item.id"
           :label="item.name"
-          :value="item.id"
+          :value="item"
         >
         </el-option>
       </el-select>

@@ -2,7 +2,6 @@
 import { reactive, ref, watch } from "vue";
 import StocksRecievingItem from "@/components/StocksRecievingItem.vue";
 import { RecieveEvent } from "@/models/recieveEvent";
-import { RecievedIngredient } from "@/models/recievedIngredient";
 import {
   ElRow,
   ElCol,
@@ -14,11 +13,18 @@ import {
   ElPopconfirm,
   ElSelect,
 } from "element-plus/dist/index.full.js";
+import { RecievedIngredient } from "@/models/recievedIngredient";
+import { RecievedIngredientGrain } from "@/models/recievedIngredientGrain";
+import { RecievedIngredientHop } from "@/models/recievedIngredientHop";
+import { RecievedIngredientYeast } from "@/models/recievedIngredientYeast";
 
 const props = defineProps({
   recieveEventData: RecieveEvent,
   suppliers: [],
   ingredientMsts: [],
+  grainMst: [],
+  hopMst: [],
+  yeastMst: [],
 });
 
 const emit = defineEmits(["clickSubmit", "clickCancel", "clickDelete"]);
@@ -35,12 +41,48 @@ const addIngredient = () => {
   form.ingredients.push(new RecievedIngredient("", props.ingredientMsts[0], 0));
 };
 
+const addIngredientGrain = () => {
+  form.grains.push(new RecievedIngredientGrain("", props.grainMst[0], 0));
+};
+
+const addIngredientHop = () => {
+  form.hops.push(new RecievedIngredientHop("", props.hopMst[0], 0));
+};
+
+const addIngredientYeast = () => {
+  form.yeasts.push(new RecievedIngredientYeast("", props.yeastMst[0], 0));
+};
+
 const updateStockRecievingItemData = (stockRecievingItemData, index) => {
   form.ingredients[index] = stockRecievingItemData;
 };
 
+const updateStockRecievingItemDataGrain = (stockRecievingItemData, index) => {
+  form.grains[index] = stockRecievingItemData;
+};
+
+const updateStockRecievingItemDataHop = (stockRecievingItemData, index) => {
+  form.hops[index] = stockRecievingItemData;
+};
+
+const updateStockRecievingItemDataYeast = (stockRecievingItemData, index) => {
+  form.yeasts[index] = stockRecievingItemData;
+};
+
 const removeStockRecievingItemData = (index) => {
   form.ingredients.splice(index, 1);
+};
+
+const removeStockRecievingItemDataGrain = (index) => {
+  form.grains.splice(index, 1);
+};
+
+const removeStockRecievingItemDataHop = (index) => {
+  form.hops.splice(index, 1);
+};
+
+const removeStockRecievingItemDataYeast = (index) => {
+  form.yeasts.splice(index, 1);
 };
 
 const onSubmit = () => {
@@ -53,6 +95,9 @@ const onSubmit = () => {
       props.suppliers.find((item) => item.id === selectedSupplierID.value),
       form.recieveDate,
       form.ingredients,
+      form.grains,
+      form.hops,
+      form.yeasts,
       form.footNote
     )
   );
@@ -72,6 +117,9 @@ const onDelete = () => {
       props.suppliers.find((item) => item.id === selectedSupplierID.value),
       form.recieveDate,
       form.ingredients,
+      form.grains,
+      form.hops,
+      form.yeasts,
       form.footNote
     )
   );
@@ -150,6 +198,55 @@ const onDelete = () => {
       </el-col>
     </el-row>
     <el-row>
+      <el-col :span="20"><span>Grains</span></el-col>
+      <el-col :span="4">
+        <el-button type="primary" @click="addIngredientGrain">Add</el-button>
+      </el-col>
+    </el-row>
+    <StocksRecievingItem
+      v-for="(grain, index) in form.grains"
+      :key="grain.id"
+      :stockRecievingItemData="form.grains[index]"
+      :item-msts="grainMst"
+      @update:stockRecievingItemData="
+        updateStockRecievingItemDataGrain($event, index)
+      "
+      @deleteItem="removeStockRecievingItemDataGrain(index)"
+    ></StocksRecievingItem>
+    <el-row>
+      <el-col :span="20"><span>Hops</span></el-col>
+      <el-col :span="4">
+        <el-button type="primary" @click="addIngredientHop">Add</el-button>
+      </el-col>
+    </el-row>
+    <StocksRecievingItem
+      v-for="(hop, index) in form.hops"
+      :key="hop.id"
+      :stockRecievingItemData="form.hops[index]"
+      :item-msts="hopMst"
+      @update:stockRecievingItemData="
+        updateStockRecievingItemDataHop($event, index)
+      "
+      @deleteItem="removeStockRecievingItemDataHop(index)"
+    ></StocksRecievingItem>
+    <el-row>
+      <el-col :span="20"><span>酵母</span></el-col>
+      <el-col :span="4">
+        <el-button type="primary" @click="addIngredientYeast">Add</el-button>
+      </el-col>
+    </el-row>
+    <StocksRecievingItem
+      v-for="(yeast, index) in form.yeasts"
+      :key="yeast.id"
+      :stockRecievingItemData="form.yeasts[index]"
+      :item-msts="yeastMst"
+      @update:stockRecievingItemData="
+        updateStockRecievingItemDataYeast($event, index)
+      "
+      @deleteItem="removeStockRecievingItemDataYeast(index)"
+    ></StocksRecievingItem>
+    <el-row>
+      <el-col :span="20"><span>その他</span></el-col>
       <el-col :span="4">
         <el-button type="primary" @click="addIngredient">Add</el-button>
       </el-col>

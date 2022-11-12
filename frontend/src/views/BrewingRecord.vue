@@ -217,7 +217,6 @@ onMounted(() => {
   fetchYeastMst();
 });
 
-// TODO 削除予定
 const fetchIngredientMst = async () => {
   const fetchedData = (await ingredientRepo.fetchAll()).result;
   const sortedData =
