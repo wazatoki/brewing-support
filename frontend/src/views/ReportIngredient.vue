@@ -4,6 +4,10 @@ import * as recieveEventRepo from "@/repositories/recieveEventRepo";
 import * as brewPlanRepo from "@/repositories/brewPlanRepo";
 import * as brewEventRepo from "@/repositories/brewEventRepo";
 import * as ingredientRepo from "@/repositories/ingredientRepo";
+import * as grainRepo from "@/repositories/ingredientGrainRepo";
+import * as hopRepo from "@/repositories/ingredientHopRepo";
+import * as yeastRepo from "@/repositories/ingredientYeastRepo";
+
 import * as inventoryRepo from "@/repositories/inventoryRepo";
 import * as ingredientClassificationRepo from "@/repositories/ingredientClassificationRepo";
 import * as reportIngredientService from "@/services/reportIngredient";
@@ -17,11 +21,14 @@ const ingredientClassifications = reactive([]);
 const ingredients = reactive([]);
 const tableData = reactive([]);
 const selectedIngredientClassificationID = ref();
-const selectedIngredientID = ref();
+//const selectedIngredientID = ref();
 const selectedIngredient = ref(
   new Ingredient("", "", 1, new Unit(), new Unit(), new Unit())
 );
 const ingredientsBuffer = [];
+const grainsBuffer = [];
+const hopsBuffer = [];
+const yeastsBuffer = [];
 const brewEventsBuffer = [];
 const brewPlansBuffer = [];
 const recieveEventsBuffer = [];
@@ -31,6 +38,10 @@ const consumedIngredientSum = ref(0);
 const recievedIngredientSum = ref(0);
 const inventoryIngredientAjustSum = ref(0);
 const inventoryQuantity = ref(0);
+const selectedCategory = ref("");
+const isIngredientClassificationVisible = ref(false);
+const fromDate = ref();
+const toDate = ref();
 
 onMounted(async () => {
   brewPlansBuffer.splice(0);
@@ -51,6 +62,15 @@ onMounted(async () => {
   (await ingredientRepo.fetchAll()).result.forEach((item) => {
     ingredientsBuffer.push(item);
   });
+  (await grainRepo.fetchAll()).result.forEach((item) => {
+    grainsBuffer.push(item);
+  });
+  (await hopRepo.fetchAll()).result.forEach((item) => {
+    hopsBuffer.push(item);
+  });
+  (await yeastRepo.fetchAll()).result.forEach((item) => {
+    yeastsBuffer.push(item);
+  });
   (await inventoryRepo.fetchAll()).result.forEach((item) => {
     inventoryBuffer.push(item);
   });
@@ -58,6 +78,40 @@ onMounted(async () => {
     ingredientClassifications.push(item);
   });
 });
+
+const onChangeSelectedCategory = () => {
+  const funcs = {
+    grains: () => {
+      isIngredientClassificationVisible.value = false;
+      ingredients.splice(0);
+      grainsBuffer.forEach((item) => {
+        ingredients.push(item);
+      });
+    },
+    hops: () => {
+      isIngredientClassificationVisible.value = false;
+      ingredients.splice(0);
+      hopsBuffer.forEach((item) => {
+        ingredients.push(item);
+      });
+    },
+    yeasts: () => {
+      isIngredientClassificationVisible.value = false;
+      ingredients.splice(0);
+      yeastsBuffer.forEach((item) => {
+        ingredients.push(item);
+      });
+    },
+    others: () => {
+      isIngredientClassificationVisible.value = true;
+      ingredients.splice(0);
+    },
+  };
+
+  if (funcs[selectedCategory.value] != null) {
+    funcs[selectedCategory.value]();
+  }
+};
 
 const onChangeIngredientClassification = () => {
   const filterdIngredients = ingredientsBuffer.filter(
@@ -74,60 +128,10 @@ const onChangeIngredientClassification = () => {
 
 const onChangeIngredient = () => {
   reportDataBuffer.splice(0);
-  brewEventsBuffer.forEach((brewEvent) => {
-    brewEvent.ingredients.forEach((consumedIngredient) => {
-      if (consumedIngredient.ingredient.id === selectedIngredientID.value) {
-        reportDataBuffer.push(
-          new ReportIngredient(
-            "",
-            brewEvent.from,
-            processingType.brewing,
-            consumedIngredient.ingredient,
-            null,
-            brewPlansBuffer.find((item) => item.id === brewEvent.brewPlanID),
-            consumedIngredient.convertToStockingUnit.quantity,
-            consumedIngredient.convertToStockingUnit.stockingUnit.name
-          )
-        );
-      }
-    });
-  });
-  recieveEventsBuffer.forEach((recieveEvent) => {
-    recieveEvent.ingredients.forEach((recievedIngredient) => {
-      if (recievedIngredient.ingredient.id === selectedIngredientID.value) {
-        reportDataBuffer.push(
-          new ReportIngredient(
-            "",
-            recieveEvent.recieveDate,
-            processingType.recieving,
-            recievedIngredient.ingredient,
-            recieveEvent.supplier,
-            null,
-            recievedIngredient.convertToStockingUnit.quantity,
-            recievedIngredient.convertToStockingUnit.stockingUnit.name
-          )
-        );
-      }
-    });
-  });
-  inventoryBuffer.forEach((inventory) => {
-    inventory.ingredients.forEach((inventoryIngredient) => {
-      if (inventoryIngredient.ingredient.id === selectedIngredientID.value) {
-        reportDataBuffer.push(
-          new ReportIngredient(
-            "",
-            inventory.onDate,
-            processingType.inventory,
-            inventoryIngredient.ingredient,
-            null,
-            null,
-            inventoryIngredient.adjustedValue,
-            inventoryIngredient.ingredient.stockingUnit.name
-          )
-        );
-      }
-    });
-  });
+
+  pushBrewEventData();
+  pushRecieveEventData();
+  pushInventoryData();
 
   const sortedBuffer = reportIngredientService.sortByDate(reportDataBuffer);
 
@@ -137,18 +141,18 @@ const onChangeIngredient = () => {
   });
 
   consumedIngredientSum.value = reportIngredientService.comsumedQuantity(
-    selectedIngredientID.value,
+    selectedIngredient.value.id,
     reportDataBuffer
   );
 
   recievedIngredientSum.value = reportIngredientService.recievedQuantity(
-    selectedIngredientID.value,
+    selectedIngredient.value.id,
     reportDataBuffer
   );
 
   inventoryIngredientAjustSum.value =
     reportIngredientService.inventoryAdjustedQuantity(
-      selectedIngredientID.value,
+      selectedIngredient.value.id,
       reportDataBuffer
     );
 
@@ -156,10 +160,254 @@ const onChangeIngredient = () => {
     recievedIngredientSum.value -
     consumedIngredientSum.value +
     inventoryIngredientAjustSum.value;
+};
 
-  selectedIngredient.value = ingredientsBuffer.find(
-    (item) => item.id === selectedIngredientID.value
-  );
+const pushBrewEventData = () => {
+  const funcs = {
+    grains: (brewEvent) => {
+      brewEvent.grains.forEach((consumedIngredient) => {
+        if (consumedIngredient.grain.id === selectedIngredient.value.id) {
+          reportDataBuffer.push(
+            new ReportIngredient(
+              "",
+              brewEvent.from,
+              processingType.brewing,
+              consumedIngredient.grain,
+              null,
+              brewPlansBuffer.find((item) => item.id === brewEvent.brewPlanID),
+              consumedIngredient.convertToStockingUnit.quantity,
+              consumedIngredient.convertToStockingUnit.stockingUnit.name
+            )
+          );
+        }
+      });
+    },
+    hops: (brewEvent) => {
+      brewEvent.hops.forEach((consumedIngredient) => {
+        if (consumedIngredient.hop.id === selectedIngredient.value.id) {
+          reportDataBuffer.push(
+            new ReportIngredient(
+              "",
+              brewEvent.from,
+              processingType.brewing,
+              consumedIngredient.hop,
+              null,
+              brewPlansBuffer.find((item) => item.id === brewEvent.brewPlanID),
+              consumedIngredient.convertToStockingUnit.quantity,
+              consumedIngredient.convertToStockingUnit.stockingUnit.name
+            )
+          );
+        }
+      });
+    },
+    yeasts: (brewEvent) => {
+      brewEvent.yeasts.forEach((consumedIngredient) => {
+        if (consumedIngredient.yeast.id === selectedIngredient.value.id) {
+          reportDataBuffer.push(
+            new ReportIngredient(
+              "",
+              brewEvent.from,
+              processingType.brewing,
+              consumedIngredient.yeast,
+              null,
+              brewPlansBuffer.find((item) => item.id === brewEvent.brewPlanID),
+              consumedIngredient.convertToStockingUnit.quantity,
+              consumedIngredient.convertToStockingUnit.stockingUnit.name
+            )
+          );
+        }
+      });
+    },
+    others: (brewEvent) => {
+      brewEvent.ingredients.forEach((consumedIngredient) => {
+        if (consumedIngredient.ingredient.id === selectedIngredient.value.id) {
+          reportDataBuffer.push(
+            new ReportIngredient(
+              "",
+              brewEvent.from,
+              processingType.brewing,
+              consumedIngredient.ingredient,
+              null,
+              brewPlansBuffer.find((item) => item.id === brewEvent.brewPlanID),
+              consumedIngredient.convertToStockingUnit.quantity,
+              consumedIngredient.convertToStockingUnit.stockingUnit.name
+            )
+          );
+        }
+      });
+    },
+  };
+  brewEventsBuffer.forEach((brewEvent) => {
+    if (funcs[selectedCategory.value] != null) {
+      funcs[selectedCategory.value](brewEvent);
+    }
+  });
+};
+
+const pushRecieveEventData = () => {
+  const funcs = {
+    grains: (recieveEvent) => {
+      recieveEvent.grains.forEach((recievedIngredient) => {
+        if (recievedIngredient.grain.id === selectedIngredient.value.id) {
+          reportDataBuffer.push(
+            new ReportIngredient(
+              "",
+              recieveEvent.recieveDate,
+              processingType.recieving,
+              recievedIngredient.grain,
+              recieveEvent.supplier,
+              null,
+              recievedIngredient.convertToStockingUnit.quantity,
+              recievedIngredient.convertToStockingUnit.stockingUnit.name
+            )
+          );
+        }
+      });
+    },
+    hops: (recieveEvent) => {
+      recieveEvent.hops.forEach((recievedIngredient) => {
+        if (recievedIngredient.hop.id === selectedIngredient.value.id) {
+          reportDataBuffer.push(
+            new ReportIngredient(
+              "",
+              recieveEvent.recieveDate,
+              processingType.recieving,
+              recievedIngredient.hop,
+              recieveEvent.supplier,
+              null,
+              recievedIngredient.convertToStockingUnit.quantity,
+              recievedIngredient.convertToStockingUnit.stockingUnit.name
+            )
+          );
+        }
+      });
+    },
+    yeasts: (recieveEvent) => {
+      recieveEvent.yeasts.forEach((recievedIngredient) => {
+        if (recievedIngredient.yeast.id === selectedIngredient.value.id) {
+          reportDataBuffer.push(
+            new ReportIngredient(
+              "",
+              recieveEvent.recieveDate,
+              processingType.recieving,
+              recievedIngredient.yeast,
+              recieveEvent.supplier,
+              null,
+              recievedIngredient.convertToStockingUnit.quantity,
+              recievedIngredient.convertToStockingUnit.stockingUnit.name
+            )
+          );
+        }
+      });
+    },
+    others: (recieveEvent) => {
+      recieveEvent.ingredients.forEach((recievedIngredient) => {
+        if (recievedIngredient.ingredient.id === selectedIngredient.value.id) {
+          reportDataBuffer.push(
+            new ReportIngredient(
+              "",
+              recieveEvent.recieveDate,
+              processingType.recieving,
+              recievedIngredient.ingredient,
+              recieveEvent.supplier,
+              null,
+              recievedIngredient.convertToStockingUnit.quantity,
+              recievedIngredient.convertToStockingUnit.stockingUnit.name
+            )
+          );
+        }
+      });
+    },
+  };
+
+  recieveEventsBuffer.forEach((recieveEvent) => {
+    if (funcs[selectedCategory.value] != null) {
+      funcs[selectedCategory.value](recieveEvent);
+    }
+  });
+};
+
+const pushInventoryData = () => {
+  const funcs = {
+    grains: (inventory) => {
+      inventory.grains.forEach((inventoryIngredient) => {
+        if (inventoryIngredient.grain.id === selectedIngredient.value.id) {
+          reportDataBuffer.push(
+            new ReportIngredient(
+              "",
+              inventory.onDate,
+              processingType.inventory,
+              inventoryIngredient.grain,
+              null,
+              null,
+              inventoryIngredient.adjustedValue,
+              inventoryIngredient.grain.stockingUnit.name
+            )
+          );
+        }
+      });
+    },
+    hops: (inventory) => {
+      inventory.hops.forEach((inventoryIngredient) => {
+        if (inventoryIngredient.hop.id === selectedIngredient.value.id) {
+          reportDataBuffer.push(
+            new ReportIngredient(
+              "",
+              inventory.onDate,
+              processingType.inventory,
+              inventoryIngredient.hop,
+              null,
+              null,
+              inventoryIngredient.adjustedValue,
+              inventoryIngredient.hop.stockingUnit.name
+            )
+          );
+        }
+      });
+    },
+    yeasts: (inventory) => {
+      inventory.yeasts.forEach((inventoryIngredient) => {
+        if (inventoryIngredient.yeast.id === selectedIngredient.value.id) {
+          reportDataBuffer.push(
+            new ReportIngredient(
+              "",
+              inventory.onDate,
+              processingType.inventory,
+              inventoryIngredient.yeast,
+              null,
+              null,
+              inventoryIngredient.adjustedValue,
+              inventoryIngredient.yeast.stockingUnit.name
+            )
+          );
+        }
+      });
+    },
+    others: (inventory) => {
+      inventory.ingredients.forEach((inventoryIngredient) => {
+        if (inventoryIngredient.ingredient.id === selectedIngredient.value.id) {
+          reportDataBuffer.push(
+            new ReportIngredient(
+              "",
+              inventory.onDate,
+              processingType.inventory,
+              inventoryIngredient.ingredient,
+              null,
+              null,
+              inventoryIngredient.adjustedValue,
+              inventoryIngredient.ingredient.stockingUnit.name
+            )
+          );
+        }
+      });
+    },
+  };
+
+  inventoryBuffer.forEach((inventory) => {
+    if (funcs[selectedCategory.value] != null) {
+      funcs[selectedCategory.value](inventory);
+    }
+  });
 };
 
 const formatDate = (row, column, cellValue) => utils.formatDateTime(cellValue);
@@ -170,9 +418,33 @@ const formatDate = (row, column, cellValue) => utils.formatDateTime(cellValue);
     <el-row>
       <el-col :span="6">
         <el-row>
+          <el-date-picker
+            v-model="fromDate"
+            type="date"
+            placeholder="Select date"
+          />
+          <el-date-picker
+            v-model="toDate"
+            type="date"
+            placeholder="Select date"
+          />
+        </el-row>
+        <el-row>
+          <el-radio-group
+            v-model="selectedCategory"
+            @change="onChangeSelectedCategory"
+          >
+            <el-radio label="grains">Grains</el-radio>
+            <el-radio label="hops">Hops</el-radio>
+            <el-radio label="yeasts">酵母</el-radio>
+            <el-radio label="others">その他</el-radio>
+          </el-radio-group>
+        </el-row>
+        <el-row>
           <el-radio-group
             v-model="selectedIngredientClassificationID"
             @change="onChangeIngredientClassification"
+            v-if="isIngredientClassificationVisible"
           >
             <el-radio
               v-for="ingredientClassification in ingredientClassifications"
@@ -184,13 +456,13 @@ const formatDate = (row, column, cellValue) => utils.formatDateTime(cellValue);
         </el-row>
         <el-row>
           <el-radio-group
-            v-model="selectedIngredientID"
+            v-model="selectedIngredient"
             @change="onChangeIngredient"
           >
             <el-radio
               v-for="ingredient in ingredients"
               :key="ingredient.id"
-              :label="ingredient.id"
+              :label="ingredient"
               >{{ ingredient.name }}</el-radio
             >
           </el-radio-group>
