@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, computed } from "vue";
 import * as recieveEventRepo from "@/repositories/recieveEventRepo";
 import * as brewPlanRepo from "@/repositories/brewPlanRepo";
 import * as brewEventRepo from "@/repositories/brewEventRepo";
@@ -40,8 +40,16 @@ const inventoryIngredientAjustSum = ref(0);
 const inventoryQuantity = ref(0);
 const selectedCategory = ref("");
 const isIngredientClassificationVisible = ref(false);
-const fromDate = ref();
-const toDate = ref();
+const fromDateStr = ref();
+const toDateStr = ref(new Date());
+
+const fromDate = () => {
+  return new Date(fromDateStr.value);
+};
+const toDate = () => {
+  const d = new Date(toDateStr.value);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDay(), 23, 59, 59, 999);
+};
 
 onMounted(async () => {
   brewPlansBuffer.splice(0);
@@ -135,25 +143,49 @@ const onChangeIngredient = () => {
 
   const sortedBuffer = reportIngredientService.sortByDate(reportDataBuffer);
 
+  const carryOver = () =>
+    reportIngredientService.carryOver(
+      selectedIngredient.value.id,
+      reportDataBuffer,
+      fromDate()
+    );
+
   tableData.splice(0);
+  tableData.push(
+    new ReportIngredient(
+      "",
+      fromDate(),
+      processingType.inventory,
+      selectedIngredient.value,
+      null,
+      null,
+      carryOver(),
+      selectedIngredient.value.stockingUnit.name
+    )
+  );
   sortedBuffer.forEach((item) => {
-    tableData.push(item);
+    if (item.processingDate > fromDate()) {
+      tableData.push(item);
+    }
   });
 
   consumedIngredientSum.value = reportIngredientService.comsumedQuantity(
     selectedIngredient.value.id,
-    reportDataBuffer
+    reportDataBuffer,
+    toDate()
   );
 
   recievedIngredientSum.value = reportIngredientService.recievedQuantity(
     selectedIngredient.value.id,
-    reportDataBuffer
+    reportDataBuffer,
+    toDate()
   );
 
   inventoryIngredientAjustSum.value =
     reportIngredientService.inventoryAdjustedQuantity(
       selectedIngredient.value.id,
-      reportDataBuffer
+      reportDataBuffer,
+      toDate()
     );
 
   inventoryQuantity.value =
@@ -419,12 +451,12 @@ const formatDate = (row, column, cellValue) => utils.formatDateTime(cellValue);
       <el-col :span="6">
         <el-row>
           <el-date-picker
-            v-model="fromDate"
+            v-model="fromDateStr"
             type="date"
             placeholder="Select date"
           />
           <el-date-picker
-            v-model="toDate"
+            v-model="toDateStr"
             type="date"
             placeholder="Select date"
           />

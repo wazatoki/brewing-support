@@ -185,7 +185,8 @@ describe("reportIngredient.ts", () => {
   it("comsumedQuantity", () => {
     const result = reportIngredient.comsumedQuantity(
       ingredients[0].id,
-      reportingIngredients
+      reportingIngredients,
+      new Date(2023, 6 - 1, 19, 10, 0)
     );
     expect(result).toBe(20);
   });
@@ -193,7 +194,8 @@ describe("reportIngredient.ts", () => {
   it("recievingQuantity", () => {
     const result = reportIngredient.recievedQuantity(
       ingredients[0].id,
-      reportingIngredients
+      reportingIngredients,
+      new Date(2023, 6 - 1, 19, 10, 0)
     );
     expect(result).toBe(50);
   });
