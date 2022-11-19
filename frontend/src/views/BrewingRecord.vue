@@ -168,18 +168,19 @@ async function onChangeCalendarEvent(info) {
   }
 }
 
-function onClickBrewingRecordFormDelete(id) {
+async function onClickBrewingRecordFormDelete(id) {
   brewEventDialogVisible.value = false;
 
   // calenderEvent削除処理
-  const event = calendarApi.getEventById(id);
-  if (event) {
-    event.remove();
+  const caIndex = calendarEvents.findIndex((e) => e.id === id);
+  if (caIndex >= 0) {
+    calendarEvents.splice(caIndex, 1);
   }
 
   // brewEvent削除処理
   const beIndex = brewEvents.findIndex((e) => e.id === id);
   if (beIndex >= 0) {
+    await brewEventRepo.remove(brewEvents[beIndex]);
     brewEvents.splice(beIndex, 1);
   }
 }

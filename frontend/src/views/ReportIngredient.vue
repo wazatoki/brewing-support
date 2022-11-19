@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref, computed } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import * as recieveEventRepo from "@/repositories/recieveEventRepo";
 import * as brewPlanRepo from "@/repositories/brewPlanRepo";
 import * as brewEventRepo from "@/repositories/brewEventRepo";
