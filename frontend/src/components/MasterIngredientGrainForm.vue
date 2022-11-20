@@ -11,6 +11,7 @@ const props = defineProps({
 const emit = defineEmits(["submitGrain", "clickCancel"]);
 
 const form = reactive(props.grainData);
+const formLabelWidth = "200px";
 
 const rules = reactive({
   name: [{ required: true, message: "名称は必須項目です。", trigger: "blur" }],
@@ -53,13 +54,11 @@ const onCancel = () => {
     <el-row>
       <el-col :span="24">
         <el-form-item
-          label="糖保有量（potential）"
+          label="糖保有量（potential）PPG"
           :label-width="formLabelWidth"
           prop="potential"
         >
-          <el-input v-model="form.potential" autocomplete="off" /><span
-            >PPG</span
-          >
+          <el-input v-model="form.potential" autocomplete="off" />
         </el-form-item>
       </el-col>
     </el-row>

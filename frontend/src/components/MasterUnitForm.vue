@@ -10,6 +10,7 @@ const props = defineProps({
 const emit = defineEmits(["submitUnit", "clickCancel"]);
 
 const form = reactive(props.unitData);
+const formLabelWidth = "140px";
 
 const rules = reactive({
   name: [{ required: true, message: "名称は必須項目です。", trigger: "blur" }],

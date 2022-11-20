@@ -25,6 +25,7 @@ const props = defineProps({
 const emit = defineEmits(["submit", "cancel"]);
 
 const form = reactive(props.inventory);
+const formLabelWidth = "140px";
 
 const addIngredient = () => {
   form.ingredients.push(
