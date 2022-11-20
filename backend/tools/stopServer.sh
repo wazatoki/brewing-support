@@ -3,4 +3,4 @@
 CURRENT=$(cd $(dirname $0);pwd)
 cd $CURRENT
 
-docker compose down
+docker compose stop
