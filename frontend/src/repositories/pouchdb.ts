@@ -30,7 +30,9 @@ export function getRemoteDBInstance(
     return remoteDB;
   }
 
-  return (remoteDB = new PouchDB(`${dbName}`));
+  return (remoteDB = new PouchDB(`${dbName}`, {
+    auth: { username: "brewing_support", password: "brewing_support" },
+  }));
 }
 
 // export class CouchDbProvider {

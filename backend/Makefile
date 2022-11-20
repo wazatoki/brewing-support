@@ -1,7 +1,7 @@
 ROOT_DIR = $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 
 .PHONY: execute
-execute: serve
+execute: start
 	docker exec brewing_support /workspace/brewing_support_linux_amd64.bin
 
 .PHONY: stop
@@ -9,8 +9,8 @@ stop:
 	cd ./build/tools && \
 	docker-compose down -v
 
-.PHONY: serve
-serve:
+.PHONY: start
+start:
 	cd ./build/tools && \
 	docker-compose up -d
 
