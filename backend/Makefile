@@ -16,7 +16,7 @@ serve:
 
 .PHONY: clean
 clean:
-	rm -rf build
+	sudo rm -rf build
 
 .PHONY: test
 test:
@@ -35,13 +35,13 @@ buildAll: clean build
 .PHONY: build
 build: clean
 	mkdir -p build/workspace && \
-	cd src && \
+	cd $(ROOT_DIR)src && \
 	export GOOS=linux && \
 	go build -a -tags netgo -installsuffix netgo --ldflags '-extldflags "-static"' -o ../build/workspace/brewing_support_linux_amd64.bin . && \
 	export GOOS=windows && \
 	go build -a -tags netgo -installsuffix netgo --ldflags '-extldflags "-static"' -o ../build/workspace/brewing_support_windows_amd64.exe . && \
 	cd $(ROOT_DIR) && \
-	cp -r resources build/workspace/
+	cp -r ./resources build/workspace/ && \
 	cp -r ./tools build/
 
 .PHONY: migrateUP
