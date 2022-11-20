@@ -6,12 +6,12 @@ execute: serve
 
 .PHONY: stop
 stop:
-	cd ../tools && \
+	cd ./build/tools && \
 	docker-compose down -v
 
 .PHONY: serve
 serve:
-	cd ../tools && \
+	cd ./build/tools && \
 	docker-compose up -d
 
 .PHONY: clean
