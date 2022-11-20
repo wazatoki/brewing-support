@@ -40,6 +40,7 @@ build: clean
 	go build -a -tags netgo -installsuffix netgo --ldflags '-extldflags "-static"' -o ../build/brewing_support_windows_amd64.exe . && \
 	cd $(ROOT_DIR) && \
 	cp -r resources build/
+	cp -r ../tools build/
 
 .PHONY: migrateUP
 migrateUP:
