@@ -6,12 +6,12 @@ execute: start
 
 .PHONY: stop
 stop:
-	cd ./build/tools && \
+	cd ./tools && \
 	docker-compose down -v
 
 .PHONY: start
 start:
-	cd ./build/tools && \
+	cd ./tools && \
 	docker-compose up -d
 
 .PHONY: clean
@@ -28,21 +28,22 @@ test:
 buildAll: clean build
 	cd ../frontend && \
 	npm run build && \
-	cp -r ./dist ../backend/build/workspace/resources/frontend
+	cp -r ./dist ../backend/build/resources/frontend
 	rm -rf ../../local-workspace/work/build
 	cp -r ../backend/build ../../local-workspace/work/build
+	sudo rm -rf ../../local-workspace/work/tools
+	sudo cp -r ../backend/tools ../../local-workspace/work/tools
 
 .PHONY: build
 build: clean
-	mkdir -p build/workspace && \
+	mkdir -p build && \
 	cd $(ROOT_DIR)src && \
 	export GOOS=linux && \
-	go build -a -tags netgo -installsuffix netgo --ldflags '-extldflags "-static"' -o ../build/workspace/brewing_support_linux_amd64.bin . && \
+	go build -a -tags netgo -installsuffix netgo --ldflags '-extldflags "-static"' -o ../build/brewing_support_linux_amd64.bin . && \
 	export GOOS=windows && \
-	go build -a -tags netgo -installsuffix netgo --ldflags '-extldflags "-static"' -o ../build/workspace/brewing_support_windows_amd64.exe . && \
+	go build -a -tags netgo -installsuffix netgo --ldflags '-extldflags "-static"' -o ../build/brewing_support_windows_amd64.exe . && \
 	cd $(ROOT_DIR) && \
-	cp -r ./resources build/workspace/ && \
-	cp -r ./tools build/
+	cp -r ./resources build/
 
 .PHONY: migrateUP
 migrateUP:
