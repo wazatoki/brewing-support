@@ -39,8 +39,16 @@ services:
       - ./execution_environment/reverse-proxy/log:/var/log/nginx
       - ./execution_environment/reverse-proxy/doc:/var/www/html
       - ./execution_environment/certs:/etc/nginx/conf.d/ssl
+      - ./execution_environment/letsencrypt:/etc/nginx/conf.d/letsencrypt
     ports:
-      - "8080:80"
-      - "8443:443"
+      - "80:80"
+      - "443:443"
     depends_on:
       - brewing_support
+  certbot:
+    image: certbot/certbot:v1.7.0
+    container_name: certbot
+    volumes:
+      - ./execution_environment/letsencrypt:/etc/letsencrypt
+      - ./execution_environment/reverse-proxy/doc:/var/www/html
+    command: ["--version"]
