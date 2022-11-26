@@ -12,7 +12,7 @@ cd $CURRENT
     nyan=$(docker-compose run --rm certbot renew --post-hook='echo nyan')
 
     if echo "${nyan}" | grep -q "nyan"; then
-        docker-compose exec nginx nginx -s reload
+        docker-compose exec reverse-proxy nginx -s reload
     fi
 
 } >> /var/log/renew-cert.log 2>&1

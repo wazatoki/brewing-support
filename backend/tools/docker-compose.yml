@@ -41,8 +41,8 @@ services:
       - ./execution_environment/certs:/etc/nginx/conf.d/ssl
       - ./execution_environment/letsencrypt:/etc/nginx/conf.d/letsencrypt
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
+      - "4443:443"
     depends_on:
       - brewing_support
   certbot:
