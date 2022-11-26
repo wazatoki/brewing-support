@@ -24,15 +24,26 @@ test:
 	go test ./... && \
 	cd $(ROOT_DIR)
 
+.PHONY: buildProduction
+buildProduction: buildAll
+	rm -f ./tools/docker-compose.yml
+	cp ./tools/docker-compose-production.yml ./tools/docker-compose.yml
+	rm -f ./tools/execution_environment/reverse-proxy/default.conf
+	cp ./tools/execution_environment/reverse-proxy/default-production.conf ./tools/execution_environment/reverse-proxy/default.conf
+	sudo rm -rf ../../local-workspace/work/build
+	sudo cp -r ../backend/build ../../local-workspace/work/build
+	sudo rm -rf ../../local-workspace/work/tools
+	sudo cp -r ../backend/tools ../../local-workspace/work/tools
+
 .PHONY: buildAll
 buildAll: clean build
 	cd ../frontend && \
 	npm run build && \
 	cp -r ./dist ../backend/build/resources/frontend
-	rm -rf ../../local-workspace/work/build
-	cp -r ../backend/build ../../local-workspace/work/build
-	sudo rm -rf ../../local-workspace/work/tools
-	sudo cp -r ../backend/tools ../../local-workspace/work/tools
+	rm -f ./tools/docker-compose.yml
+	cp ./tools/docker-compose-development.yml ./tools/docker-compose.yml
+	rm -f ./tools/execution_environment/reverse-proxy/default.conf
+	cp ./tools/execution_environment/reverse-proxy/default-development.conf ./tools/execution_environment/reverse-proxy/default.conf
 
 .PHONY: build
 build: clean
