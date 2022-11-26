@@ -26,6 +26,8 @@ services:
   brewing_support_couch_db:
     image: couchdb:3.2
     container_name: brewing_support_couch_db
+    volumes:
+      - ./execution_environment/couchdb/data:/opt/couchdb/data
     expose:
       - 5984
     environment: 
