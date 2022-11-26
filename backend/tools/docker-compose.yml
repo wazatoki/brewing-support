@@ -29,7 +29,7 @@ services:
     volumes:
       - ./execution_environment/couchdb/data:/opt/couchdb/data
       - ./execution_environment/couchdb/config:/opt/couchdb/etc/local.d
-    expose:
+    expose: 
       - 5984
     environment: 
       COUCHDB_USER: "brewing_support"
