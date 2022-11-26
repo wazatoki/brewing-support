@@ -26,8 +26,8 @@ services:
   brewing_support_couch_db:
     image: couchdb:3.2
     container_name: brewing_support_couch_db
-    ports: 
-      - "5984:5984"
+    expose:
+      - 5984
     environment: 
       COUCHDB_USER: "brewing_support"
       COUCHDB_PASSWORD: "brewing_support"
@@ -43,6 +43,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "5984:5984"
     depends_on:
       - brewing_support
   certbot:
