@@ -29,10 +29,11 @@ const props = defineProps({
 
 const emit = defineEmits(["clickSubmit", "clickCancel", "clickDelete"]);
 
+const suppliers = reactive(props.suppliers);
 const form = reactive(props.recieveEventData);
-const selectedSupplierID = ref(props.recieveEventData.supplier.id);
+const selectedSupplier = ref(props.recieveEventData.supplier);
 watch(props.recieveEventData, (a) => {
-  selectedSupplierID.value = a.supplier.id;
+  selectedSupplier.value = a.supplier;
 });
 
 const formLabelWidth = "140px";
@@ -92,7 +93,7 @@ const onSubmit = () => {
       form.id,
       form.noteNO,
       form.noteDate,
-      props.suppliers.find((item) => item.id === selectedSupplierID.value),
+      selectedSupplier.value,
       form.recieveDate,
       form.ingredients,
       form.grains,
@@ -114,7 +115,7 @@ const onDelete = () => {
       form.id,
       form.noteNO,
       form.noteDate,
-      props.suppliers.find((item) => item.id === selectedSupplierID.value),
+      selectedSupplier.value,
       form.recieveDate,
       form.ingredients,
       form.grains,
@@ -124,14 +125,6 @@ const onDelete = () => {
     )
   );
 };
-
-// const onSupplierChange = () => {
-//   const supplier = props.suppliers.find(
-//     (item) => item.id === selectedSupplierID.value
-//   );
-
-//   form.supplier = supplier;
-// };
 </script>
 
 <template>
@@ -159,15 +152,16 @@ const onDelete = () => {
         <el-form-item label="仕入先" :label-width="formLabelWidth">
           <el-select
             @change="onSupplierChange"
-            v-model="selectedSupplierID"
+            v-model="selectedSupplier"
             class="form-input"
             placeholder="仕入先"
+            value-key="id"
           >
             <el-option
               v-for="supplier in suppliers"
               :key="supplier.id"
               :label="supplier.name"
-              :value="supplier.id"
+              :value="supplier"
             >
             </el-option>
           </el-select>
