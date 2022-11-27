@@ -12,6 +12,7 @@ export class BrewPlan {
   originalGravity: number;
   finalGravity: number;
   brixLevel: number;
+  finalBrixLevel: number;
   abv: number;
   ibus: number;
   mashEfficienty: number;
@@ -28,6 +29,7 @@ export class BrewPlan {
     this.originalGravity = 1;
     this.finalGravity = 1;
     this.brixLevel = 0;
+    this.finalBrixLevel = 0;
     this.abv = 0;
     this.ibus = 0;
     this.mashEfficienty = 0;
@@ -55,6 +57,7 @@ export class BrewPlan {
     originalGravity = 1,
     finalGravity = 1,
     brixLevel = 0,
+    finalBrixLevel = 0,
     abv = 0,
     ibus = 0,
     mashEfficienty = 0,
@@ -80,6 +83,7 @@ export class BrewPlan {
     this.originalGravity = originalGravity;
     this.finalGravity = finalGravity;
     this.brixLevel = brixLevel;
+    this.finalBrixLevel = finalBrixLevel;
     this.abv = abv;
     this.ibus = ibus;
     this.mashEfficienty = mashEfficienty;
@@ -98,6 +102,7 @@ export interface BrewPlanMember {
   originalGravity: number;
   finalGravity: number;
   brixLevel: number;
+  finalBrixLevel: number;
   abv: number;
   ibus: number;
   mashEfficienty: number;

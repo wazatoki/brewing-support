@@ -60,6 +60,7 @@ const brewPlans: BrewPlan[] = [
     0,
     0,
     0,
+    0,
     grains,
     hops,
     {
@@ -72,6 +73,7 @@ const brewPlans: BrewPlan[] = [
     "brew-plan-2",
     2,
     "brew-plan-name-2",
+    0,
     0,
     0,
     0,

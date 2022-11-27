@@ -41,6 +41,7 @@ export async function fetchAll(): Promise<{
             item.doc.originalGravity,
             item.doc.finalGravity,
             item.doc.brixLevel,
+            item.doc.finalBrixLevel,
             item.doc.abv,
             item.doc.ibus,
             item.doc.mashEfficienty,
@@ -91,6 +92,7 @@ export async function save(brewPlan: BrewPlan): Promise<{ id: string }> {
     doc.originalGravity = brewPlan.originalGravity;
     doc.finalGravity = brewPlan.finalGravity;
     doc.brixLevel = brewPlan.brixLevel;
+    doc.finalBrixLevel = brewPlan.finalBrixLevel;
     doc.abv = brewPlan.abv;
     doc.ibus = brewPlan.ibus;
     doc.mashEfficienty = brewPlan.mashEfficienty;
@@ -119,6 +121,7 @@ export async function save(brewPlan: BrewPlan): Promise<{ id: string }> {
         originalGravity: brewPlan.originalGravity,
         finalGravity: brewPlan.finalGravity,
         brixLevel: brewPlan.brixLevel,
+        finalBrixLevel: brewPlan.finalBrixLevel,
         abv: brewPlan.abv,
         ibus: brewPlan.ibus,
         mashEfficienty: brewPlan.mashEfficienty,

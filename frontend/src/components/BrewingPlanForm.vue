@@ -25,6 +25,7 @@ const form = reactive(
     props.brewPlan.originalGravity,
     props.brewPlan.finalGravity,
     props.brewPlan.brixLevel,
+    props.brewPlan.finalBrixLevel,
     props.brewPlan.abv,
     props.brewPlan.ibus,
     props.brewPlan.mashEfficienty,
@@ -59,6 +60,12 @@ const calculateOG = () => {
   form.originalGravity =
     Math.round((Number(form.abv) / 131 + Number(form.finalGravity)) * 1000) /
     1000;
+  calculateBrixLevel();
+};
+
+const calculateBrixLevel = () => {
+  form.brixLevel =
+    Math.round((((Number(form.originalGravity) - 1) * 1000) / 4) * 10) / 10;
 };
 
 const calculateIBUs = () => {
@@ -88,6 +95,10 @@ const calculateGrainQuantity = () => {
         453.6
     );
   });
+};
+
+const calculateFinalGravity = () => {
+  form.finalGravity = (form.finalBrixLevel * 4) / 1000 + 1;
 };
 
 const grainQuantitySum = computed(() => {
@@ -151,6 +162,11 @@ const onChangeFinalGravity = () => {
   calculateOG();
 };
 
+const onChangeBrixLevel = () => {
+  calculateFinalGravity();
+  calculateOG();
+};
+
 const recalculation = () => {
   calculateOG();
   calculateGrainQuantity();
@@ -173,6 +189,7 @@ const onSubmit = async (formEl) => {
           form.originalGravity,
           form.finalGravity,
           form.brixLevel,
+          form.finalBrixLevel,
           form.abv,
           form.ibus,
           form.mashEfficienty,
@@ -246,6 +263,13 @@ const onCancel = () => {
     </el-row>
     <el-row>
       <el-col :span="12">
+        <el-form-item label="ABV" :label-width="formLabelWidth" prop="abv">
+          <el-input v-model="form.abv" autocomplete="off" @blur="onChangeAbv" />
+        </el-form-item>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="12">
         <el-form-item
           label="初期比重"
           :label-width="formLabelWidth"
@@ -256,11 +280,11 @@ const onCancel = () => {
       </el-col>
       <el-col :span="12">
         <el-form-item
-          label="糖度"
+          label="初期糖度"
           :label-width="formLabelWidth"
           prop="brixLevel"
         >
-          <el-input v-model="form.brixLevel" autocomplete="off" />
+          <span>{{ form.brixLevel }}</span>
         </el-form-item>
       </el-col>
     </el-row>
@@ -279,8 +303,16 @@ const onCancel = () => {
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item label="ABV" :label-width="formLabelWidth" prop="abv">
-          <el-input v-model="form.abv" autocomplete="off" @blur="onChangeAbv" />
+        <el-form-item
+          label="最終糖度"
+          :label-width="formLabelWidth"
+          prop="finalBrixLevel"
+        >
+          <el-input
+            v-model="form.finalBrixLevel"
+            @blur="onChangeBrixLevel"
+            autocomplete="off"
+          />
         </el-form-item>
       </el-col>
     </el-row>
