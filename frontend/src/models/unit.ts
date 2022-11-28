@@ -1,18 +1,24 @@
+import { createUUID } from "@/services/utils";
+import { kebabCase } from "element-plus/es/utils";
+
+export const typename = "unit";
+export const prefix = typename + "-";
+
 export class Unit implements UnitMember {
   id: string;
   name: string;
   conversionFactor: number;
   baseUnit: Unit | null;
 
-  isReferenceUnit(unit: Unit) {
+  isReferenceUnit(unit: Unit): boolean {
     if (this.baseUnit && this.baseUnit.id === unit.id) {
       return true;
     }
     return false;
   }
 
-  clear() {
-    this.id = "";
+  clear(): void {
+    this.id = prefix + createUUID();
     this.name = "";
     this.conversionFactor = 1;
     this.baseUnit = null;
@@ -27,8 +33,17 @@ export class Unit implements UnitMember {
     };
   }
 
+  getPlainObject(): UnitMember {
+    return {
+      id: this.id,
+      name: this.name,
+      conversionFactor: this.conversionFactor,
+      baseUnit: this.baseUnit,
+    };
+  }
+
   constructor(
-    id = "",
+    id = prefix + createUUID(),
     name = "",
     conversionFactor = 1,
     baseUnit: Unit | null = null
