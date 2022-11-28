@@ -1,5 +1,4 @@
 import { createUUID } from "@/services/utils";
-import { kebabCase } from "element-plus/es/utils";
 
 export const typename = "unit";
 export const prefix = typename + "-";
