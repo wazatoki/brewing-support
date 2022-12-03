@@ -1,4 +1,8 @@
+import { createUUID } from "@/services/utils";
 import { Unit } from "./unit";
+
+export const typename = "hop";
+export const prefix = typename + "-";
 
 export class Hop {
   id: string;
@@ -9,7 +13,7 @@ export class Hop {
   stockingUnit: Unit;
 
   constructor(
-    id = "",
+    id = prefix + createUUID(),
     name = "",
     alphaAcid = 0,
     brewingUnit = new Unit(),
@@ -25,7 +29,7 @@ export class Hop {
   }
 
   clear() {
-    this.id = "";
+    this.id = prefix + createUUID();
     this.name = "";
     this.alphaAcid = 0;
     this.brewingUnit = new Unit();
