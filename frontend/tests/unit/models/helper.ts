@@ -1,5 +1,7 @@
 import { Unit } from "@/models/unit";
 import { Grain } from "@/models/ingredientGrain";
+import { Hop } from "@/models/ingredientHop";
+import { Yeast } from "@/models/ingredientYeast";
 
 export const createUnits = () => {
   const units: Unit[] = [] as Unit[];
@@ -32,4 +34,44 @@ export const createGrains = () => {
     );
   }
   return grains;
+};
+
+export const createHops = () => {
+  const hops: Hop[] = [] as Hop[];
+  const units = createUnits();
+  hops.push(new Hop("hop-test-id", "", 0, new Unit(), new Unit(), new Unit()));
+  for (let i = 1; i < 10; i++) {
+    hops.push(
+      new Hop(
+        "test-hop-id-" + i,
+        "test-hop-name-" + i,
+        i,
+        units[i],
+        units[i],
+        units[i]
+      )
+    );
+  }
+  return hops;
+};
+
+export const createYeasts = () => {
+  const yeasts: Yeast[] = [] as Yeast[];
+  const units = createUnits();
+  yeasts.push(
+    new Yeast("yeast-test-id", "", 0, new Unit(), new Unit(), new Unit())
+  );
+  for (let i = 1; i < 10; i++) {
+    yeasts.push(
+      new Yeast(
+        "test-yeast-id-" + i,
+        "test-yeast-name-" + i,
+        i,
+        units[i],
+        units[i],
+        units[i]
+      )
+    );
+  }
+  return yeasts;
 };
