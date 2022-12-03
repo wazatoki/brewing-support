@@ -19,8 +19,8 @@ export class BrewEvent {
     this.id = "";
     this.name = "";
     this.desc = "";
-    this.from = new Date();
-    this.to = new Date();
+    this.from = new Date(0);
+    this.to = new Date(0);
     this.ingredients = [] as ConsumedIngredient[];
     this.grains = [] as ConsumedIngredientGrain[];
     this.hops = [] as ConsumedIngredientHop[];
@@ -32,8 +32,8 @@ export class BrewEvent {
     id = "",
     name = "",
     desc = "",
-    from = new Date(),
-    to = new Date(),
+    from = new Date(0),
+    to = new Date(0),
     ingredients = [] as ConsumedIngredient[],
     grains = [] as ConsumedIngredientGrain[],
     hops = [] as ConsumedIngredientHop[],

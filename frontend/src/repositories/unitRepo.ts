@@ -1,4 +1,4 @@
-import { Unit, UnitMember } from "@/models/unit";
+import { Unit, UnitMember, typename, prefix } from "@/models/unit";
 import { unitReferencingList } from "@/services/unit";
 import { unitReferencingList as ingredientUnitReferencingList } from "@/services/ingredient";
 import { fetchAll as ingredientFetchAll } from "@/repositories/ingredientRepo";
@@ -6,9 +6,6 @@ import { createUUID } from "@/services/utils";
 import { getDBInstance } from "./pouchdb";
 import { instanceToPlain } from "class-transformer";
 import { Ingredient } from "@/models/ingredient";
-
-const typename = "unit";
-const prefix = typename + "-";
 
 export async function fetchAll(): Promise<{
   result: Unit[];

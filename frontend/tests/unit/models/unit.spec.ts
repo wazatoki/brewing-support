@@ -1,16 +1,5 @@
-import { Unit, UnitMember, prefix } from "@/models/unit";
-
-export const createUnits = () => {
-  const units: Unit[] = [] as Unit[];
-  units.push(new Unit("", "", 1, null));
-  units.push(new Unit("test-unit-id-1", "test-unit-name-1", 1, null));
-  for (let i = 2; i < 10; i++) {
-    units.push(
-      new Unit("test-unit-id-" + i, "test-unit-name-" + i, i, units[1])
-    );
-  }
-  return units;
-};
+import { Unit, prefix } from "@/models/unit";
+import { createUnits } from "./helper";
 
 describe("unit.ts", () => {
   it("Unit shall create with no options.", () => {
@@ -58,16 +47,5 @@ describe("unit.ts", () => {
     const result = units[2].convertToBaseUnit(10);
     expect(result.quantity).toEqual(20);
     expect(result.baseUnit.id).toEqual("test-unit-id-1");
-  });
-
-  it("getPlainObject", () => {
-    const units = createUnits();
-    const result: UnitMember = units[2].getPlainObject();
-    expect(result).toEqual({
-      id: units[2].id,
-      name: units[2].name,
-      conversionFactor: units[2].conversionFactor,
-      baseUnit: units[2].baseUnit,
-    });
   });
 });

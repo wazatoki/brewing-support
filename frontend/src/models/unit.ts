@@ -32,15 +32,6 @@ export class Unit implements UnitMember {
     };
   }
 
-  getPlainObject(): UnitMember {
-    return {
-      id: this.id,
-      name: this.name,
-      conversionFactor: this.conversionFactor,
-      baseUnit: this.baseUnit,
-    };
-  }
-
   constructor(
     id = prefix + createUUID(),
     name = "",

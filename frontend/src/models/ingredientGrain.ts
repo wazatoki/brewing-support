@@ -1,6 +1,10 @@
-import { Unit } from "./unit";
+import { createUUID } from "@/services/utils";
+import { Unit } from "@/models/unit";
 
-export class Grain {
+export const typename = "grain";
+export const prefix = typename + "-";
+
+export class Grain implements GrainMember {
   id: string;
   name: string;
   potential: number;
@@ -9,7 +13,7 @@ export class Grain {
   stockingUnit: Unit;
 
   constructor(
-    id = "",
+    id = prefix + createUUID(),
     name = "",
     potential = 0,
     brewingUnit = new Unit(),
@@ -25,7 +29,7 @@ export class Grain {
   }
 
   clear() {
-    this.id = "";
+    this.id = prefix + createUUID();
     this.name = "";
     this.potential = 0;
     this.brewingUnit = new Unit();
