@@ -2,6 +2,9 @@ import { Grain } from "@/models/ingredientGrain";
 import { Unit } from "@/models/unit";
 import { createUUID } from "@/services/utils";
 
+export const typename = "consumed_ingredient-grain";
+export const prefix = typename + "-";
+
 export class ConsumedIngredientGrain {
   id: string;
   grain: Grain;
@@ -18,8 +21,8 @@ export class ConsumedIngredientGrain {
     return { quantity: q, stockingUnit: this.grain.stockingUnit };
   }
 
-  constructor(id = "", grain: Grain, quantity = 0) {
-    this.id = id || "consumed_ingredient-grain-" + createUUID();
+  constructor(id = "", grain = new Grain(), quantity = 0) {
+    this.id = id || prefix + createUUID();
     this.grain = grain;
     this.quantity = quantity;
   }

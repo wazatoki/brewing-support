@@ -2,6 +2,8 @@ import { Unit } from "@/models/unit";
 import { Grain } from "@/models/ingredientGrain";
 import { Hop } from "@/models/ingredientHop";
 import { Yeast } from "@/models/ingredientYeast";
+import { ConsumedIngredientGrain } from "@/models/consumedIngredientGrain";
+import { consumedIngredientGrainSum } from "@/services/brewEvent";
 
 export const createUnits = () => {
   const units: Unit[] = [] as Unit[];
@@ -74,4 +76,23 @@ export const createYeasts = () => {
     );
   }
   return yeasts;
+};
+
+export const createConsumedIngredientGrain = () => {
+  const ciGrains: ConsumedIngredientGrain[] = [] as ConsumedIngredientGrain[];
+  const grains = createGrains();
+
+  ciGrains.push(
+    new ConsumedIngredientGrain("consumed_ingredient-grain-id", new Grain(), 0)
+  );
+  for (let i = 1; i < 10; i++) {
+    ciGrains.push(
+      new ConsumedIngredientGrain(
+        "test-consumed_ingredient-grain-id-" + i,
+        grains[i],
+        i
+      )
+    );
+  }
+  return ciGrains;
 };
