@@ -3,7 +3,8 @@ import { Grain } from "@/models/ingredientGrain";
 import { Hop } from "@/models/ingredientHop";
 import { Yeast } from "@/models/ingredientYeast";
 import { ConsumedIngredientGrain } from "@/models/consumedIngredientGrain";
-import { consumedIngredientGrainSum } from "@/services/brewEvent";
+import { ConsumedIngredientHop } from "@/models/consumedIngredientHop";
+import { ConsumedIngredientYeast } from "@/models/consumedIngredientYeast";
 
 export const createUnits = () => {
   const units: Unit[] = [] as Unit[];
@@ -95,4 +96,42 @@ export const createConsumedIngredientGrain = () => {
     );
   }
   return ciGrains;
+};
+
+export const createConsumedIngredientHop = () => {
+  const ciHops: ConsumedIngredientHop[] = [] as ConsumedIngredientHop[];
+  const hops = createHops();
+
+  ciHops.push(
+    new ConsumedIngredientHop("consumed_ingredient-hop-id", new Hop(), 0)
+  );
+  for (let i = 1; i < 10; i++) {
+    ciHops.push(
+      new ConsumedIngredientHop(
+        "test-consumed_ingredient-hop-id-" + i,
+        hops[i],
+        i
+      )
+    );
+  }
+  return ciHops;
+};
+
+export const createConsumedIngredientYeast = () => {
+  const ciYeasts: ConsumedIngredientYeast[] = [] as ConsumedIngredientYeast[];
+  const yeasts = createYeasts();
+
+  ciYeasts.push(
+    new ConsumedIngredientYeast("consumed_ingredient-yeast-id", new Yeast(), 0)
+  );
+  for (let i = 1; i < 10; i++) {
+    ciYeasts.push(
+      new ConsumedIngredientYeast(
+        "test-consumed_ingredient-yeast-id-" + i,
+        yeasts[i],
+        i
+      )
+    );
+  }
+  return ciYeasts;
 };
