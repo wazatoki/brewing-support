@@ -5,6 +5,7 @@ import { Yeast } from "@/models/ingredientYeast";
 import { ConsumedIngredientGrain } from "@/models/consumedIngredientGrain";
 import { ConsumedIngredientHop } from "@/models/consumedIngredientHop";
 import { ConsumedIngredientYeast } from "@/models/consumedIngredientYeast";
+import { IngredientClassification } from "@/models/ingredientClassification";
 
 export const createUnits = () => {
   const units: Unit[] = [] as Unit[];
@@ -16,6 +17,22 @@ export const createUnits = () => {
     );
   }
   return units;
+};
+
+export const createIngredientClassification = () => {
+  const ingredientClassifications = [] as IngredientClassification[];
+  ingredientClassifications.push(
+    new IngredientClassification("unit-test-id", "")
+  );
+  for (let i = 1; i < 10; i++) {
+    ingredientClassifications.push(
+      new IngredientClassification(
+        "test-ingredient_classification-id-" + i,
+        "test-ingredient_classification-name-" + i
+      )
+    );
+  }
+  return ingredientClassifications;
 };
 
 export const createGrains = () => {
