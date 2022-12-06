@@ -4,7 +4,7 @@ import { Unit } from "./unit";
 export const typename = "yeast";
 export const prefix = typename + "-";
 
-export class Yeast {
+export class Yeast implements YeastMember {
   id: string;
   name: string;
   attenuation: number;

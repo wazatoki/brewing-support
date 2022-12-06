@@ -4,7 +4,7 @@ import { Unit } from "./unit";
 export const typename = "hop";
 export const prefix = typename + "-";
 
-export class Hop {
+export class Hop implements HopMember {
   id: string;
   name: string;
   alphaAcid: number;

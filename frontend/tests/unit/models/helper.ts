@@ -2,6 +2,7 @@ import { Unit } from "@/models/unit";
 import { Grain } from "@/models/ingredientGrain";
 import { Hop } from "@/models/ingredientHop";
 import { Yeast } from "@/models/ingredientYeast";
+import { Ingredient } from "@/models/ingredient";
 import { ConsumedIngredientGrain } from "@/models/consumedIngredientGrain";
 import { ConsumedIngredientHop } from "@/models/consumedIngredientHop";
 import { ConsumedIngredientYeast } from "@/models/consumedIngredientYeast";
@@ -94,6 +95,36 @@ export const createYeasts = () => {
     );
   }
   return yeasts;
+};
+
+export const createIngredients = () => {
+  const ingredients: Ingredient[] = [] as Ingredient[];
+  const units = createUnits();
+  const ingredientClassifications = createIngredientClassification();
+
+  ingredients.push(
+    new Ingredient(
+      "ingredient-test-id",
+      "",
+      ingredientClassifications[0],
+      new Unit(),
+      new Unit(),
+      new Unit()
+    )
+  );
+  for (let i = 1; i < 10; i++) {
+    ingredients.push(
+      new Ingredient(
+        "test-ingredient-id-" + i,
+        "test-ingredient-name-" + i,
+        ingredientClassifications[i],
+        units[i],
+        units[i],
+        units[i]
+      )
+    );
+  }
+  return ingredients;
 };
 
 export const createConsumedIngredientGrain = () => {

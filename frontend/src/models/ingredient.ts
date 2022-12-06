@@ -1,7 +1,11 @@
 import { Unit } from "./unit";
 import { IngredientClassification } from "./ingredientClassification";
+import { createUUID } from "@/services/utils";
 
-export class Ingredient {
+export const typename = "ingredient";
+export const prefix = typename + "-";
+
+export class Ingredient implements IngredientMember {
   id: string;
   name: string;
   ingredientClassification: IngredientClassification;
@@ -10,7 +14,7 @@ export class Ingredient {
   stockingUnit: Unit;
 
   constructor(
-    id = "",
+    id = prefix + createUUID(),
     name = "",
     ingredientClassification = new IngredientClassification(),
     brewingUnit = new Unit(),
@@ -26,7 +30,7 @@ export class Ingredient {
   }
 
   clear() {
-    this.id = "";
+    this.id = prefix + createUUID();
     this.name = "";
     this.ingredientClassification = new IngredientClassification();
     this.brewingUnit = new Unit();
