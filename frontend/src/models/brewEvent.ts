@@ -2,8 +2,12 @@ import { ConsumedIngredient } from "./consumedIngredient";
 import { ConsumedIngredientGrain } from "./consumedIngredientGrain";
 import { ConsumedIngredientHop } from "./consumedIngredientHop";
 import { ConsumedIngredientYeast } from "./consumedIngredientYeast";
+import { createUUID } from "@/services/utils";
 
-export class BrewEvent {
+export const typename = "brew_event";
+export const prefix = typename + "-";
+
+export class BrewEvent implements BrewEventMember {
   id: string;
   name: string;
   desc: string;
@@ -16,7 +20,7 @@ export class BrewEvent {
   brewPlanID: string;
 
   clear() {
-    this.id = "";
+    this.id = prefix + createUUID();
     this.name = "";
     this.desc = "";
     this.from = new Date(0);
@@ -29,7 +33,7 @@ export class BrewEvent {
   }
 
   constructor(
-    id = "",
+    id = prefix + createUUID(),
     name = "",
     desc = "",
     from = new Date(0),

@@ -2,7 +2,10 @@ import { BrewEvent } from "./brewEvent";
 import { Grain } from "./ingredientGrain";
 import { Hop } from "./ingredientHop";
 import { Yeast } from "./ingredientYeast";
-import { Unit } from "./unit";
+import { createUUID } from "@/services/utils";
+
+export const typename = "brew_plan";
+export const prefix = typename + "-";
 
 export class BrewPlan {
   id: string;
@@ -22,7 +25,7 @@ export class BrewPlan {
   events: BrewEvent[];
 
   clear() {
-    this.id = "";
+    this.id = prefix + createUUID();
     this.batchNumber = 0;
     this.name = "";
     this.batchSize = 0;
@@ -36,21 +39,14 @@ export class BrewPlan {
     this.grains = [] as GrainPlan[];
     this.hops = [] as HopPlan[];
     this.yeastPlan = {
-      yeast: new Yeast(
-        undefined,
-        undefined,
-        undefined,
-        new Unit(),
-        new Unit(),
-        new Unit()
-      ),
+      yeast: new Yeast(),
       quantity: 0,
     } as YeastPlan;
     this.events = [] as BrewEvent[];
   }
 
   constructor(
-    id = "",
+    id = prefix + createUUID(),
     batchNumber = 0,
     name = "",
     batchSize = 0,
@@ -64,14 +60,7 @@ export class BrewPlan {
     grains = [] as GrainPlan[],
     hops = [] as HopPlan[],
     yeastPlan = {
-      yeast: new Yeast(
-        undefined,
-        undefined,
-        undefined,
-        new Unit(),
-        new Unit(),
-        new Unit()
-      ),
+      yeast: new Yeast(),
       quantity: 0,
     } as YeastPlan,
     events = [] as BrewEvent[]

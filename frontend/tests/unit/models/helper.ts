@@ -8,6 +8,8 @@ import { ConsumedIngredientHop } from "@/models/consumedIngredientHop";
 import { ConsumedIngredientYeast } from "@/models/consumedIngredientYeast";
 import { IngredientClassification } from "@/models/ingredientClassification";
 import { ConsumedIngredient } from "@/models/consumedIngredient";
+import { BrewEvent } from "@/models/brewEvent";
+import { BrewPlan, GrainPlan, HopPlan, YeastPlan } from "@/models/brewPlan";
 
 export const createUnits = () => {
   const units: Unit[] = [] as Unit[];
@@ -202,4 +204,157 @@ export const createConsumedIngredient = () => {
     );
   }
   return ciIngredients;
+};
+
+export const createBrewEvents = () => {
+  const events: BrewEvent[] = [] as BrewEvent[];
+  const ingredients = createConsumedIngredient();
+  const grains = createConsumedIngredientGrain();
+  const hops = createConsumedIngredientHop();
+  const yeasts = createConsumedIngredientYeast();
+  events.push(
+    new BrewEvent("brew_event-test-id", "", "", new Date(0), new Date(0))
+  );
+  events.push(
+    new BrewEvent(
+      "brew_event-test-id-1",
+      "brew_event-test-name-1",
+      "brew_event-test-desc-1",
+      new Date("2000-1-1 9:00:00"),
+      new Date("2000-1-1 23:00:00"),
+      ingredients,
+      grains,
+      hops,
+      yeasts,
+      "brew_plan-test-1"
+    )
+  );
+  for (let i = 2; i < 10; i++) {
+    events.push(
+      new BrewEvent(
+        "brew_event-test-id-" + i,
+        "brew_event-test-name-" + i,
+        "brew_event-test-desc-" + i,
+        new Date("2000-1-" + i + " 9:00:00"),
+        new Date("2000-1-" + i + " 23:00:00"),
+        ingredients,
+        grains,
+        hops,
+        yeasts,
+        "brew_plan-test-" + i
+      )
+    );
+  }
+  return events;
+};
+
+export const createGrainPlans = () => {
+  const grainPlans: GrainPlan[] = [] as GrainPlan[];
+  const grains = createGrains();
+  for (let i = 1; i < 10; i++) {
+    grainPlans.push({
+      grain: grains[i],
+      quantity: i,
+      ratio: i,
+    });
+  }
+  return grainPlans;
+};
+
+export const createHopPlans = () => {
+  const hopPlans: HopPlan[] = [] as HopPlan[];
+  const hops = createHops();
+  for (let i = 1; i < 10; i++) {
+    hopPlans.push({
+      hop: hops[i],
+      quantity: i,
+      alphaAcid: i,
+      boilTime: i,
+      ibus: i,
+    });
+  }
+  return hopPlans;
+};
+
+export const createYeastPlans = () => {
+  const yeastPlans: YeastPlan[] = [] as YeastPlan[];
+  const yeasts = createYeasts();
+  for (let i = 1; i < 10; i++) {
+    yeastPlans.push({
+      yeast: yeasts[i],
+      quantity: i,
+    });
+  }
+  return yeastPlans;
+};
+
+export const createBrewPlans = () => {
+  const plans: BrewPlan[] = [] as BrewPlan[];
+  const events: BrewEvent[] = createBrewEvents();
+  const grainPlans: GrainPlan[] = createGrainPlans();
+  const hopPlans: HopPlan[] = createHopPlans();
+  const yeastPlans: YeastPlan[] = createYeastPlans();
+  plans.push(
+    new BrewPlan(
+      "brew_Plan-test-id",
+      0,
+      "",
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      [] as GrainPlan[],
+      [] as HopPlan[],
+      {
+        yeast: new Yeast(),
+        quantity: 0,
+      } as YeastPlan,
+      [] as BrewEvent[]
+    )
+  );
+  plans.push(
+    new BrewPlan(
+      "brew_plan-test-id-1",
+      1,
+      "brew_plan-test-name-1",
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      grainPlans,
+      hopPlans,
+      yeastPlans[0],
+      events
+    )
+  );
+  for (let i = 2; i < 10; i++) {
+    plans.push(
+      new BrewPlan(
+        "brew_plan-test-id-" + i,
+        i,
+        "brew_plan-test-name-" + i,
+        i,
+        i,
+        i,
+        i,
+        i,
+        i,
+        i,
+        i,
+        grainPlans,
+        hopPlans,
+        yeastPlans[i - 1],
+        events
+      )
+    );
+  }
+  return plans;
 };
