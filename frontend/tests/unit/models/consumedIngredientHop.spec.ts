@@ -18,7 +18,7 @@ describe("ConsumedIngredientHop.ts", () => {
 
   it("ConsumedIngredientHop shall create with options.", () => {
     const hops = createConsumedIngredientHop();
-    expect(hops[1].id).toContain("test-consumed_ingredient-hop-id-1");
+    expect(hops[1].id).toContain("test-consumed_ingredient_hop-id-1");
     expect(hops[1].quantity).toEqual(1);
     expect(hops[1].hop.id).toEqual("test-hop-id-1");
     expect(hops[1].hop.name).toEqual("test-hop-name-1");

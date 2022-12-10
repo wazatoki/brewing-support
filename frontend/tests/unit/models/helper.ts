@@ -7,6 +7,7 @@ import { ConsumedIngredientGrain } from "@/models/consumedIngredientGrain";
 import { ConsumedIngredientHop } from "@/models/consumedIngredientHop";
 import { ConsumedIngredientYeast } from "@/models/consumedIngredientYeast";
 import { IngredientClassification } from "@/models/ingredientClassification";
+import { ConsumedIngredient } from "@/models/consumedIngredient";
 
 export const createUnits = () => {
   const units: Unit[] = [] as Unit[];
@@ -132,12 +133,12 @@ export const createConsumedIngredientGrain = () => {
   const grains = createGrains();
 
   ciGrains.push(
-    new ConsumedIngredientGrain("consumed_ingredient-grain-id", new Grain(), 0)
+    new ConsumedIngredientGrain("consumed_ingredient_grain-id", new Grain(), 0)
   );
   for (let i = 1; i < 10; i++) {
     ciGrains.push(
       new ConsumedIngredientGrain(
-        "test-consumed_ingredient-grain-id-" + i,
+        "test-consumed_ingredient_grain-id-" + i,
         grains[i],
         i
       )
@@ -151,12 +152,12 @@ export const createConsumedIngredientHop = () => {
   const hops = createHops();
 
   ciHops.push(
-    new ConsumedIngredientHop("consumed_ingredient-hop-id", new Hop(), 0)
+    new ConsumedIngredientHop("consumed_ingredient_hop-id", new Hop(), 0)
   );
   for (let i = 1; i < 10; i++) {
     ciHops.push(
       new ConsumedIngredientHop(
-        "test-consumed_ingredient-hop-id-" + i,
+        "test-consumed_ingredient_hop-id-" + i,
         hops[i],
         i
       )
@@ -170,16 +171,35 @@ export const createConsumedIngredientYeast = () => {
   const yeasts = createYeasts();
 
   ciYeasts.push(
-    new ConsumedIngredientYeast("consumed_ingredient-yeast-id", new Yeast(), 0)
+    new ConsumedIngredientYeast("consumed_ingredient_yeast-id", new Yeast(), 0)
   );
   for (let i = 1; i < 10; i++) {
     ciYeasts.push(
       new ConsumedIngredientYeast(
-        "test-consumed_ingredient-yeast-id-" + i,
+        "test-consumed_ingredient_yeast-id-" + i,
         yeasts[i],
         i
       )
     );
   }
   return ciYeasts;
+};
+
+export const createConsumedIngredient = () => {
+  const ciIngredients: ConsumedIngredient[] = [] as ConsumedIngredient[];
+  const ingredients = createIngredients();
+
+  ciIngredients.push(
+    new ConsumedIngredient("consumed_ingredient-id", new Ingredient(), 0)
+  );
+  for (let i = 1; i < 10; i++) {
+    ciIngredients.push(
+      new ConsumedIngredient(
+        "test-consumed_ingredient-id-" + i,
+        ingredients[i],
+        i
+      )
+    );
+  }
+  return ciIngredients;
 };

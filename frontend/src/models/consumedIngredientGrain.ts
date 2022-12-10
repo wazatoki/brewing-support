@@ -2,7 +2,7 @@ import { Grain } from "@/models/ingredientGrain";
 import { Unit } from "@/models/unit";
 import { createUUID } from "@/services/utils";
 
-export const typename = "consumed_ingredient-grain";
+export const typename = "consumed_ingredient_grain";
 export const prefix = typename + "-";
 
 export class ConsumedIngredientGrain {

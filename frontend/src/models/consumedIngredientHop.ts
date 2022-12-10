@@ -2,7 +2,7 @@ import { Hop } from "@/models/ingredientHop";
 import { Unit } from "@/models/unit";
 import { createUUID } from "@/services/utils";
 
-export const typename = "consumed_ingredient-hop";
+export const typename = "consumed_ingredient_hop";
 export const prefix = typename + "-";
 
 export class ConsumedIngredientHop {

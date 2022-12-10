@@ -21,7 +21,7 @@ describe("ConsumedIngredientGrain.ts", () => {
 
   it("ConsumedIngredientGrain shall create with options.", () => {
     const grains = createConsumedIngredientGrain();
-    expect(grains[1].id).toContain("test-consumed_ingredient-grain-id-1");
+    expect(grains[1].id).toContain("test-consumed_ingredient_grain-id-1");
     expect(grains[1].quantity).toEqual(1);
     expect(grains[1].grain.id).toEqual("test-grain-id-1");
     expect(grains[1].grain.name).toEqual("test-grain-name-1");

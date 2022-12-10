@@ -1,11 +1,7 @@
 import * as ingredient from "@/models/ingredient";
 import * as ingredientClassification from "@/models/ingredientClassification";
 import * as unit from "@/models/unit";
-import {
-  createIngredients,
-  createIngredientClassification,
-  createUnits,
-} from "./helper";
+import { createIngredients, createUnits } from "./helper";
 
 export const ingredients: ingredient.Ingredient[] = [];
 

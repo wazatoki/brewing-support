@@ -2,7 +2,7 @@ import { Yeast } from "@/models/ingredientYeast";
 import { Unit } from "@/models/unit";
 import { createUUID } from "@/services/utils";
 
-export const typename = "consumed_ingredient-yeast";
+export const typename = "consumed_ingredient_yeast";
 export const prefix = typename + "-";
 
 export class ConsumedIngredientYeast {
