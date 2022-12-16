@@ -2,8 +2,12 @@ import { InventoryIngredient } from "@/models/inventoryIngredient";
 import { InventoryIngredientGrain } from "./inventoryIngredientGrain";
 import { InventoryIngredientHop } from "./inventoryIngredientHop";
 import { InventoryIngredientYeast } from "./inventoryIngredientYeast";
+import { createUUID } from "@/services/utils";
 
-export class Inventory {
+export const typename = "inventory";
+export const prefix = typename + "-";
+
+export class Inventory implements InventoryMember {
   id: string;
   onDate: Date;
   ingredients: InventoryIngredient[];
@@ -13,7 +17,7 @@ export class Inventory {
   note: string;
 
   clear() {
-    this.id = "";
+    this.id = prefix + createUUID();
     this.onDate = new Date();
     this.ingredients = [] as InventoryIngredient[];
     this.grains = [] as InventoryIngredientGrain[];
@@ -23,7 +27,7 @@ export class Inventory {
   }
 
   constructor(
-    id = "",
+    id = prefix + createUUID(),
     onDate = new Date(),
     ingredients = [] as InventoryIngredient[],
     grains = [] as InventoryIngredientGrain[],

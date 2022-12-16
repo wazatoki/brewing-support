@@ -2,6 +2,9 @@ import { Hop } from "@/models/ingredientHop";
 import { Unit } from "@/models/unit";
 import { createUUID } from "@/services/utils";
 
+export const typename = "inventory_ingredient_hop";
+export const prefix = typename + "-";
+
 export class InventoryIngredientHop {
   id: string;
   hop: Hop;
@@ -22,7 +25,7 @@ export class InventoryIngredientHop {
     adjustedValue = 0,
     note = ""
   ) {
-    this.id = id || "inventory_ingredient-hop-" + createUUID();
+    this.id = id || prefix + createUUID();
     this.hop = hop;
     this.resultValue = resultValue;
     this.calculatedValue = calculatedValue;

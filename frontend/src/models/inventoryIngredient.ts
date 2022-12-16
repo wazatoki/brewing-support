@@ -2,6 +2,9 @@ import { Ingredient } from "@/models/ingredient";
 import { Unit } from "@/models/unit";
 import { createUUID } from "@/services/utils";
 
+export const typename = "inventory_ingredient";
+export const prefix = typename + "-";
+
 export class InventoryIngredient {
   id: string;
   ingredient: Ingredient;
@@ -22,7 +25,7 @@ export class InventoryIngredient {
     adjustedValue = 0,
     note = ""
   ) {
-    this.id = id || "inventory_ingredient-" + createUUID();
+    this.id = id || prefix + createUUID();
     this.ingredient = ingredient;
     this.resultValue = resultValue;
     this.calculatedValue = calculatedValue;

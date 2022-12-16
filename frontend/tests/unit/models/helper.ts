@@ -10,6 +10,11 @@ import { IngredientClassification } from "@/models/ingredientClassification";
 import { ConsumedIngredient } from "@/models/consumedIngredient";
 import { BrewEvent } from "@/models/brewEvent";
 import { BrewPlan, GrainPlan, HopPlan, YeastPlan } from "@/models/brewPlan";
+import { InventoryIngredientGrain } from "@/models/inventoryIngredientGrain";
+import { InventoryIngredientHop } from "@/models/inventoryIngredientHop";
+import { InventoryIngredientYeast } from "@/models/inventoryIngredientYeast";
+import { InventoryIngredient } from "@/models/inventoryIngredient";
+import { Inventory } from "@/models/inventory";
 
 export const createUnits = () => {
   const units: Unit[] = [] as Unit[];
@@ -357,4 +362,145 @@ export const createBrewPlans = () => {
     );
   }
   return plans;
+};
+
+export const createInventoryIngredientGrain = () => {
+  const iiGrains: InventoryIngredientGrain[] = [] as InventoryIngredientGrain[];
+  const grains = createGrains();
+
+  iiGrains.push(
+    new InventoryIngredientGrain(
+      "inventory_ingredient_grain-id",
+      new Grain(),
+      0,
+      0,
+      0,
+      ""
+    )
+  );
+  for (let i = 1; i < 10; i++) {
+    iiGrains.push(
+      new InventoryIngredientGrain(
+        "inventory_ingredient_grain-id-" + i,
+        grains[i],
+        i,
+        i,
+        i,
+        "inventory_ingredient_grain-note-" + i
+      )
+    );
+  }
+  return iiGrains;
+};
+
+export const createInventoryIngredientHop = () => {
+  const iiHops: InventoryIngredientHop[] = [] as InventoryIngredientHop[];
+  const hops = createHops();
+
+  iiHops.push(
+    new InventoryIngredientHop(
+      "inventory_ingredient_hop-id",
+      new Hop(),
+      0,
+      0,
+      0,
+      ""
+    )
+  );
+  for (let i = 1; i < 10; i++) {
+    iiHops.push(
+      new InventoryIngredientHop(
+        "inventory_ingredient_hop-id-" + i,
+        hops[i],
+        i,
+        i,
+        i,
+        "inventory_ingredient_hop-note-" + i
+      )
+    );
+  }
+  return iiHops;
+};
+
+export const createInventoryIngredientYeast = () => {
+  const iiYeasts: InventoryIngredientYeast[] = [] as InventoryIngredientYeast[];
+  const yeasts = createYeasts();
+
+  iiYeasts.push(
+    new InventoryIngredientYeast(
+      "inventory_ingredient_yeast-id",
+      new Yeast(),
+      0,
+      0,
+      0,
+      ""
+    )
+  );
+  for (let i = 1; i < 10; i++) {
+    iiYeasts.push(
+      new InventoryIngredientYeast(
+        "inventory_ingredient_yeast-id-" + i,
+        yeasts[i],
+        i,
+        i,
+        i,
+        "inventory_ingredient_yeast-note-" + i
+      )
+    );
+  }
+  return iiYeasts;
+};
+
+export const createInventoryIngredient = () => {
+  const iiIngredients: InventoryIngredient[] = [] as InventoryIngredient[];
+  const ingredients = createIngredients();
+
+  iiIngredients.push(
+    new InventoryIngredient(
+      "inventory_ingredient-id",
+      new Ingredient(),
+      0,
+      0,
+      0,
+      ""
+    )
+  );
+  for (let i = 1; i < 10; i++) {
+    iiIngredients.push(
+      new InventoryIngredient(
+        "inventory_ingredient-id-" + i,
+        ingredients[i],
+        i,
+        i,
+        i,
+        "inventory_ingredient-note-" + i
+      )
+    );
+  }
+  return iiIngredients;
+};
+
+export const createInventories = () => {
+  const inventories: Inventory[] = [] as Inventory[];
+  const ingredients = createInventoryIngredient();
+  const grains = createInventoryIngredientGrain();
+  const hops = createInventoryIngredientHop();
+  const yeasts = createInventoryIngredientYeast();
+
+  inventories.push(new Inventory("inventory-id", new Date(0)));
+
+  for (let i = 1; i < 10; i++) {
+    inventories.push(
+      new Inventory(
+        "inventory-id-" + i,
+        new Date("2000-1-" + i + " 9:00:00"),
+        ingredients,
+        grains,
+        hops,
+        yeasts,
+        "inventory-note-" + i
+      )
+    );
+  }
+  return inventories;
 };

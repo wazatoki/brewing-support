@@ -1,5 +1,4 @@
-import { BrewPlan, GrainPlan, HopPlan, YeastPlan } from "@/models/brewPlan";
-import { Yeast } from "@/models/ingredientYeast";
+import { BrewPlan, GrainPlan, HopPlan } from "@/models/brewPlan";
 import { createBrewPlans } from "./helper";
 
 describe("brewPlan.ts", () => {
