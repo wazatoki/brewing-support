@@ -19,7 +19,7 @@ export class InventoryIngredientHop {
 
   constructor(
     id = "",
-    hop: Hop,
+    hop = new Hop(),
     resultValue = 0,
     calculatedValue = 0,
     adjustedValue = 0,
