@@ -2,6 +2,9 @@ import { Ingredient } from "@/models/ingredient";
 import { Unit } from "@/models/unit";
 import { createUUID } from "@/services/utils";
 
+export const typename = "recieved_ingredient";
+export const prefix = typename + "-";
+
 export class RecievedIngredient {
   id: string;
   ingredient: Ingredient;
@@ -18,8 +21,8 @@ export class RecievedIngredient {
     return { quantity: q, stockingUnit: this.ingredient.stockingUnit };
   }
 
-  constructor(id = "", ingredient: Ingredient, quantity = 0) {
-    this.id = id || "recieved_ingredient-" + createUUID();
+  constructor(id = "", ingredient = new Ingredient(), quantity = 0) {
+    this.id = id || prefix + createUUID();
     this.ingredient = ingredient;
     this.quantity = quantity;
   }

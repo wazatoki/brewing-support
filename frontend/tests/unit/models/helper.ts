@@ -15,6 +15,10 @@ import { InventoryIngredientHop } from "@/models/inventoryIngredientHop";
 import { InventoryIngredientYeast } from "@/models/inventoryIngredientYeast";
 import { InventoryIngredient } from "@/models/inventoryIngredient";
 import { Inventory } from "@/models/inventory";
+import { RecievedIngredientGrain } from "@/models/recievedIngredientGrain";
+import { RecievedIngredientHop } from "@/models/recievedIngredientHop";
+import { RecievedIngredientYeast } from "@/models/recievedIngredientYeast";
+import { RecievedIngredient } from "@/models/recievedIngredient";
 
 export const createUnits = () => {
   const units: Unit[] = [] as Unit[];
@@ -503,4 +507,80 @@ export const createInventories = () => {
     );
   }
   return inventories;
+};
+
+export const createRecievedIngredientGrain = () => {
+  const riGrains: RecievedIngredientGrain[] = [] as RecievedIngredientGrain[];
+  const grains = createGrains();
+
+  riGrains.push(
+    new RecievedIngredientGrain("recieved_ingredient_grain-id", new Grain(), 0)
+  );
+  for (let i = 1; i < 10; i++) {
+    riGrains.push(
+      new RecievedIngredientGrain(
+        "test-recieved_ingredient_grain-id-" + i,
+        grains[i],
+        i
+      )
+    );
+  }
+  return riGrains;
+};
+
+export const createRecievedIngredientHop = () => {
+  const riHops: RecievedIngredientHop[] = [] as RecievedIngredientHop[];
+  const hops = createHops();
+
+  riHops.push(
+    new RecievedIngredientHop("recieved_ingredient_hop-id", new Hop(), 0)
+  );
+  for (let i = 1; i < 10; i++) {
+    riHops.push(
+      new RecievedIngredientHop(
+        "test-recieved_ingredient_hop-id-" + i,
+        hops[i],
+        i
+      )
+    );
+  }
+  return riHops;
+};
+
+export const createRecievedIngredientYeast = () => {
+  const riYeasts: RecievedIngredientYeast[] = [] as RecievedIngredientYeast[];
+  const yeasts = createYeasts();
+
+  riYeasts.push(
+    new RecievedIngredientYeast("recieved_ingredient_yeast-id", new Yeast(), 0)
+  );
+  for (let i = 1; i < 10; i++) {
+    riYeasts.push(
+      new RecievedIngredientYeast(
+        "test-recieved_ingredient_yeast-id-" + i,
+        yeasts[i],
+        i
+      )
+    );
+  }
+  return riYeasts;
+};
+
+export const createRecievedIngredient = () => {
+  const riIngredients: RecievedIngredient[] = [] as RecievedIngredient[];
+  const ingredients = createIngredients();
+
+  riIngredients.push(
+    new RecievedIngredient("recieved_ingredient-id", new Ingredient(), 0)
+  );
+  for (let i = 1; i < 10; i++) {
+    riIngredients.push(
+      new RecievedIngredient(
+        "test-recieved_ingredient-id-" + i,
+        ingredients[i],
+        i
+      )
+    );
+  }
+  return riIngredients;
 };
