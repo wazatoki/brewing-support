@@ -19,7 +19,7 @@ export class InventoryIngredientGrain {
 
   constructor(
     id = "",
-    grain: Grain,
+    grain = new Grain(),
     resultValue = 0,
     calculatedValue = 0,
     adjustedValue = 0,
