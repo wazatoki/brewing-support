@@ -3,8 +3,12 @@ import { RecievedIngredient } from "@/models/recievedIngredient";
 import { RecievedIngredientGrain } from "@/models/recievedIngredientGrain";
 import { RecievedIngredientHop } from "@/models/recievedIngredientHop";
 import { RecievedIngredientYeast } from "@/models/recievedIngredientYeast";
+import { createUUID } from "@/services/utils";
 
-export class RecieveEvent {
+export const typename = "recieve_event";
+export const prefix = typename + "-";
+
+export class RecieveEvent implements RecieveEventMember {
   id: string;
   noteNO: string;
   noteDate: Date;
@@ -17,7 +21,7 @@ export class RecieveEvent {
   footNote: string;
 
   constructor(
-    id = "",
+    id = prefix + createUUID(),
     noteNO = "",
     noteDate = new Date(),
     supplier = new Supplier(),
@@ -41,7 +45,7 @@ export class RecieveEvent {
   }
 
   clear() {
-    this.id = "";
+    this.id = prefix + createUUID();
     this.noteNO = "";
     this.noteDate = new Date();
     this.supplier = new Supplier();

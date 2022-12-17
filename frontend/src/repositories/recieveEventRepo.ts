@@ -15,7 +15,7 @@ import { RecievedIngredientYeast } from "@/models/recievedIngredientYeast";
 import { Yeast } from "@/models/ingredientYeast";
 import { Supplier } from "@/models/supplier";
 
-const typename = "recieve-event";
+const typename = "recieve_event";
 const prefix = typename + "-";
 
 export async function fetchAll(): Promise<{

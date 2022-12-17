@@ -19,6 +19,8 @@ import { RecievedIngredientGrain } from "@/models/recievedIngredientGrain";
 import { RecievedIngredientHop } from "@/models/recievedIngredientHop";
 import { RecievedIngredientYeast } from "@/models/recievedIngredientYeast";
 import { RecievedIngredient } from "@/models/recievedIngredient";
+import { RecieveEvent } from "@/models/recieveEvent";
+import { Supplier } from "@/models/supplier";
 
 export const createUnits = () => {
   const units: Unit[] = [] as Unit[];
@@ -583,4 +585,48 @@ export const createRecievedIngredient = () => {
     );
   }
   return riIngredients;
+};
+
+export const createSuppliers = () => {
+  const suppliers: Supplier[] = [] as Supplier[];
+  suppliers.push(new Supplier("supplier-id", ""));
+  for (let i = 1; i < 10; i++) {
+    suppliers.push(new Supplier("supplier-id-" + i, "supplier-name-" + i));
+  }
+  return suppliers;
+};
+
+export const createRecieveEvents = () => {
+  const events: RecieveEvent[] = [] as RecieveEvent[];
+  const ingredients = createRecievedIngredient();
+  const grains = createRecievedIngredientGrain();
+  const hops = createRecievedIngredientHop();
+  const yeasts = createRecievedIngredientYeast();
+  const suppliers = createSuppliers();
+  events.push(
+    new RecieveEvent(
+      "recieve_event-test-id",
+      "",
+      new Date(0),
+      new Supplier(),
+      new Date(0)
+    )
+  );
+  for (let i = 1; i < 10; i++) {
+    events.push(
+      new RecieveEvent(
+        "recieve_event-test-id-" + i,
+        "recieve_event-test-note-no-" + i,
+        new Date("2000-1-" + i + " 9:00:00"),
+        suppliers[1],
+        new Date("2000-1-" + i + " 10:00:00"),
+        ingredients,
+        grains,
+        hops,
+        yeasts,
+        "recieve_event-test-footnote-" + i
+      )
+    );
+  }
+  return events;
 };
