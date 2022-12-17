@@ -18,14 +18,14 @@ export class InventoryIngredient {
   }
 
   constructor(
-    id = "",
-    ingredient: Ingredient,
+    id = prefix + createUUID(),
+    ingredient = new Ingredient(),
     resultValue = 0,
     calculatedValue = 0,
     adjustedValue = 0,
     note = ""
   ) {
-    this.id = id || prefix + createUUID();
+    this.id = id;
     this.ingredient = ingredient;
     this.resultValue = resultValue;
     this.calculatedValue = calculatedValue;
