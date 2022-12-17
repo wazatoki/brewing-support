@@ -19,7 +19,7 @@ export class InventoryIngredientYeast {
 
   constructor(
     id = "",
-    yeast: Yeast,
+    yeast = new Yeast(),
     resultValue = 0,
     calculatedValue = 0,
     adjustedValue = 0,
