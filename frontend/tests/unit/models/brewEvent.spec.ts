@@ -37,7 +37,7 @@ describe("brewEvent.ts", () => {
   it("reset instance after call clear()", () => {
     const events = createBrewEvents();
     events[1].clear();
-    expect(events[1].id).toContain("brew_event-");
+    expect(events[1].id).toContain("brew_event-test-id-1");
     expect(events[1].name).toEqual("");
     expect(events[1].desc).toEqual("");
     expect(events[1].from).toEqual(new Date(0));

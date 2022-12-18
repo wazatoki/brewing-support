@@ -35,11 +35,12 @@ describe("unit.ts", () => {
 
   it("reset instance after call clear()", () => {
     const units = createUnits();
-    units[1].clear();
-    expect(units[1].id).toContain(prefix);
-    expect(units[1].name).toEqual("");
-    expect(units[1].conversionFactor).toEqual(1);
-    expect(units[1].baseUnit).toEqual(null);
+    const u = units[1];
+    u.clear();
+    expect(u.id).toEqual("test-unit-id-1");
+    expect(u.name).toEqual("");
+    expect(u.conversionFactor).toEqual(1);
+    expect(u.baseUnit).toEqual(null);
   });
 
   it("convertToBaseUnit", () => {

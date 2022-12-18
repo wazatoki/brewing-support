@@ -30,7 +30,6 @@ export class Ingredient implements IngredientMember {
   }
 
   clear() {
-    this.id = prefix + createUUID();
     this.name = "";
     this.ingredientClassification = new IngredientClassification();
     this.brewingUnit = new Unit();

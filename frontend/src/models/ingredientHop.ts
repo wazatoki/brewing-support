@@ -29,7 +29,6 @@ export class Hop implements HopMember {
   }
 
   clear() {
-    this.id = prefix + createUUID();
     this.name = "";
     this.alphaAcid = 0;
     this.brewingUnit = new Unit();

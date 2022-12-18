@@ -58,26 +58,27 @@ describe("ingredientYeast.ts", () => {
 
   it("reset instance after call clear()", () => {
     const yeasts = createYeasts();
-    yeasts[1].clear();
-    expect(yeasts[1].id).toContain(ingredientYeast.prefix);
-    expect(yeasts[1].name).toEqual("");
-    expect(yeasts[1].attenuation).toEqual(0);
-    expect(yeasts[1].brewingUnit.id).not.toEqual(yeasts[1].recievingUnit.id);
-    expect(yeasts[1].recievingUnit.id).not.toEqual(yeasts[1].stockingUnit.id);
+    const yeast = yeasts[1];
+    yeast.clear();
+    expect(yeast.id).toEqual("test-yeast-id-1");
+    expect(yeast.name).toEqual("");
+    expect(yeast.attenuation).toEqual(0);
+    expect(yeast.brewingUnit.id).not.toEqual(yeast.recievingUnit.id);
+    expect(yeast.recievingUnit.id).not.toEqual(yeast.stockingUnit.id);
 
-    expect(yeasts[1].brewingUnit.id).toContain(unit.prefix);
-    expect(yeasts[1].brewingUnit.name).toEqual("");
-    expect(yeasts[1].brewingUnit.conversionFactor).toEqual(1);
-    expect(yeasts[1].brewingUnit.baseUnit).toEqual(null);
+    expect(yeast.brewingUnit.id).toContain(unit.prefix);
+    expect(yeast.brewingUnit.name).toEqual("");
+    expect(yeast.brewingUnit.conversionFactor).toEqual(1);
+    expect(yeast.brewingUnit.baseUnit).toEqual(null);
 
-    expect(yeasts[1].recievingUnit.id).toContain(unit.prefix);
-    expect(yeasts[1].recievingUnit.name).toEqual("");
-    expect(yeasts[1].recievingUnit.conversionFactor).toEqual(1);
-    expect(yeasts[1].recievingUnit.baseUnit).toEqual(null);
+    expect(yeast.recievingUnit.id).toContain(unit.prefix);
+    expect(yeast.recievingUnit.name).toEqual("");
+    expect(yeast.recievingUnit.conversionFactor).toEqual(1);
+    expect(yeast.recievingUnit.baseUnit).toEqual(null);
 
-    expect(yeasts[1].stockingUnit.id).toContain(unit.prefix);
-    expect(yeasts[1].stockingUnit.name).toEqual("");
-    expect(yeasts[1].stockingUnit.conversionFactor).toEqual(1);
-    expect(yeasts[1].stockingUnit.baseUnit).toEqual(null);
+    expect(yeast.stockingUnit.id).toContain(unit.prefix);
+    expect(yeast.stockingUnit.name).toEqual("");
+    expect(yeast.stockingUnit.conversionFactor).toEqual(1);
+    expect(yeast.stockingUnit.baseUnit).toEqual(null);
   });
 });

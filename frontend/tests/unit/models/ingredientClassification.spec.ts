@@ -10,8 +10,16 @@ describe("ingredientClassification.ts", () => {
 
   it("IngredientClassification shall create with options.", () => {
     const classifications = createIngredientClassification();
-    const g = classifications[1];
-    expect(g.id).toEqual("test-ingredient_classification-id-1");
-    expect(g.name).toEqual("test-ingredient_classification-name-1");
+    const ic = classifications[1];
+    expect(ic.id).toEqual("test-ingredient_classification-id-1");
+    expect(ic.name).toEqual("test-ingredient_classification-name-1");
+  });
+
+  it("reset instance after call clear()", () => {
+    const classifications = createIngredientClassification();
+    const ic = classifications[1];
+    ic.clear();
+    expect(ic.id).toEqual("test-ingredient_classification-id-1");
+    expect(ic.name).toEqual("");
   });
 });

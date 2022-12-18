@@ -25,7 +25,6 @@ export class BrewPlan {
   events: BrewEvent[];
 
   clear() {
-    this.id = prefix + createUUID();
     this.batchNumber = 0;
     this.name = "";
     this.batchSize = 0;

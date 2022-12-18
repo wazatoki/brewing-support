@@ -20,7 +20,6 @@ export class BrewEvent implements BrewEventMember {
   brewPlanID: string;
 
   clear() {
-    this.id = prefix + createUUID();
     this.name = "";
     this.desc = "";
     this.from = new Date(0);

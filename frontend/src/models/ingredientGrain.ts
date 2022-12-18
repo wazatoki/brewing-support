@@ -29,7 +29,6 @@ export class Grain implements GrainMember {
   }
 
   clear() {
-    this.id = prefix + createUUID();
     this.name = "";
     this.potential = 0;
     this.brewingUnit = new Unit();

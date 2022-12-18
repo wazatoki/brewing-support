@@ -29,7 +29,6 @@ export class Yeast implements YeastMember {
   }
 
   clear() {
-    this.id = prefix + createUUID();
     this.name = "";
     this.attenuation = 0;
     this.brewingUnit = new Unit();

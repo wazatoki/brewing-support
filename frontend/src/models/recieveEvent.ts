@@ -45,7 +45,6 @@ export class RecieveEvent implements RecieveEventMember {
   }
 
   clear() {
-    this.id = prefix + createUUID();
     this.noteNO = "";
     this.noteDate = new Date();
     this.supplier = new Supplier();

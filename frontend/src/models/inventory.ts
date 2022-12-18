@@ -17,7 +17,6 @@ export class Inventory implements InventoryMember {
   note: string;
 
   clear() {
-    this.id = prefix + createUUID();
     this.onDate = new Date();
     this.ingredients = [] as InventoryIngredient[];
     this.grains = [] as InventoryIngredientGrain[];

@@ -17,7 +17,6 @@ export class Unit implements UnitMember {
   }
 
   clear(): void {
-    this.id = prefix + createUUID();
     this.name = "";
     this.conversionFactor = 1;
     this.baseUnit = null;
