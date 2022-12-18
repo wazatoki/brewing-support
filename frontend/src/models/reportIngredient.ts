@@ -1,10 +1,14 @@
 import { createUUID } from "@/services/utils";
 import { Ingredient } from "@/models/ingredient";
-import { Supplier } from "./supplier";
-import { BrewPlan } from "./brewPlan";
-import { Yeast } from "./ingredientYeast";
-import { Grain } from "./ingredientGrain";
-import { Hop } from "./ingredientHop";
+import { Supplier } from "@/models/supplier";
+import { BrewPlan } from "@/models/brewPlan";
+import { Yeast } from "@/models/ingredientYeast";
+import { Grain } from "@/models/ingredientGrain";
+import { Hop } from "@/models/ingredientHop";
+import * as processingTp from "@/models/processingType";
+
+export const typename = "report_ingredient";
+export const prefix = typename + "-";
 
 export class ReportIngredient {
   id: string;
@@ -17,16 +21,16 @@ export class ReportIngredient {
   unitName: string;
 
   constructor(
-    id = "",
-    processingDate: Date,
-    processingType: string,
-    ingredient: Ingredient,
-    supplier: Supplier | null,
-    brewPlan: BrewPlan | null,
-    quantity: number,
+    id = prefix + createUUID(),
+    processingDate = new Date(),
+    processingType = processingTp.recieving,
+    ingredient: Ingredient | Grain | Hop | Yeast = new Ingredient(),
+    supplier: Supplier | null = null,
+    brewPlan: BrewPlan | null = null,
+    quantity = 0,
     unitName = ""
   ) {
-    this.id = id || "report_ingredient-" + createUUID();
+    this.id = id;
     this.processingDate = processingDate;
     this.processingType = processingType;
     this.ingredient = ingredient;

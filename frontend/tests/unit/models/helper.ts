@@ -21,6 +21,8 @@ import { RecievedIngredientYeast } from "@/models/recievedIngredientYeast";
 import { RecievedIngredient } from "@/models/recievedIngredient";
 import { RecieveEvent } from "@/models/recieveEvent";
 import { Supplier } from "@/models/supplier";
+import { ReportIngredient } from "@/models/reportIngredient";
+import * as processingTp from "@/models/processingType";
 
 export const createUnits = () => {
   const units: Unit[] = [] as Unit[];
@@ -629,4 +631,161 @@ export const createRecieveEvents = () => {
     );
   }
   return events;
+};
+
+export const createReportIngredient = () => {
+  const reportIngredients: ReportIngredient[] = [] as ReportIngredient[];
+  const ingredients = createIngredients();
+  const grains = createGrains();
+  const hops = createHops();
+  const yeasts = createYeasts();
+  const suppliers = createSuppliers();
+  const brewPlans = createBrewPlans();
+  const units = createUnits();
+  reportIngredients.push(new ReportIngredient());
+  reportIngredients.push(
+    new ReportIngredient(
+      "report_ingredient-id-1",
+      new Date("2000-1-1 9:00:00"),
+      processingTp.inventory,
+      ingredients[1],
+      null,
+      null,
+      100,
+      units[1].name
+    )
+  );
+  reportIngredients.push(
+    new ReportIngredient(
+      "report_ingredient-id-2",
+      new Date("2000-1-2 9:00:00"),
+      processingTp.recieving,
+      ingredients[1],
+      suppliers[1],
+      null,
+      10,
+      units[1].name
+    )
+  );
+  reportIngredients.push(
+    new ReportIngredient(
+      "report_ingredient-id-3",
+      new Date("2000-1-3 9:00:00"),
+      processingTp.brewing,
+      ingredients[1],
+      null,
+      brewPlans[1],
+      1,
+      units[1].name
+    )
+  );
+  reportIngredients.push(
+    new ReportIngredient(
+      "report_ingredient-id-11",
+      new Date("2000-1-1 9:00:00"),
+      processingTp.inventory,
+      grains[1],
+      null,
+      null,
+      200,
+      units[1].name
+    )
+  );
+  reportIngredients.push(
+    new ReportIngredient(
+      "report_ingredient-id-12",
+      new Date("2000-1-2 9:00:00"),
+      processingTp.recieving,
+      grains[1],
+      suppliers[1],
+      null,
+      20,
+      units[1].name
+    )
+  );
+  reportIngredients.push(
+    new ReportIngredient(
+      "report_ingredient-id-13",
+      new Date("2000-1-3 9:00:00"),
+      processingTp.brewing,
+      grains[1],
+      null,
+      brewPlans[1],
+      2,
+      units[1].name
+    )
+  );
+  reportIngredients.push(
+    new ReportIngredient(
+      "report_ingredient-id-21",
+      new Date("2000-1-1 9:00:00"),
+      processingTp.inventory,
+      hops[1],
+      null,
+      null,
+      300,
+      units[1].name
+    )
+  );
+  reportIngredients.push(
+    new ReportIngredient(
+      "report_ingredient-id-22",
+      new Date("2000-1-2 9:00:00"),
+      processingTp.recieving,
+      hops[1],
+      suppliers[1],
+      null,
+      30,
+      units[1].name
+    )
+  );
+  reportIngredients.push(
+    new ReportIngredient(
+      "report_ingredient-id-23",
+      new Date("2000-1-3 9:00:00"),
+      processingTp.brewing,
+      hops[1],
+      null,
+      brewPlans[1],
+      3,
+      units[1].name
+    )
+  );
+  reportIngredients.push(
+    new ReportIngredient(
+      "report_ingredient-id-31",
+      new Date("2000-1-1 9:00:00"),
+      processingTp.inventory,
+      yeasts[1],
+      null,
+      null,
+      400,
+      units[1].name
+    )
+  );
+  reportIngredients.push(
+    new ReportIngredient(
+      "report_ingredient-id-32",
+      new Date("2000-1-2 9:00:00"),
+      processingTp.recieving,
+      yeasts[1],
+      suppliers[1],
+      null,
+      40,
+      units[1].name
+    )
+  );
+  reportIngredients.push(
+    new ReportIngredient(
+      "report_ingredient-id-33",
+      new Date("2000-1-3 9:00:00"),
+      processingTp.brewing,
+      yeasts[1],
+      null,
+      brewPlans[1],
+      4,
+      units[1].name
+    )
+  );
+  return reportIngredients;
 };
