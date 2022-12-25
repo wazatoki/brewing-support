@@ -35,19 +35,62 @@ export function getRemoteDBInstance(
   }));
 }
 
-// export class CouchDbProvider {
+export async function fetchAllDocuments<T>(
+  startkey: string,
+  dbName = ""
+): Promise<T[]> {
+  const resultArray = [] as T[];
+  try {
+    const fetchedDocuments = await getDBInstance(dbName).allDocs<T>({
+      include_docs: true,
+      startkey: startkey,
+      endkey: startkey + "\ufff0",
+    });
+    fetchedDocuments.rows.forEach(
+      (item: {
+        doc?:
+          | PouchDB.Core.ExistingDocument<T & PouchDB.Core.AllDocsMeta>
+          | undefined;
+        id: string;
+        key: string;
+        value: {
+          rev: string;
+          deleted?: boolean | undefined;
+        };
+      }) => {
+        if (item.doc) {
+          resultArray.push(item.doc);
+        }
+      }
+    );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (e: any) {
+    console.log(e);
+    throw new Error(e.name);
+  }
+  return resultArray;
+}
 
-//     private db: PouchDB.Database<{}>;
+export async function fetchByID<T>(id: string, dbName = ""): Promise<T> {
+  try {
+    const result = await getDBInstance(dbName).get<T>(id);
+    return result;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (e: any) {
+    console.log(e);
+    throw new Error(e.name);
+  }
+}
 
-//     getCouchDb(dbName:string = "brewing_support_db"): PouchDB.Database<{}> {
-
-//         if
-
-//         return new PouchDB(
-//             `${dbName}`,
-//             {
-//                 skip_setup: true
-//             });
-//     }
-// }
-// export default new CouchDbProvider();
+export async function remove<T>(id: string, dbName = "") {
+  try {
+    const doc = await getDBInstance(dbName).get<T>(id);
+    if (doc) {
+      getDBInstance(dbName).remove(doc);
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (e: any) {
+    console.log(e);
+    throw new Error(e.name);
+  }
+}
