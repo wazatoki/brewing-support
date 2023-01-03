@@ -86,11 +86,46 @@ export async function remove<T>(id: string, dbName = "") {
   try {
     const doc = await getDBInstance(dbName).get<T>(id);
     if (doc) {
-      getDBInstance(dbName).remove(doc);
+      await getDBInstance(dbName).remove(doc);
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.log(e);
     throw new Error(e.name);
+  }
+}
+
+export async function save<T>(
+  obj: T & { id: string; type: string },
+  dbName = ""
+) {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const doc: any = await getDBInstance(dbName).get<T>(obj.id);
+    Object.keys(obj).forEach((key) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      doc[key] = (obj as any)[key];
+    });
+
+    try {
+      await getDBInstance(dbName).put(doc);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
+      console.log(e);
+      throw new Error(e.name);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (e: any) {
+    if (e.name === "not_found") {
+      const doc = { ...obj, _id: obj.id };
+      try {
+        await getDBInstance(dbName).put(doc);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (e: any) {
+        console.log(e);
+        throw new Error(e.name);
+      }
+    }
   }
 }
