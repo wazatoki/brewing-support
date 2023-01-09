@@ -31,6 +31,33 @@ export class Unit implements UnitMember {
     };
   }
 
+  toPlainObject(): UnitObject {
+    let baseUnit: {
+      id: string;
+      name: string;
+      conversionFactor: number;
+      baseUnit: null;
+    } | null;
+
+    if (this.baseUnit === null) {
+      baseUnit = null;
+    } else {
+      baseUnit = {
+        id: this.baseUnit.id,
+        name: this.baseUnit.name,
+        conversionFactor: this.baseUnit.conversionFactor,
+        baseUnit: null,
+      };
+    }
+
+    return {
+      id: this.id,
+      name: this.name,
+      conversionFactor: this.conversionFactor,
+      baseUnit: baseUnit,
+    };
+  }
+
   constructor(
     id = prefix + createUUID(),
     name = "",
@@ -50,3 +77,15 @@ export interface UnitMember {
   conversionFactor: number;
   baseUnit: Unit | null;
 }
+
+export type UnitObject = {
+  id: string;
+  name: string;
+  conversionFactor: number;
+  baseUnit: {
+    id: string;
+    name: string;
+    conversionFactor: number;
+    baseUnit: null;
+  } | null;
+};

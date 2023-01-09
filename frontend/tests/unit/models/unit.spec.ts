@@ -49,4 +49,20 @@ describe("unit.ts", () => {
     expect(result.quantity).toEqual(20);
     expect(result.baseUnit.id).toEqual("test-unit-id-1");
   });
+
+  it("toPlainObject", () => {
+    const units = createUnits();
+    const result = units[2].toPlainObject();
+    expect(result).toEqual({
+      id: "test-unit-id-2",
+      name: "test-unit-name-2",
+      conversionFactor: 2,
+      baseUnit: {
+        id: "test-unit-id-1",
+        name: "test-unit-name-1",
+        conversionFactor: 1,
+        baseUnit: null,
+      },
+    });
+  });
 });
