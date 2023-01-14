@@ -1,5 +1,5 @@
 import { InventoryIngredientHop } from "@/models/inventoryIngredientHop";
-import { createInventoryIngredientHop } from "./helper";
+import { createInventoryIngredientHop, createHops } from "./helper";
 
 describe("inventoryIngredientHop.ts", () => {
   it("InventoryIngredientHop shall create with no options.", () => {
@@ -29,5 +29,19 @@ describe("inventoryIngredientHop.ts", () => {
     expect(
       iIngredientHops[1].hop.brewingUnit.convertToBaseUnit
     ).toHaveBeenCalled();
+  });
+
+  it("toPlainObject", () => {
+    const iIngredientHops = createInventoryIngredientHop();
+    const hops = createHops();
+    const result = iIngredientHops[2].toPlainObject();
+    expect(result).toEqual({
+      id: "inventory_ingredient_hop-id-2",
+      hop: hops[2].toPlainObject(),
+      resultValue: 2,
+      calculatedValue: 2,
+      adjustedValue: 2,
+      note: "inventory_ingredient_hop-note-2",
+    });
   });
 });
