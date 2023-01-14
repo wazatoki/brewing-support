@@ -55,9 +55,7 @@ export const createIngredientClassification = () => {
 export const createGrains = () => {
   const grains: Grain[] = [] as Grain[];
   const units = createUnits();
-  grains.push(
-    new Grain("grain-test-id", "", 0, new Unit(), new Unit(), new Unit())
-  );
+  grains.push(new Grain("grain-test-id", "", 0, units[1], units[1], units[1]));
   for (let i = 1; i < 10; i++) {
     grains.push(
       new Grain(
@@ -76,7 +74,7 @@ export const createGrains = () => {
 export const createHops = () => {
   const hops: Hop[] = [] as Hop[];
   const units = createUnits();
-  hops.push(new Hop("hop-test-id", "", 0, new Unit(), new Unit(), new Unit()));
+  hops.push(new Hop("hop-test-id", "", 0, units[1], units[1], units[1]));
   for (let i = 1; i < 10; i++) {
     hops.push(
       new Hop(
@@ -95,9 +93,7 @@ export const createHops = () => {
 export const createYeasts = () => {
   const yeasts: Yeast[] = [] as Yeast[];
   const units = createUnits();
-  yeasts.push(
-    new Yeast("yeast-test-id", "", 0, new Unit(), new Unit(), new Unit())
-  );
+  yeasts.push(new Yeast("yeast-test-id", "", 0, units[1], units[1], units[1]));
   for (let i = 1; i < 10; i++) {
     yeasts.push(
       new Yeast(
@@ -123,9 +119,9 @@ export const createIngredients = () => {
       "ingredient-test-id",
       "",
       ingredientClassifications[0],
-      new Unit(),
-      new Unit(),
-      new Unit()
+      units[1],
+      units[1],
+      units[1]
     )
   );
   for (let i = 1; i < 10; i++) {
@@ -148,7 +144,7 @@ export const createConsumedIngredientGrain = () => {
   const grains = createGrains();
 
   ciGrains.push(
-    new ConsumedIngredientGrain("consumed_ingredient_grain-id", new Grain(), 0)
+    new ConsumedIngredientGrain("consumed_ingredient_grain-id", grains[1], 0)
   );
   for (let i = 1; i < 10; i++) {
     ciGrains.push(
@@ -167,7 +163,7 @@ export const createConsumedIngredientHop = () => {
   const hops = createHops();
 
   ciHops.push(
-    new ConsumedIngredientHop("consumed_ingredient_hop-id", new Hop(), 0)
+    new ConsumedIngredientHop("consumed_ingredient_hop-id", hops[1], 0)
   );
   for (let i = 1; i < 10; i++) {
     ciHops.push(
@@ -186,7 +182,7 @@ export const createConsumedIngredientYeast = () => {
   const yeasts = createYeasts();
 
   ciYeasts.push(
-    new ConsumedIngredientYeast("consumed_ingredient_yeast-id", new Yeast(), 0)
+    new ConsumedIngredientYeast("consumed_ingredient_yeast-id", yeasts[1], 0)
   );
   for (let i = 1; i < 10; i++) {
     ciYeasts.push(
@@ -205,7 +201,7 @@ export const createConsumedIngredient = () => {
   const ingredients = createIngredients();
 
   ciIngredients.push(
-    new ConsumedIngredient("consumed_ingredient-id", new Ingredient(), 0)
+    new ConsumedIngredient("consumed_ingredient-id", ingredients[1], 0)
   );
   for (let i = 1; i < 10; i++) {
     ciIngredients.push(

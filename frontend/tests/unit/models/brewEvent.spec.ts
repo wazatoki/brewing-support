@@ -3,7 +3,13 @@ import { ConsumedIngredient } from "@/models/consumedIngredient";
 import { ConsumedIngredientGrain } from "@/models/consumedIngredientGrain";
 import { ConsumedIngredientHop } from "@/models/consumedIngredientHop";
 import { ConsumedIngredientYeast } from "@/models/consumedIngredientYeast";
-import { createBrewEvents } from "./helper";
+import {
+  createBrewEvents,
+  createConsumedIngredient,
+  createConsumedIngredientGrain,
+  createConsumedIngredientHop,
+  createConsumedIngredientYeast,
+} from "./helper";
 
 describe("brewEvent.ts", () => {
   it("BrewEvent shall create with no options.", () => {
@@ -47,5 +53,33 @@ describe("brewEvent.ts", () => {
     expect(events[1].hops).toEqual([] as ConsumedIngredientHop[]);
     expect(events[1].yeasts).toEqual([] as ConsumedIngredientYeast[]);
     expect(events[1].brewPlanID).toEqual("");
+  });
+
+  it("toPlainObject", () => {
+    const events = createBrewEvents();
+    const ingredients = createConsumedIngredient().map((v) =>
+      v.toPlainObject()
+    );
+    const grains = createConsumedIngredientGrain().map((v) =>
+      v.toPlainObject()
+    );
+    const hops = createConsumedIngredientHop().map((v) => v.toPlainObject());
+    const yeasts = createConsumedIngredientYeast().map((v) =>
+      v.toPlainObject()
+    );
+
+    const result = events[2].toPlainObject();
+    expect(result).toEqual({
+      id: "brew_event-test-id-2",
+      name: "brew_event-test-name-2",
+      desc: "brew_event-test-desc-2",
+      from: new Date("2000-1-2 9:00:00"),
+      to: new Date("2000-1-2 23:00:00"),
+      ingredients: ingredients,
+      grains: grains,
+      hops: hops,
+      yeasts: yeasts,
+      brewPlanID: "brew_plan-test-2",
+    });
   });
 });
