@@ -1,7 +1,11 @@
 import * as ingredient from "@/models/ingredient";
 import * as ingredientClassification from "@/models/ingredientClassification";
 import * as unit from "@/models/unit";
-import { createIngredients, createUnits } from "./helper";
+import {
+  createIngredients,
+  createIngredientClassification,
+  createUnits,
+} from "./helper";
 
 export const ingredients: ingredient.Ingredient[] = [];
 
@@ -87,5 +91,20 @@ describe("ingredient.ts", () => {
     expect(ingr.stockingUnit.name).toEqual("");
     expect(ingr.stockingUnit.conversionFactor).toEqual(1);
     expect(ingr.stockingUnit.baseUnit).toEqual(null);
+  });
+
+  it("toPlainObject", () => {
+    const ingredients = createIngredients();
+    const ingredientClassifications = createIngredientClassification();
+    const units = createUnits();
+    const result = ingredients[2].toPlainObject();
+    expect(result).toEqual({
+      id: "test-ingredient-id-2",
+      name: "test-ingredient-name-2",
+      ingredientClassification: ingredientClassifications[2].toPlainObject(),
+      brewingUnit: units[2].toPlainObject(),
+      recievingUnit: units[2].toPlainObject(),
+      stockingUnit: units[2].toPlainObject(),
+    });
   });
 });

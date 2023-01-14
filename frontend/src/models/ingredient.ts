@@ -1,5 +1,8 @@
-import { Unit } from "./unit";
-import { IngredientClassification } from "./ingredientClassification";
+import { Unit, UnitPlainObject } from "./unit";
+import {
+  IngredientClassification,
+  IngredientClassificationPlainObject,
+} from "./ingredientClassification";
 import { createUUID } from "@/services/utils";
 
 export const typename = "ingredient";
@@ -37,6 +40,17 @@ export class Ingredient implements IngredientMember {
     this.stockingUnit = new Unit();
   }
 
+  toPlainObject(): IngredientPlainObject {
+    return {
+      id: this.id,
+      name: this.name,
+      ingredientClassification: this.ingredientClassification.toPlainObject(),
+      brewingUnit: this.brewingUnit.toPlainObject(),
+      recievingUnit: this.recievingUnit.toPlainObject(),
+      stockingUnit: this.stockingUnit.toPlainObject(),
+    };
+  }
+
   isReferenceUnit(unit: Unit) {
     if (
       (this.brewingUnit && this.brewingUnit.id === unit.id) ||
@@ -69,3 +83,12 @@ export interface IngredientMember {
   recievingUnit: Unit;
   stockingUnit: Unit;
 }
+
+export type IngredientPlainObject = {
+  id: string;
+  name: string;
+  ingredientClassification: IngredientClassificationPlainObject;
+  brewingUnit: UnitPlainObject;
+  recievingUnit: UnitPlainObject;
+  stockingUnit: UnitPlainObject;
+};
