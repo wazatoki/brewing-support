@@ -1,7 +1,7 @@
 import * as consumedIngredientHop from "@/models/consumedIngredientHop";
 import * as ingredientHop from "@/models/ingredientHop";
 import { Unit } from "@/models/unit";
-import { createConsumedIngredientHop } from "./helper";
+import { createConsumedIngredientHop, createHops } from "./helper";
 
 describe("ConsumedIngredientHop.ts", () => {
   it("ConsumedIngredientHop shall create with no options.", () => {
@@ -38,6 +38,17 @@ describe("ConsumedIngredientHop.ts", () => {
     expect(result).toEqual({
       quantity: 1,
       stockingUnit: hops[1].hop.stockingUnit,
+    });
+  });
+
+  it("toPlainObject", () => {
+    const consumedIngredientHops = createConsumedIngredientHop();
+    const hops = createHops();
+    const result = consumedIngredientHops[2].toPlainObject();
+    expect(result).toEqual({
+      id: "test-consumed_ingredient_hop-id-2",
+      hop: hops[2].toPlainObject(),
+      quantity: 2,
     });
   });
 });

@@ -1,4 +1,4 @@
-import { Hop } from "@/models/ingredientHop";
+import { Hop, HopPlainObject } from "@/models/ingredientHop";
 import { Unit } from "@/models/unit";
 import { createUUID } from "@/services/utils";
 
@@ -21,9 +21,23 @@ export class ConsumedIngredientHop {
     return { quantity: q, stockingUnit: this.hop.stockingUnit };
   }
 
+  toPlainObject(): ConsumedIngredientHopPlainObject {
+    return {
+      id: this.id,
+      hop: this.hop.toPlainObject(),
+      quantity: this.quantity,
+    };
+  }
+
   constructor(id = "", hop = new Hop(), quantity = 0) {
     this.id = id || prefix + createUUID();
     this.hop = hop;
     this.quantity = quantity;
   }
 }
+
+export type ConsumedIngredientHopPlainObject = {
+  id: string;
+  hop: HopPlainObject;
+  quantity: number;
+};
