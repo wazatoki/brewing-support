@@ -1,5 +1,5 @@
 import { createUUID } from "@/services/utils";
-import { Unit } from "./unit";
+import { Unit, UnitPlainObject } from "./unit";
 
 export const typename = "hop";
 export const prefix = typename + "-";
@@ -36,6 +36,17 @@ export class Hop implements HopMember {
     this.stockingUnit = new Unit();
   }
 
+  toPlainObject(): HopPlainObject {
+    return {
+      id: this.id,
+      name: this.name,
+      alphaAcid: this.alphaAcid,
+      brewingUnit: this.brewingUnit.toPlainObject(),
+      recievingUnit: this.recievingUnit.toPlainObject(),
+      stockingUnit: this.stockingUnit.toPlainObject(),
+    };
+  }
+
   isReferenceUnit(unit: Unit) {
     if (
       (this.brewingUnit && this.brewingUnit.id === unit.id) ||
@@ -56,3 +67,12 @@ export interface HopMember {
   recievingUnit: Unit;
   stockingUnit: Unit;
 }
+
+export type HopPlainObject = {
+  id: string;
+  name: string;
+  alphaAcid: number;
+  brewingUnit: UnitPlainObject;
+  recievingUnit: UnitPlainObject;
+  stockingUnit: UnitPlainObject;
+};

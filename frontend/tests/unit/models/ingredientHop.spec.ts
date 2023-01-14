@@ -81,4 +81,18 @@ describe("ingredientHop.ts", () => {
     expect(hop.stockingUnit.conversionFactor).toEqual(1);
     expect(hop.stockingUnit.baseUnit).toEqual(null);
   });
+
+  it("toPlainObject", () => {
+    const hops = createHops();
+    const units = createUnits();
+    const result = hops[2].toPlainObject();
+    expect(result).toEqual({
+      id: "test-hop-id-2",
+      name: "test-hop-name-2",
+      alphaAcid: 2,
+      brewingUnit: units[2].toPlainObject(),
+      recievingUnit: units[2].toPlainObject(),
+      stockingUnit: units[2].toPlainObject(),
+    });
+  });
 });
