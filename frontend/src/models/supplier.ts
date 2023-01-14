@@ -15,9 +15,21 @@ export class Supplier {
   clear() {
     this.name = "";
   }
+
+  toPlainObject(): SupplierPlainObject {
+    return {
+      id: this.id,
+      name: this.name,
+    };
+  }
 }
 
 export interface SupplierMember {
   id: string;
   name: string;
 }
+
+export type SupplierPlainObject = {
+  id: string;
+  name: string;
+};

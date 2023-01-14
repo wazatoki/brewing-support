@@ -31,7 +31,7 @@ export class Unit implements UnitMember {
     };
   }
 
-  toPlainObject(): UnitObject {
+  toPlainObject(): UnitPlainObject {
     let baseUnit: {
       id: string;
       name: string;
@@ -78,7 +78,7 @@ export interface UnitMember {
   baseUnit: Unit | null;
 }
 
-export type UnitObject = {
+export type UnitPlainObject = {
   id: string;
   name: string;
   conversionFactor: number;

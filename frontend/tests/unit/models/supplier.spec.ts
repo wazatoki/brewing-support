@@ -22,4 +22,13 @@ describe("supplier.ts", () => {
     expect(s.id).toEqual("supplier-id-1");
     expect(s.name).toEqual("");
   });
+
+  it("toPlainObject", () => {
+    const suppliers = createSuppliers();
+    const result = suppliers[2].toPlainObject();
+    expect(result).toEqual({
+      id: "supplier-id-2",
+      name: "supplier-name-2",
+    });
+  });
 });
