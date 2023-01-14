@@ -1,7 +1,7 @@
 import * as consumedIngredientYeast from "@/models/consumedIngredientYeast";
 import * as ingredientYeast from "@/models/ingredientYeast";
 import { Unit } from "@/models/unit";
-import { createConsumedIngredientYeast } from "./helper";
+import { createConsumedIngredientYeast, createYeasts } from "./helper";
 
 describe("ConsumedIngredientYeast.ts", () => {
   it("ConsumedIngredientYeast shall create with no options.", () => {
@@ -38,6 +38,17 @@ describe("ConsumedIngredientYeast.ts", () => {
     expect(result).toEqual({
       quantity: 1,
       stockingUnit: yeasts[1].yeast.stockingUnit,
+    });
+  });
+
+  it("toPlainObject", () => {
+    const consumedIngredientYeasts = createConsumedIngredientYeast();
+    const yeasts = createYeasts();
+    const result = consumedIngredientYeasts[2].toPlainObject();
+    expect(result).toEqual({
+      id: "test-consumed_ingredient_yeast-id-2",
+      yeast: yeasts[2].toPlainObject(),
+      quantity: 2,
     });
   });
 });
