@@ -375,7 +375,7 @@ export const createInventoryIngredientGrain = () => {
   iiGrains.push(
     new InventoryIngredientGrain(
       "inventory_ingredient_grain-id",
-      new Grain(),
+      grains[0],
       0,
       0,
       0,
@@ -404,7 +404,7 @@ export const createInventoryIngredientHop = () => {
   iiHops.push(
     new InventoryIngredientHop(
       "inventory_ingredient_hop-id",
-      new Hop(),
+      hops[0],
       0,
       0,
       0,
@@ -433,7 +433,7 @@ export const createInventoryIngredientYeast = () => {
   iiYeasts.push(
     new InventoryIngredientYeast(
       "inventory_ingredient_yeast-id",
-      new Yeast(),
+      yeasts[0],
       0,
       0,
       0,
@@ -462,7 +462,7 @@ export const createInventoryIngredient = () => {
   iiIngredients.push(
     new InventoryIngredient(
       "inventory_ingredient-id",
-      new Ingredient(),
+      ingredients[0],
       0,
       0,
       0,

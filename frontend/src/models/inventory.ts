@@ -1,7 +1,19 @@
-import { InventoryIngredient } from "@/models/inventoryIngredient";
-import { InventoryIngredientGrain } from "./inventoryIngredientGrain";
-import { InventoryIngredientHop } from "./inventoryIngredientHop";
-import { InventoryIngredientYeast } from "./inventoryIngredientYeast";
+import {
+  InventoryIngredient,
+  InventoryIngredientPlainObject,
+} from "@/models/inventoryIngredient";
+import {
+  InventoryIngredientGrain,
+  InventoryIngredientGrainPlainObject,
+} from "./inventoryIngredientGrain";
+import {
+  InventoryIngredientHop,
+  InventoryIngredientHopPlainObject,
+} from "./inventoryIngredientHop";
+import {
+  InventoryIngredientYeast,
+  InventoryIngredientYeastPlainObject,
+} from "./inventoryIngredientYeast";
 import { createUUID } from "@/services/utils";
 
 export const typename = "inventory";
@@ -23,6 +35,35 @@ export class Inventory implements InventoryMember {
     this.hops = [] as InventoryIngredientHop[];
     this.yeasts = [] as InventoryIngredientYeast[];
     this.note = "";
+  }
+
+  toPlainObject(): InventoryPlainObject {
+    const ingredients = this.ingredients.map(
+      (ingredient: InventoryIngredient): InventoryIngredientPlainObject =>
+        ingredient.toPlainObject()
+    );
+    const grains = this.grains.map(
+      (grain: InventoryIngredientGrain): InventoryIngredientGrainPlainObject =>
+        grain.toPlainObject()
+    );
+    const hops = this.hops.map(
+      (hop: InventoryIngredientHop): InventoryIngredientHopPlainObject =>
+        hop.toPlainObject()
+    );
+    const yeasts = this.yeasts.map(
+      (yeast: InventoryIngredientYeast): InventoryIngredientYeastPlainObject =>
+        yeast.toPlainObject()
+    );
+
+    return {
+      id: this.id,
+      onDate: this.onDate,
+      ingredients: ingredients,
+      grains: grains,
+      hops: hops,
+      yeasts: yeasts,
+      note: this.note,
+    };
   }
 
   constructor(
@@ -53,3 +94,13 @@ export interface InventoryMember {
   yeasts: InventoryIngredientYeast[];
   note: string;
 }
+
+export type InventoryPlainObject = {
+  id: string;
+  onDate: Date;
+  ingredients: InventoryIngredientPlainObject[];
+  grains: InventoryIngredientGrainPlainObject[];
+  hops: InventoryIngredientHopPlainObject[];
+  yeasts: InventoryIngredientYeastPlainObject[];
+  note: string;
+};
