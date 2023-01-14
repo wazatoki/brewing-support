@@ -1,7 +1,7 @@
 import * as recievedIngredientHop from "@/models/recievedIngredientHop";
 import * as ingredientHop from "@/models/ingredientHop";
 import { Unit } from "@/models/unit";
-import { createRecievedIngredientHop } from "./helper";
+import { createRecievedIngredientHop, createHops } from "./helper";
 
 export const recievedIngredientHops: recievedIngredientHop.RecievedIngredientHop[] =
   [];
@@ -41,6 +41,17 @@ describe("RecievedIngredientHop.ts", () => {
     expect(result).toEqual({
       quantity: 1,
       stockingUnit: hops[1].hop.stockingUnit,
+    });
+  });
+
+  it("toPlainObject", () => {
+    const recievedIngredientHops = createRecievedIngredientHop();
+    const hops = createHops();
+    const result = recievedIngredientHops[2].toPlainObject();
+    expect(result).toEqual({
+      id: "test-recieved_ingredient_hop-id-2",
+      hop: hops[2].toPlainObject(),
+      quantity: 2,
     });
   });
 });
