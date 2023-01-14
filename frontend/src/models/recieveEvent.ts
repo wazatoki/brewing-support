@@ -1,8 +1,20 @@
-import { Supplier } from "@/models/supplier";
-import { RecievedIngredient } from "@/models/recievedIngredient";
-import { RecievedIngredientGrain } from "@/models/recievedIngredientGrain";
-import { RecievedIngredientHop } from "@/models/recievedIngredientHop";
-import { RecievedIngredientYeast } from "@/models/recievedIngredientYeast";
+import { Supplier, SupplierPlainObject } from "@/models/supplier";
+import {
+  RecievedIngredient,
+  RecievedIngredientPlainObject,
+} from "@/models/recievedIngredient";
+import {
+  RecievedIngredientGrain,
+  RecievedIngredientGrainPlainObject,
+} from "@/models/recievedIngredientGrain";
+import {
+  RecievedIngredientHop,
+  RecievedIngredientHopPlainObject,
+} from "@/models/recievedIngredientHop";
+import {
+  RecievedIngredientYeast,
+  RecievedIngredientYeastPlainObject,
+} from "@/models/recievedIngredientYeast";
 import { createUUID } from "@/services/utils";
 
 export const typename = "recieve_event";
@@ -55,6 +67,37 @@ export class RecieveEvent implements RecieveEventMember {
     this.yeasts = [] as RecievedIngredientYeast[];
     this.footNote = "";
   }
+
+  toPlainObject(): RecieveEventPlainObject {
+    const ingredients = this.ingredients.map(
+      (ingredient: RecievedIngredient): RecievedIngredientPlainObject =>
+        ingredient.toPlainObject()
+    );
+    const grains = this.grains.map(
+      (grain: RecievedIngredientGrain): RecievedIngredientGrainPlainObject =>
+        grain.toPlainObject()
+    );
+    const hops = this.hops.map(
+      (hop: RecievedIngredientHop): RecievedIngredientHopPlainObject =>
+        hop.toPlainObject()
+    );
+    const yeasts = this.yeasts.map(
+      (yeast: RecievedIngredientYeast): RecievedIngredientYeastPlainObject =>
+        yeast.toPlainObject()
+    );
+    return {
+      id: this.id,
+      noteNO: this.noteNO,
+      noteDate: this.noteDate,
+      supplier: this.supplier.toPlainObject(),
+      recieveDate: this.recieveDate,
+      ingredients: ingredients,
+      grains: grains,
+      hops: hops,
+      yeasts: yeasts,
+      footNote: this.footNote,
+    };
+  }
 }
 
 export interface RecieveEventMember {
@@ -69,3 +112,16 @@ export interface RecieveEventMember {
   yeasts: RecievedIngredientYeast[];
   footNote: string;
 }
+
+export type RecieveEventPlainObject = {
+  id: string;
+  noteNO: string;
+  noteDate: Date;
+  supplier: SupplierPlainObject;
+  recieveDate: Date;
+  ingredients: RecievedIngredientPlainObject[];
+  grains: RecievedIngredientGrainPlainObject[];
+  hops: RecievedIngredientHopPlainObject[];
+  yeasts: RecievedIngredientYeastPlainObject[];
+  footNote: string;
+};

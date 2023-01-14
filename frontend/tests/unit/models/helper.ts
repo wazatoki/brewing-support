@@ -514,7 +514,7 @@ export const createRecievedIngredientGrain = () => {
   const grains = createGrains();
 
   riGrains.push(
-    new RecievedIngredientGrain("recieved_ingredient_grain-id", new Grain(), 0)
+    new RecievedIngredientGrain("recieved_ingredient_grain-id", grains[1], 0)
   );
   for (let i = 1; i < 10; i++) {
     riGrains.push(
@@ -533,7 +533,7 @@ export const createRecievedIngredientHop = () => {
   const hops = createHops();
 
   riHops.push(
-    new RecievedIngredientHop("recieved_ingredient_hop-id", new Hop(), 0)
+    new RecievedIngredientHop("recieved_ingredient_hop-id", hops[1], 0)
   );
   for (let i = 1; i < 10; i++) {
     riHops.push(
@@ -552,7 +552,7 @@ export const createRecievedIngredientYeast = () => {
   const yeasts = createYeasts();
 
   riYeasts.push(
-    new RecievedIngredientYeast("recieved_ingredient_yeast-id", new Yeast(), 0)
+    new RecievedIngredientYeast("recieved_ingredient_yeast-id", yeasts[1], 0)
   );
   for (let i = 1; i < 10; i++) {
     riYeasts.push(
@@ -571,7 +571,7 @@ export const createRecievedIngredient = () => {
   const ingredients = createIngredients();
 
   riIngredients.push(
-    new RecievedIngredient("recieved_ingredient-id", new Ingredient(), 0)
+    new RecievedIngredient("recieved_ingredient-id", ingredients[1], 0)
   );
   for (let i = 1; i < 10; i++) {
     riIngredients.push(
@@ -606,7 +606,7 @@ export const createRecieveEvents = () => {
       "recieve_event-test-id",
       "",
       new Date(0),
-      new Supplier(),
+      suppliers[1],
       new Date(0)
     )
   );

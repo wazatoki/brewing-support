@@ -1,10 +1,29 @@
 import * as recieveEvent from "@/models/recieveEvent";
 import * as supplier from "@/models/supplier";
-import { RecievedIngredient } from "@/models/recievedIngredient";
-import { RecievedIngredientGrain } from "@/models/recievedIngredientGrain";
-import { RecievedIngredientHop } from "@/models/recievedIngredientHop";
-import { RecievedIngredientYeast } from "@/models/recievedIngredientYeast";
-import { createRecieveEvents } from "./helper";
+import {
+  RecievedIngredient,
+  RecievedIngredientPlainObject,
+} from "@/models/recievedIngredient";
+import {
+  RecievedIngredientGrain,
+  RecievedIngredientGrainPlainObject,
+} from "@/models/recievedIngredientGrain";
+import {
+  RecievedIngredientHop,
+  RecievedIngredientHopPlainObject,
+} from "@/models/recievedIngredientHop";
+import {
+  RecievedIngredientYeast,
+  RecievedIngredientYeastPlainObject,
+} from "@/models/recievedIngredientYeast";
+import {
+  createRecieveEvents,
+  createSuppliers,
+  createRecievedIngredient,
+  createRecievedIngredientGrain,
+  createRecievedIngredientHop,
+  createRecievedIngredientYeast,
+} from "./helper";
 
 describe("recieveEvent.ts", () => {
   it("RecieveEvent shall create with no options.", () => {
@@ -50,5 +69,40 @@ describe("recieveEvent.ts", () => {
     expect(re.hops).toEqual([] as RecievedIngredientHop[]);
     expect(re.yeasts).toEqual([] as RecievedIngredientYeast[]);
     expect(re.footNote).toEqual("");
+  });
+
+  it("toPlainObject", () => {
+    const events = createRecieveEvents();
+    const suppliers = createSuppliers();
+    const ingredients = createRecievedIngredient().map(
+      (ingredient: RecievedIngredient): RecievedIngredientPlainObject =>
+        ingredient.toPlainObject()
+    );
+    const grains = createRecievedIngredientGrain().map(
+      (grain: RecievedIngredientGrain): RecievedIngredientGrainPlainObject =>
+        grain.toPlainObject()
+    );
+    const hops = createRecievedIngredientHop().map(
+      (hop: RecievedIngredientHop): RecievedIngredientHopPlainObject =>
+        hop.toPlainObject()
+    );
+    const yeasts = createRecievedIngredientYeast().map(
+      (yeast: RecievedIngredientYeast): RecievedIngredientYeastPlainObject =>
+        yeast.toPlainObject()
+    );
+
+    const result = events[2].toPlainObject();
+    expect(result).toEqual({
+      id: "recieve_event-test-id-2",
+      noteNO: "recieve_event-test-note-no-2",
+      noteDate: new Date("2000-1-2 9:00:00"),
+      supplier: suppliers[1].toPlainObject(),
+      recieveDate: new Date("2000-1-2 10:00:00"),
+      ingredients: ingredients,
+      grains: grains,
+      hops: hops,
+      yeasts: yeasts,
+      footNote: "recieve_event-test-footnote-2",
+    });
   });
 });
