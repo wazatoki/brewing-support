@@ -1,4 +1,4 @@
-import { Grain } from "@/models/ingredientGrain";
+import { Grain, GrainPlainObject } from "@/models/ingredientGrain";
 import { Unit } from "@/models/unit";
 import { createUUID } from "@/services/utils";
 
@@ -21,9 +21,23 @@ export class ConsumedIngredientGrain {
     return { quantity: q, stockingUnit: this.grain.stockingUnit };
   }
 
+  toPlainObject(): ConsumedIngredientGrainPlainObject {
+    return {
+      id: this.id,
+      grain: this.grain.toPlainObject(),
+      quantity: this.quantity,
+    };
+  }
+
   constructor(id = "", grain = new Grain(), quantity = 0) {
     this.id = id || prefix + createUUID();
     this.grain = grain;
     this.quantity = quantity;
   }
 }
+
+export type ConsumedIngredientGrainPlainObject = {
+  id: string;
+  grain: GrainPlainObject;
+  quantity: number;
+};
