@@ -1,5 +1,5 @@
 import { InventoryIngredientGrain } from "@/models/inventoryIngredientGrain";
-import { createInventoryIngredientGrain } from "./helper";
+import { createInventoryIngredientGrain, createGrains } from "./helper";
 
 describe("inventoryIngredientGrain.ts", () => {
   it("InventoryIngredientGrain shall create with no options.", () => {
@@ -31,5 +31,19 @@ describe("inventoryIngredientGrain.ts", () => {
     expect(
       iIngredientGrains[1].grain.brewingUnit.convertToBaseUnit
     ).toHaveBeenCalled();
+  });
+
+  it("toPlainObject", () => {
+    const iIngredientGrains = createInventoryIngredientGrain();
+    const grains = createGrains();
+    const result = iIngredientGrains[2].toPlainObject();
+    expect(result).toEqual({
+      id: "inventory_ingredient_grain-id-2",
+      grain: grains[2].toPlainObject(),
+      resultValue: 2,
+      calculatedValue: 2,
+      adjustedValue: 2,
+      note: "inventory_ingredient_grain-note-2",
+    });
   });
 });
