@@ -1,4 +1,4 @@
-import { Ingredient } from "@/models/ingredient";
+import { Ingredient, IngredientPlainObject } from "@/models/ingredient";
 import { Unit } from "@/models/unit";
 import { createUUID } from "@/services/utils";
 
@@ -21,9 +21,23 @@ export class ConsumedIngredient {
     return { quantity: q, stockingUnit: this.ingredient.stockingUnit };
   }
 
+  toPlainObject(): ConsumedIngredientPlainObject {
+    return {
+      id: this.id,
+      ingredient: this.ingredient.toPlainObject(),
+      quantity: this.quantity,
+    };
+  }
+
   constructor(id = "", ingredient = new Ingredient(), quantity = 0) {
     this.id = id || prefix + createUUID();
     this.ingredient = ingredient;
     this.quantity = quantity;
   }
 }
+
+export type ConsumedIngredientPlainObject = {
+  id: string;
+  ingredient: IngredientPlainObject;
+  quantity: number;
+};

@@ -2,7 +2,7 @@ import * as consumedIngredient from "@/models/consumedIngredient";
 import * as ingredient from "@/models/ingredient";
 import * as ingredientClassification from "@/models/ingredientClassification";
 import { Unit } from "@/models/unit";
-import { createConsumedIngredient } from "./helper";
+import { createConsumedIngredient, createIngredients } from "./helper";
 
 export const consumedIngredients: consumedIngredient.ConsumedIngredient[] = [];
 
@@ -47,6 +47,17 @@ describe("ConsumedIngredient.ts", () => {
     expect(result).toEqual({
       quantity: 1,
       stockingUnit: grains[1].ingredient.stockingUnit,
+    });
+  });
+
+  it("toPlainObject", () => {
+    const consumedIngredients = createConsumedIngredient();
+    const ingredients = createIngredients();
+    const result = consumedIngredients[2].toPlainObject();
+    expect(result).toEqual({
+      id: "test-consumed_ingredient-id-2",
+      ingredient: ingredients[2].toPlainObject(),
+      quantity: 2,
     });
   });
 });
