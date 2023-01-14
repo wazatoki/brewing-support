@@ -81,4 +81,18 @@ describe("ingredientYeast.ts", () => {
     expect(yeast.stockingUnit.conversionFactor).toEqual(1);
     expect(yeast.stockingUnit.baseUnit).toEqual(null);
   });
+
+  it("toPlainObject", () => {
+    const yeasts = createYeasts();
+    const units = createUnits();
+    const result = yeasts[2].toPlainObject();
+    expect(result).toEqual({
+      id: "test-yeast-id-2",
+      name: "test-yeast-name-2",
+      attenuation: 2,
+      brewingUnit: units[2].toPlainObject(),
+      recievingUnit: units[2].toPlainObject(),
+      stockingUnit: units[2].toPlainObject(),
+    });
+  });
 });

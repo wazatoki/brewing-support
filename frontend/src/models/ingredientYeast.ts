@@ -1,5 +1,5 @@
 import { createUUID } from "@/services/utils";
-import { Unit } from "./unit";
+import { Unit, UnitPlainObject } from "./unit";
 
 export const typename = "yeast";
 export const prefix = typename + "-";
@@ -36,6 +36,17 @@ export class Yeast implements YeastMember {
     this.stockingUnit = new Unit();
   }
 
+  toPlainObject(): YeastPlainObject {
+    return {
+      id: this.id,
+      name: this.name,
+      attenuation: this.attenuation,
+      brewingUnit: this.brewingUnit.toPlainObject(),
+      recievingUnit: this.recievingUnit.toPlainObject(),
+      stockingUnit: this.stockingUnit.toPlainObject(),
+    };
+  }
+
   isReferenceUnit(unit: Unit) {
     if (
       (this.brewingUnit && this.brewingUnit.id === unit.id) ||
@@ -56,3 +67,12 @@ export interface YeastMember {
   recievingUnit: Unit;
   stockingUnit: Unit;
 }
+
+export type YeastPlainObject = {
+  id: string;
+  name: string;
+  attenuation: number;
+  brewingUnit: UnitPlainObject;
+  recievingUnit: UnitPlainObject;
+  stockingUnit: UnitPlainObject;
+};
