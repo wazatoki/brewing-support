@@ -81,4 +81,18 @@ describe("ingredientGrain.ts", () => {
     expect(g.stockingUnit.conversionFactor).toEqual(1);
     expect(g.stockingUnit.baseUnit).toEqual(null);
   });
+
+  it("toPlainObject", () => {
+    const grains = createGrains();
+    const units = createUnits();
+    const result = grains[2].toPlainObject();
+    expect(result).toEqual({
+      id: "test-grain-id-2",
+      name: "test-grain-name-2",
+      potential: 2,
+      brewingUnit: units[2].toPlainObject(),
+      recievingUnit: units[2].toPlainObject(),
+      stockingUnit: units[2].toPlainObject(),
+    });
+  });
 });

@@ -1,5 +1,5 @@
 import { createUUID } from "@/services/utils";
-import { Unit } from "@/models/unit";
+import { Unit, UnitPlainObject } from "@/models/unit";
 
 export const typename = "grain";
 export const prefix = typename + "-";
@@ -36,6 +36,17 @@ export class Grain implements GrainMember {
     this.stockingUnit = new Unit();
   }
 
+  toPlainObject(): GrainPlainObject {
+    return {
+      id: this.id,
+      name: this.name,
+      potential: this.potential,
+      brewingUnit: this.brewingUnit.toPlainObject(),
+      recievingUnit: this.recievingUnit.toPlainObject(),
+      stockingUnit: this.stockingUnit.toPlainObject(),
+    };
+  }
+
   isReferenceUnit(unit: Unit) {
     if (
       (this.brewingUnit && this.brewingUnit.id === unit.id) ||
@@ -56,3 +67,12 @@ export interface GrainMember {
   recievingUnit: Unit;
   stockingUnit: Unit;
 }
+
+export type GrainPlainObject = {
+  id: string;
+  name: string;
+  potential: number;
+  brewingUnit: UnitPlainObject;
+  recievingUnit: UnitPlainObject;
+  stockingUnit: UnitPlainObject;
+};
