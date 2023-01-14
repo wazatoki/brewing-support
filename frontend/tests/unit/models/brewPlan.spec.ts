@@ -1,5 +1,23 @@
-import { BrewPlan, GrainPlan, HopPlan } from "@/models/brewPlan";
-import { createBrewPlans } from "./helper";
+import { BrewEvent, BrewEventPlainObject } from "@/models/brewEvent";
+import {
+  BrewPlan,
+  GrainPlan,
+  GrainPlanPlainObject,
+  HopPlan,
+  HopPlanPlainObject,
+  YeastPlanPlainObject,
+} from "@/models/brewPlan";
+import {
+  createBrewEvents,
+  createBrewPlans,
+  createConsumedIngredient,
+  createConsumedIngredientGrain,
+  createConsumedIngredientHop,
+  createConsumedIngredientYeast,
+  createGrainPlans,
+  createHopPlans,
+  createYeastPlans,
+} from "./helper";
 
 describe("brewPlan.ts", () => {
   it("BrewPlan shall create with no options.", () => {
@@ -60,5 +78,55 @@ describe("brewPlan.ts", () => {
     expect(bp.hops).toEqual([] as HopPlan[]);
     expect(bp.yeastPlan.yeast.id).toContain("yeast-");
     expect(bp.yeastPlan.quantity).toEqual(0);
+  });
+
+  it("toPlainObject", () => {
+    const plans = createBrewPlans();
+    const grainPlanPlainObjects = createGrainPlans().map(
+      (gp: GrainPlan): GrainPlanPlainObject => {
+        return {
+          grain: gp.grain.toPlainObject(),
+          quantity: gp.quantity,
+          ratio: gp.ratio,
+        };
+      }
+    );
+    const hopPlanPlainObjects = createHopPlans().map(
+      (hp: HopPlan): HopPlanPlainObject => {
+        return {
+          hop: hp.hop.toPlainObject(),
+          quantity: hp.quantity,
+          alphaAcid: hp.alphaAcid,
+          boilTime: hp.boilTime,
+          ibus: hp.ibus,
+        };
+      }
+    );
+    const yeastPlan = createYeastPlans()[1];
+    const yeastPlanObject: YeastPlanPlainObject = {
+      yeast: yeastPlan.yeast.toPlainObject(),
+      quantity: yeastPlan.quantity,
+    };
+    const events = createBrewEvents().map(
+      (event: BrewEvent): BrewEventPlainObject => event.toPlainObject()
+    );
+    const result = plans[2].toPlainObject();
+    expect(result).toEqual({
+      id: "brew_plan-test-id-2",
+      batchNumber: 2,
+      name: "brew_plan-test-name-2",
+      batchSize: 2,
+      originalGravity: 2,
+      finalGravity: 2,
+      brixLevel: 2,
+      finalBrixLevel: 2,
+      abv: 2,
+      ibus: 2,
+      mashEfficienty: 2,
+      grains: grainPlanPlainObjects,
+      hops: hopPlanPlainObjects,
+      yeastPlan: yeastPlanObject,
+      events: events,
+    });
   });
 });

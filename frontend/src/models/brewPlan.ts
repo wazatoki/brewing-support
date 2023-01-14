@@ -1,7 +1,7 @@
-import { BrewEvent } from "./brewEvent";
-import { Grain } from "./ingredientGrain";
-import { Hop } from "./ingredientHop";
-import { Yeast } from "./ingredientYeast";
+import { BrewEvent, BrewEventPlainObject } from "./brewEvent";
+import { Grain, GrainPlainObject } from "./ingredientGrain";
+import { Hop, HopPlainObject } from "./ingredientHop";
+import { Yeast, YeastPlainObject } from "./ingredientYeast";
 import { createUUID } from "@/services/utils";
 
 export const typename = "brew_plan";
@@ -42,6 +42,51 @@ export class BrewPlan {
       quantity: 0,
     } as YeastPlan;
     this.events = [] as BrewEvent[];
+  }
+
+  toPlainObject(): BrewPlanPlainObject {
+    const grainObjects = this.grains.map(
+      (grain: GrainPlan): GrainPlanPlainObject => {
+        return {
+          grain: grain.grain.toPlainObject(),
+          quantity: grain.quantity,
+          ratio: grain.ratio,
+        };
+      }
+    );
+    const hopObjects = this.hops.map((hop: HopPlan): HopPlanPlainObject => {
+      return {
+        hop: hop.hop.toPlainObject(),
+        quantity: hop.quantity,
+        alphaAcid: hop.alphaAcid,
+        boilTime: hop.boilTime,
+        ibus: hop.ibus,
+      };
+    });
+    const yeastObject: YeastPlanPlainObject = {
+      yeast: this.yeastPlan.yeast.toPlainObject(),
+      quantity: this.yeastPlan.quantity,
+    };
+    const eventObject = this.events.map(
+      (e: BrewEvent): BrewEventPlainObject => e.toPlainObject()
+    );
+    return {
+      id: this.id,
+      batchNumber: this.batchNumber,
+      name: this.name,
+      batchSize: this.batchSize,
+      originalGravity: this.originalGravity,
+      finalGravity: this.finalGravity,
+      brixLevel: this.brixLevel,
+      finalBrixLevel: this.finalBrixLevel,
+      abv: this.abv,
+      ibus: this.ibus,
+      mashEfficienty: this.mashEfficienty,
+      grains: grainObjects,
+      hops: hopObjects,
+      yeastPlan: yeastObject,
+      events: eventObject,
+    };
   }
 
   constructor(
@@ -118,3 +163,40 @@ export interface YeastPlan {
   yeast: Yeast;
   quantity: number;
 }
+
+export type GrainPlanPlainObject = {
+  grain: GrainPlainObject;
+  quantity: number;
+  ratio: number;
+};
+
+export type HopPlanPlainObject = {
+  hop: HopPlainObject;
+  quantity: number;
+  alphaAcid: number;
+  boilTime: number;
+  ibus: number;
+};
+
+export type YeastPlanPlainObject = {
+  yeast: YeastPlainObject;
+  quantity: number;
+};
+
+export type BrewPlanPlainObject = {
+  id: string;
+  batchNumber: number;
+  name: string;
+  batchSize: number;
+  originalGravity: number;
+  finalGravity: number;
+  brixLevel: number;
+  finalBrixLevel: number;
+  abv: number;
+  ibus: number;
+  mashEfficienty: number;
+  grains: GrainPlanPlainObject[];
+  hops: HopPlanPlainObject[];
+  yeastPlan: YeastPlanPlainObject;
+  events: BrewEventPlainObject[];
+};
