@@ -1,4 +1,4 @@
-import { Ingredient } from "@/models/ingredient";
+import { Ingredient, IngredientPlainObject } from "@/models/ingredient";
 import { Unit } from "@/models/unit";
 import { createUUID } from "@/services/utils";
 
@@ -17,6 +17,17 @@ export class InventoryIngredient {
     return this.ingredient.stockingUnit.convertToBaseUnit(this.adjustedValue);
   }
 
+  toPlainObject(): InventoryIngredientPlainObject {
+    return {
+      id: this.id,
+      ingredient: this.ingredient.toPlainObject(),
+      resultValue: this.resultValue,
+      calculatedValue: this.calculatedValue,
+      adjustedValue: this.adjustedValue,
+      note: this.note,
+    };
+  }
+
   constructor(
     id = prefix + createUUID(),
     ingredient = new Ingredient(),
@@ -33,3 +44,12 @@ export class InventoryIngredient {
     this.note = note;
   }
 }
+
+export type InventoryIngredientPlainObject = {
+  id: string;
+  ingredient: IngredientPlainObject;
+  resultValue: number;
+  calculatedValue: number;
+  adjustedValue: number;
+  note: string;
+};

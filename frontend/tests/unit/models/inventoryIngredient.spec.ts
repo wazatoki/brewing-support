@@ -1,5 +1,5 @@
 import { InventoryIngredient } from "@/models/inventoryIngredient";
-import { createInventoryIngredient } from "./helper";
+import { createIngredients, createInventoryIngredient } from "./helper";
 
 describe("inventoryIngredient.ts", () => {
   it("InventoryIngredient shall create with no options.", () => {
@@ -29,5 +29,19 @@ describe("inventoryIngredient.ts", () => {
     expect(
       iIngredients[1].ingredient.brewingUnit.convertToBaseUnit
     ).toHaveBeenCalled();
+  });
+
+  it("toPlainObject", () => {
+    const iIngredients = createInventoryIngredient();
+    const ingredients = createIngredients();
+    const result = iIngredients[2].toPlainObject();
+    expect(result).toEqual({
+      id: "inventory_ingredient-id-2",
+      ingredient: ingredients[2].toPlainObject(),
+      resultValue: 2,
+      calculatedValue: 2,
+      adjustedValue: 2,
+      note: "inventory_ingredient-note-2",
+    });
   });
 });
