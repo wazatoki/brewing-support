@@ -17,9 +17,21 @@ export class IngredientClassification
   clear() {
     this.name = "";
   }
+
+  toPlainObject(): IngredientClassificationPlainObject {
+    return {
+      id: this.id,
+      name: this.name,
+    };
+  }
 }
 
 export interface IngredientClassificationMember {
   id: string;
   name: string;
 }
+
+export type IngredientClassificationPlainObject = {
+  id: string;
+  name: string;
+};

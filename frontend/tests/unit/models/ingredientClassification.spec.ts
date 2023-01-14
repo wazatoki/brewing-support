@@ -22,4 +22,13 @@ describe("ingredientClassification.ts", () => {
     expect(ic.id).toEqual("test-ingredient_classification-id-1");
     expect(ic.name).toEqual("");
   });
+
+  it("toPlainObject", () => {
+    const ingredientClassifications = createIngredientClassification();
+    const result = ingredientClassifications[2].toPlainObject();
+    expect(result).toEqual({
+      id: "test-ingredient_classification-id-2",
+      name: "test-ingredient_classification-name-2",
+    });
+  });
 });
