@@ -1,7 +1,7 @@
 import * as recievedIngredientYeast from "@/models/recievedIngredientYeast";
 import * as ingredientYeast from "@/models/ingredientYeast";
 import { Unit } from "@/models/unit";
-import { createRecievedIngredientYeast } from "./helper";
+import { createRecievedIngredientYeast, createYeasts } from "./helper";
 
 export const recievedIngredientYeasts: recievedIngredientYeast.RecievedIngredientYeast[] =
   [];
@@ -42,6 +42,17 @@ describe("RecievedIngredientYeast.ts", () => {
     expect(result).toEqual({
       quantity: 1,
       stockingUnit: yeasts[1].yeast.stockingUnit,
+    });
+  });
+
+  it("toPlainObject", () => {
+    const recievedIngredientYeasts = createRecievedIngredientYeast();
+    const yeasts = createYeasts();
+    const result = recievedIngredientYeasts[2].toPlainObject();
+    expect(result).toEqual({
+      id: "test-recieved_ingredient_yeast-id-2",
+      yeast: yeasts[2].toPlainObject(),
+      quantity: 2,
     });
   });
 });
