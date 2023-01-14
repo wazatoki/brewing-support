@@ -1,7 +1,7 @@
 import * as recievedIngredientGrain from "@/models/recievedIngredientGrain";
 import * as ingredientGrain from "@/models/ingredientGrain";
 import { Unit } from "@/models/unit";
-import { createRecievedIngredientGrain } from "./helper";
+import { createRecievedIngredientGrain, createGrains } from "./helper";
 
 export const recievedIngredientGrains: recievedIngredientGrain.RecievedIngredientGrain[] =
   [];
@@ -42,6 +42,17 @@ describe("RecievedIngredientGrain.ts", () => {
     expect(result).toEqual({
       quantity: 1,
       stockingUnit: grains[1].grain.stockingUnit,
+    });
+  });
+
+  it("toPlainObject", () => {
+    const recievedIngredientGrains = createRecievedIngredientGrain();
+    const grains = createGrains();
+    const result = recievedIngredientGrains[2].toPlainObject();
+    expect(result).toEqual({
+      id: "test-recieved_ingredient_grain-id-2",
+      grain: grains[2].toPlainObject(),
+      quantity: 2,
     });
   });
 });
