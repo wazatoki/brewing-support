@@ -1,4 +1,4 @@
-import { Yeast } from "@/models/ingredientYeast";
+import { Yeast, YeastPlainObject } from "@/models/ingredientYeast";
 import { Unit } from "@/models/unit";
 import { createUUID } from "@/services/utils";
 
@@ -17,6 +17,17 @@ export class InventoryIngredientYeast {
     return this.yeast.stockingUnit.convertToBaseUnit(this.adjustedValue);
   }
 
+  toPlainObject(): InventoryIngredientYeastPlainObject {
+    return {
+      id: this.id,
+      yeast: this.yeast.toPlainObject(),
+      resultValue: this.resultValue,
+      calculatedValue: this.calculatedValue,
+      adjustedValue: this.adjustedValue,
+      note: this.note,
+    };
+  }
+
   constructor(
     id = "",
     yeast = new Yeast(),
@@ -33,3 +44,12 @@ export class InventoryIngredientYeast {
     this.note = note;
   }
 }
+
+export type InventoryIngredientYeastPlainObject = {
+  id: string;
+  yeast: YeastPlainObject;
+  resultValue: number;
+  calculatedValue: number;
+  adjustedValue: number;
+  note: string;
+};

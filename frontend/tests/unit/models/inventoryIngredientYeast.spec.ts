@@ -1,5 +1,5 @@
 import { InventoryIngredientYeast } from "@/models/inventoryIngredientYeast";
-import { createInventoryIngredientYeast } from "./helper";
+import { createInventoryIngredientYeast, createYeasts } from "./helper";
 
 describe("inventoryIngredientYeast.ts", () => {
   it("InventoryIngredientYeast shall create with no options.", () => {
@@ -31,5 +31,19 @@ describe("inventoryIngredientYeast.ts", () => {
     expect(
       iIngredientYeasts[1].yeast.brewingUnit.convertToBaseUnit
     ).toHaveBeenCalled();
+  });
+
+  it("toPlainObject", () => {
+    const iIngredientYeasts = createInventoryIngredientYeast();
+    const yeasts = createYeasts();
+    const result = iIngredientYeasts[2].toPlainObject();
+    expect(result).toEqual({
+      id: "inventory_ingredient_yeast-id-2",
+      yeast: yeasts[2].toPlainObject(),
+      resultValue: 2,
+      calculatedValue: 2,
+      adjustedValue: 2,
+      note: "inventory_ingredient_yeast-note-2",
+    });
   });
 });
