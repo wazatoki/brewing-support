@@ -1,5 +1,10 @@
 import * as reportIngredient from "@/models/reportIngredient";
-import { createReportIngredient } from "./helper";
+import {
+  createReportIngredient,
+  createIngredients,
+  createSuppliers,
+  createUnits,
+} from "./helper";
 import * as processingTp from "@/models/processingType";
 
 describe("reportIngredient.ts", () => {
@@ -29,5 +34,23 @@ describe("reportIngredient.ts", () => {
     expect(reportIngredients[1].brewPlan).toBe(null);
     expect(reportIngredients[1].quantity).toEqual(100);
     expect(reportIngredients[1].unitName).toEqual("test-unit-name-1");
+  });
+
+  it("toPlainObject", () => {
+    const reportIngredients = createReportIngredient();
+    const ingredients = createIngredients();
+    const suppliers = createSuppliers();
+    const units = createUnits();
+    const result = reportIngredients[2].toPlainObject();
+    expect(result).toEqual({
+      id: "report_ingredient-id-2",
+      processingDate: new Date("2000-1-2 9:00:00"),
+      processingType: processingTp.recieving,
+      ingredient: ingredients[1].toPlainObject(),
+      supplier: suppliers[1].toPlainObject(),
+      brewPlan: null,
+      quantity: 10,
+      unitName: units[1].name,
+    });
   });
 });

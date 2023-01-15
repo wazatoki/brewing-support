@@ -1,10 +1,10 @@
 import { createUUID } from "@/services/utils";
-import { Ingredient } from "@/models/ingredient";
-import { Supplier } from "@/models/supplier";
-import { BrewPlan } from "@/models/brewPlan";
-import { Yeast } from "@/models/ingredientYeast";
-import { Grain } from "@/models/ingredientGrain";
-import { Hop } from "@/models/ingredientHop";
+import { Ingredient, IngredientPlainObject } from "@/models/ingredient";
+import { Supplier, SupplierPlainObject } from "@/models/supplier";
+import { BrewPlan, BrewPlanPlainObject } from "@/models/brewPlan";
+import { Yeast, YeastPlainObject } from "@/models/ingredientYeast";
+import { Grain, GrainPlainObject } from "@/models/ingredientGrain";
+import { Hop, HopPlainObject } from "@/models/ingredientHop";
 import * as processingTp from "@/models/processingType";
 
 export const typename = "report_ingredient";
@@ -39,4 +39,32 @@ export class ReportIngredient {
     this.quantity = quantity;
     this.unitName = unitName;
   }
+
+  toPlainObject(): ReportIngredientplainObject {
+    return {
+      id: this.id,
+      processingDate: this.processingDate,
+      processingType: this.processingType,
+      ingredient: this.ingredient.toPlainObject(),
+      supplier: this.supplier ? this.supplier.toPlainObject() : null,
+      brewPlan: this.brewPlan ? this.brewPlan.toPlainObject() : null,
+      quantity: this.quantity,
+      unitName: this.unitName,
+    };
+  }
 }
+
+export type ReportIngredientplainObject = {
+  id: string;
+  processingDate: Date;
+  processingType: string;
+  ingredient:
+    | IngredientPlainObject
+    | GrainPlainObject
+    | HopPlainObject
+    | YeastPlainObject;
+  supplier: SupplierPlainObject | null;
+  brewPlan: BrewPlanPlainObject | null;
+  quantity: number;
+  unitName: string;
+};
