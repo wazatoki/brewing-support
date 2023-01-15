@@ -1,8 +1,4 @@
-import {
-  BrewEvent,
-  BrewEventMember,
-  BrewEventPlainObject,
-} from "@/models/brewEvent";
+import { BrewEvent, BrewEventPlainObject } from "@/models/brewEvent";
 import { createUUID } from "@/services/utils";
 import * as pouchdb from "@/repositories/pouchdb";
 import { ConsumedIngredient } from "@/models/consumedIngredient";
@@ -292,7 +288,7 @@ export async function fetchAll(): Promise<{
 
 export async function remove(brewEvent: BrewEvent) {
   try {
-    await pouchdb.remove<BrewEventMember>(brewEvent.id);
+    await pouchdb.remove<BrewEventPlainObject>(brewEvent.id);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
@@ -306,19 +302,20 @@ export async function save(brewEvent: BrewEvent): Promise<{ id: string }> {
     brewEvent.id = prefix + createUUID();
   }
 
+  const brewEventPlainObject = brewEvent.toPlainObject();
   try {
-    await pouchdb.save<BrewEventMember>({
+    await pouchdb.save<BrewEventPlainObject>({
       type: typename,
-      id: brewEvent.id,
-      name: brewEvent.name,
-      desc: brewEvent.desc,
-      from: brewEvent.from,
-      to: brewEvent.to,
-      ingredients: brewEvent.ingredients,
-      grains: brewEvent.grains,
-      hops: brewEvent.hops,
-      yeasts: brewEvent.yeasts,
-      brewPlanID: brewEvent.brewPlanID,
+      id: brewEventPlainObject.id,
+      name: brewEventPlainObject.name,
+      desc: brewEventPlainObject.desc,
+      from: brewEventPlainObject.from,
+      to: brewEventPlainObject.to,
+      ingredients: brewEventPlainObject.ingredients,
+      grains: brewEventPlainObject.grains,
+      hops: brewEventPlainObject.hops,
+      yeasts: brewEventPlainObject.yeasts,
+      brewPlanID: brewEventPlainObject.brewPlanID,
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
