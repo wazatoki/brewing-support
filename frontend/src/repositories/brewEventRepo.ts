@@ -1,4 +1,9 @@
-import { BrewEvent, BrewEventPlainObject } from "@/models/brewEvent";
+import {
+  BrewEvent,
+  BrewEventPlainObject,
+  typename,
+  prefix,
+} from "@/models/brewEvent";
 import { createUUID } from "@/services/utils";
 import * as pouchdb from "@/repositories/pouchdb";
 import { ConsumedIngredient } from "@/models/consumedIngredient";
@@ -11,9 +16,6 @@ import { Unit } from "@/models/unit";
 import { ConsumedIngredientGrain } from "@/models/consumedIngredientGrain";
 import { ConsumedIngredientHop } from "@/models/consumedIngredientHop";
 import { ConsumedIngredientYeast } from "@/models/consumedIngredientYeast";
-
-const typename = "brew_event";
-const prefix = typename + "-";
 
 export async function fetchAll(): Promise<{
   result: BrewEvent[];
