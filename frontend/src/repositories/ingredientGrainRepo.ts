@@ -1,11 +1,12 @@
-import { Grain, GrainMember } from "@/models/ingredientGrain";
+import {
+  Grain,
+  GrainPlainObject,
+  typename,
+  prefix,
+} from "@/models/ingredientGrain";
 import { createUUID } from "@/services/utils";
-import { getDBInstance } from "./pouchdb";
-import { instanceToPlain } from "class-transformer";
 import { Unit } from "@/models/unit";
-
-const typename = "grain";
-const prefix = typename + "-";
+import * as pouchdb from "@/repositories/pouchdb";
 
 export async function fetchAll(): Promise<{
   result: Grain[];
@@ -13,55 +14,58 @@ export async function fetchAll(): Promise<{
   const result: Grain[] = [];
 
   try {
-    const fetchResult = await getDBInstance().allDocs<GrainMember>({
-      include_docs: true,
-      startkey: prefix,
-      endkey: prefix + "\ufff0",
+    const fetchResult = await pouchdb.fetchAllDocuments<GrainPlainObject>(
+      prefix
+    );
+
+    fetchResult.forEach((grainPO) => {
+      const g = new Grain(
+        grainPO.id,
+        grainPO.name,
+        grainPO.potential,
+        new Unit(
+          grainPO.brewingUnit.id,
+          grainPO.brewingUnit.name,
+          grainPO.brewingUnit.conversionFactor,
+          grainPO.brewingUnit.baseUnit
+            ? new Unit(
+                grainPO.brewingUnit.baseUnit.id,
+                grainPO.brewingUnit.baseUnit.name,
+                grainPO.brewingUnit.baseUnit.conversionFactor,
+                null
+              )
+            : null
+        ),
+        new Unit(
+          grainPO.recievingUnit.id,
+          grainPO.recievingUnit.name,
+          grainPO.recievingUnit.conversionFactor,
+          grainPO.recievingUnit.baseUnit
+            ? new Unit(
+                grainPO.recievingUnit.baseUnit.id,
+                grainPO.recievingUnit.baseUnit.name,
+                grainPO.recievingUnit.baseUnit.conversionFactor,
+                null
+              )
+            : null
+        ),
+        new Unit(
+          grainPO.stockingUnit.id,
+          grainPO.stockingUnit.name,
+          grainPO.stockingUnit.conversionFactor,
+          grainPO.stockingUnit.baseUnit
+            ? new Unit(
+                grainPO.stockingUnit.baseUnit.id,
+                grainPO.stockingUnit.baseUnit.name,
+                grainPO.stockingUnit.baseUnit.conversionFactor,
+                null
+              )
+            : null
+        )
+      );
+      result.push(g);
     });
 
-    fetchResult.rows.forEach(
-      (item: {
-        doc?:
-          | PouchDB.Core.ExistingDocument<
-              GrainMember & PouchDB.Core.AllDocsMeta
-            >
-          | undefined;
-        id: string;
-        key: string;
-        value: {
-          rev: string;
-          deleted?: boolean | undefined;
-        };
-      }) => {
-        if (item.doc) {
-          const u = new Grain(
-            item.doc.id,
-            item.doc.name,
-            item.doc.potential,
-            new Unit(
-              item.doc.brewingUnit.id,
-              item.doc.brewingUnit.name,
-              item.doc.brewingUnit.conversionFactor,
-              item.doc.brewingUnit.baseUnit
-            ),
-            new Unit(
-              item.doc.recievingUnit.id,
-              item.doc.recievingUnit.name,
-              item.doc.recievingUnit.conversionFactor,
-              item.doc.recievingUnit.baseUnit
-            ),
-            new Unit(
-              item.doc.stockingUnit.id,
-              item.doc.stockingUnit.name,
-              item.doc.stockingUnit.conversionFactor,
-              item.doc.stockingUnit.baseUnit
-            )
-          );
-          u.brewingUnit = item.doc.brewingUnit;
-          result.push(u);
-        }
-      }
-    );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.log(e);
@@ -73,15 +77,8 @@ export async function fetchAll(): Promise<{
 
 export async function remove(grain: Grain) {
   try {
-    const doc = await getDBInstance().get<GrainMember>(grain.id);
+    await pouchdb.remove<GrainPlainObject>(grain.id);
 
-    try {
-      await getDBInstance().remove(doc);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      console.log(e);
-      throw new Error(e.name);
-    }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.log(e);
@@ -90,49 +87,27 @@ export async function remove(grain: Grain) {
 }
 
 export async function save(grain: Grain): Promise<{ id: string }> {
-  const id = grain.id || prefix + createUUID();
-
-  try {
-    const doc = await getDBInstance().get<GrainMember>(id);
-    doc.name = grain.name;
-    doc.potential = grain.potential;
-    doc.brewingUnit = grain.brewingUnit;
-    doc.recievingUnit = grain.recievingUnit;
-    doc.stockingUnit = grain.stockingUnit;
-    try {
-      await getDBInstance().put(instanceToPlain(doc));
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      console.log(e);
-      throw new Error(e.name);
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (e: any) {
-    // ID検索の結果not_foundが返る => 新規保存
-    if (e.name === "not_found") {
-      const doc = {
-        _id: id,
-        type: typename,
-        id: id,
-        name: grain.name,
-        potential: grain.potential,
-        brewingUnit: grain.brewingUnit,
-        recievingUnit: grain.recievingUnit,
-        stockingUnit: grain.stockingUnit,
-      };
-      try {
-        await getDBInstance().put(instanceToPlain(doc));
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (e: any) {
-        console.log(e);
-        throw new Error(e.name);
-      }
-      // ID検索の結果 DBでエラー発生
-    } else {
-      console.log(e);
-      throw new Error(e.name);
-    }
+  if (!grain.id) {
+    grain.id = prefix + createUUID();
   }
 
-  return { id: id };
+  const grainPlainObject = grain.toPlainObject();
+
+  try {
+    await pouchdb.save<GrainPlainObject>({
+      type: typename,
+      id: grainPlainObject.id,
+      name: grainPlainObject.name,
+      potential: grainPlainObject.potential,
+      brewingUnit: grainPlainObject.brewingUnit,
+      recievingUnit: grainPlainObject.recievingUnit,
+      stockingUnit: grainPlainObject.stockingUnit,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (e: any) {
+    throw new Error(e.name);
+  }
+
+  return { id: grain.id };
 }
