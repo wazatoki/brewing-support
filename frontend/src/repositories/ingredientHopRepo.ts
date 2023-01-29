@@ -1,11 +1,9 @@
-import { Hop, HopMember } from "@/models/ingredientHop";
+import { Hop, HopPlainObject, typename, prefix } from "@/models/ingredientHop";
 import { createUUID } from "@/services/utils";
 import { getDBInstance } from "./pouchdb";
 import { instanceToPlain } from "class-transformer";
 import { Unit } from "@/models/unit";
-
-const typename = "hop";
-const prefix = typename + "-";
+import * as pouchdb from "@/repositories/pouchdb";
 
 export async function fetchAll(): Promise<{
   result: Hop[];
@@ -13,53 +11,56 @@ export async function fetchAll(): Promise<{
   const result: Hop[] = [];
 
   try {
-    const fetchResult = await getDBInstance().allDocs<HopMember>({
-      include_docs: true,
-      startkey: prefix,
-      endkey: prefix + "\ufff0",
+    const fetchResult = await pouchdb.fetchAllDocuments<HopPlainObject>(prefix);
+
+    fetchResult.forEach((hopPO) => {
+      const h = new Hop(
+        hopPO.id,
+        hopPO.name,
+        hopPO.alphaAcid,
+        new Unit(
+          hopPO.brewingUnit.id,
+          hopPO.brewingUnit.name,
+          hopPO.brewingUnit.conversionFactor,
+          hopPO.brewingUnit.baseUnit
+            ? new Unit(
+                hopPO.brewingUnit.baseUnit.id,
+                hopPO.brewingUnit.baseUnit.name,
+                hopPO.brewingUnit.baseUnit.conversionFactor,
+                null
+              )
+            : null
+        ),
+        new Unit(
+          hopPO.recievingUnit.id,
+          hopPO.recievingUnit.name,
+          hopPO.recievingUnit.conversionFactor,
+          hopPO.recievingUnit.baseUnit
+            ? new Unit(
+                hopPO.recievingUnit.baseUnit.id,
+                hopPO.recievingUnit.baseUnit.name,
+                hopPO.recievingUnit.baseUnit.conversionFactor,
+                null
+              )
+            : null
+        ),
+        new Unit(
+          hopPO.stockingUnit.id,
+          hopPO.stockingUnit.name,
+          hopPO.stockingUnit.conversionFactor,
+          hopPO.stockingUnit.baseUnit
+            ? new Unit(
+                hopPO.stockingUnit.baseUnit.id,
+                hopPO.stockingUnit.baseUnit.name,
+                hopPO.stockingUnit.baseUnit.conversionFactor,
+                null
+              )
+            : null
+        )
+      );
+      result.push(h);
     });
 
-    fetchResult.rows.forEach(
-      (item: {
-        doc?:
-          | PouchDB.Core.ExistingDocument<HopMember & PouchDB.Core.AllDocsMeta>
-          | undefined;
-        id: string;
-        key: string;
-        value: {
-          rev: string;
-          deleted?: boolean | undefined;
-        };
-      }) => {
-        if (item.doc) {
-          const u = new Hop(
-            item.doc.id,
-            item.doc.name,
-            item.doc.alphaAcid,
-            new Unit(
-              item.doc.brewingUnit.id,
-              item.doc.brewingUnit.name,
-              item.doc.brewingUnit.conversionFactor,
-              item.doc.brewingUnit.baseUnit
-            ),
-            new Unit(
-              item.doc.recievingUnit.id,
-              item.doc.recievingUnit.name,
-              item.doc.recievingUnit.conversionFactor,
-              item.doc.recievingUnit.baseUnit
-            ),
-            new Unit(
-              item.doc.stockingUnit.id,
-              item.doc.stockingUnit.name,
-              item.doc.stockingUnit.conversionFactor,
-              item.doc.stockingUnit.baseUnit
-            )
-          );
-          u.brewingUnit = item.doc.brewingUnit;
-          result.push(u);
-        }
-      }
-    );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.log(e);
@@ -71,15 +72,8 @@ export async function fetchAll(): Promise<{
 
 export async function remove(hop: Hop) {
   try {
-    const doc = await getDBInstance().get<HopMember>(hop.id);
+    await pouchdb.remove<HopPlainObject>(hop.id);
 
-    try {
-      await getDBInstance().remove(doc);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      console.log(e);
-      throw new Error(e.name);
-    }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.log(e);
@@ -88,49 +82,27 @@ export async function remove(hop: Hop) {
 }
 
 export async function save(hop: Hop): Promise<{ id: string }> {
-  const id = hop.id || prefix + createUUID();
-
-  try {
-    const doc = await getDBInstance().get<HopMember>(id);
-    doc.name = hop.name;
-    doc.alphaAcid = hop.alphaAcid;
-    doc.brewingUnit = hop.brewingUnit;
-    doc.recievingUnit = hop.recievingUnit;
-    doc.stockingUnit = hop.stockingUnit;
-    try {
-      await getDBInstance().put(instanceToPlain(doc));
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      console.log(e);
-      throw new Error(e.name);
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (e: any) {
-    // ID検索の結果not_foundが返る => 新規保存
-    if (e.name === "not_found") {
-      const doc = {
-        _id: id,
-        type: typename,
-        id: id,
-        name: hop.name,
-        alphaAcid: hop.alphaAcid,
-        brewingUnit: hop.brewingUnit,
-        recievingUnit: hop.recievingUnit,
-        stockingUnit: hop.stockingUnit,
-      };
-      try {
-        await getDBInstance().put(instanceToPlain(doc));
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (e: any) {
-        console.log(e);
-        throw new Error(e.name);
-      }
-      // ID検索の結果 DBでエラー発生
-    } else {
-      console.log(e);
-      throw new Error(e.name);
-    }
+  if (!hop.id) {
+    hop.id = prefix + createUUID();
   }
 
-  return { id: id };
+  const hopPlainObject = hop.toPlainObject();
+
+  try {
+    await pouchdb.save<HopPlainObject>({
+      type: typename,
+      id: hopPlainObject.id,
+      name: hopPlainObject.name,
+      alphaAcid: hopPlainObject.alphaAcid,
+      brewingUnit: hopPlainObject.brewingUnit,
+      recievingUnit: hopPlainObject.recievingUnit,
+      stockingUnit: hopPlainObject.stockingUnit,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (e: any) {
+    throw new Error(e.name);
+  }
+
+  return { id: hop.id };
 }
