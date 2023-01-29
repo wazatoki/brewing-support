@@ -1,10 +1,14 @@
-import { Yeast, YeastMember } from "@/models/ingredientYeast";
+import {
+  Yeast,
+  YeastPlainObject,
+  typename,
+  prefix,
+} from "@/models/ingredientYeast";
 import { createUUID } from "@/services/utils";
 import { getDBInstance } from "./pouchdb";
 import { instanceToPlain } from "class-transformer";
-
-const typename = "yeast";
-const prefix = typename + "-";
+import { Unit } from "@/models/unit";
+import * as pouchdb from "@/repositories/pouchdb";
 
 export async function fetchAll(): Promise<{
   result: Yeast[];
@@ -12,40 +16,58 @@ export async function fetchAll(): Promise<{
   const result: Yeast[] = [];
 
   try {
-    const fetchResult = await getDBInstance().allDocs<YeastMember>({
-      include_docs: true,
-      startkey: prefix,
-      endkey: prefix + "\ufff0",
+    const fetchResult = await pouchdb.fetchAllDocuments<YeastPlainObject>(
+      prefix
+    );
+
+    fetchResult.forEach((yeastPO) => {
+      const g = new Yeast(
+        yeastPO.id,
+        yeastPO.name,
+        yeastPO.attenuation,
+        new Unit(
+          yeastPO.brewingUnit.id,
+          yeastPO.brewingUnit.name,
+          yeastPO.brewingUnit.conversionFactor,
+          yeastPO.brewingUnit.baseUnit
+            ? new Unit(
+                yeastPO.brewingUnit.baseUnit.id,
+                yeastPO.brewingUnit.baseUnit.name,
+                yeastPO.brewingUnit.baseUnit.conversionFactor,
+                null
+              )
+            : null
+        ),
+        new Unit(
+          yeastPO.recievingUnit.id,
+          yeastPO.recievingUnit.name,
+          yeastPO.recievingUnit.conversionFactor,
+          yeastPO.recievingUnit.baseUnit
+            ? new Unit(
+                yeastPO.recievingUnit.baseUnit.id,
+                yeastPO.recievingUnit.baseUnit.name,
+                yeastPO.recievingUnit.baseUnit.conversionFactor,
+                null
+              )
+            : null
+        ),
+        new Unit(
+          yeastPO.stockingUnit.id,
+          yeastPO.stockingUnit.name,
+          yeastPO.stockingUnit.conversionFactor,
+          yeastPO.stockingUnit.baseUnit
+            ? new Unit(
+                yeastPO.stockingUnit.baseUnit.id,
+                yeastPO.stockingUnit.baseUnit.name,
+                yeastPO.stockingUnit.baseUnit.conversionFactor,
+                null
+              )
+            : null
+        )
+      );
+      result.push(g);
     });
 
-    fetchResult.rows.forEach(
-      (item: {
-        doc?:
-          | PouchDB.Core.ExistingDocument<
-              YeastMember & PouchDB.Core.AllDocsMeta
-            >
-          | undefined;
-        id: string;
-        key: string;
-        value: {
-          rev: string;
-          deleted?: boolean | undefined;
-        };
-      }) => {
-        if (item.doc) {
-          const u = new Yeast(
-            item.doc.id,
-            item.doc.name,
-            item.doc.attenuation,
-            item.doc.brewingUnit,
-            item.doc.recievingUnit,
-            item.doc.stockingUnit
-          );
-          u.brewingUnit = item.doc.brewingUnit;
-          result.push(u);
-        }
-      }
-    );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.log(e);
@@ -57,15 +79,8 @@ export async function fetchAll(): Promise<{
 
 export async function remove(yeast: Yeast) {
   try {
-    const doc = await getDBInstance().get<YeastMember>(yeast.id);
+    await pouchdb.remove<YeastPlainObject>(yeast.id);
 
-    try {
-      await getDBInstance().remove(doc);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      console.log(e);
-      throw new Error(e.name);
-    }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.log(e);
@@ -74,49 +89,27 @@ export async function remove(yeast: Yeast) {
 }
 
 export async function save(yeast: Yeast): Promise<{ id: string }> {
-  const id = yeast.id || prefix + createUUID();
-
-  try {
-    const doc = await getDBInstance().get<YeastMember>(id);
-    doc.name = yeast.name;
-    doc.attenuation = yeast.attenuation;
-    doc.brewingUnit = yeast.brewingUnit;
-    doc.recievingUnit = yeast.recievingUnit;
-    doc.stockingUnit = yeast.stockingUnit;
-    try {
-      await getDBInstance().put(instanceToPlain(doc));
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      console.log(e);
-      throw new Error(e.name);
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (e: any) {
-    // ID検索の結果not_foundが返る => 新規保存
-    if (e.name === "not_found") {
-      const doc = {
-        _id: id,
-        type: typename,
-        id: id,
-        name: yeast.name,
-        attenuation: yeast.attenuation,
-        brewingUnit: yeast.brewingUnit,
-        recievingUnit: yeast.recievingUnit,
-        stockingUnit: yeast.stockingUnit,
-      };
-      try {
-        await getDBInstance().put(instanceToPlain(doc));
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (e: any) {
-        console.log(e);
-        throw new Error(e.name);
-      }
-      // ID検索の結果 DBでエラー発生
-    } else {
-      console.log(e);
-      throw new Error(e.name);
-    }
+  if (!yeast.id) {
+    yeast.id = prefix + createUUID();
   }
 
-  return { id: id };
+  const yeastPlainObject = yeast.toPlainObject();
+
+  try {
+    await pouchdb.save<YeastPlainObject>({
+      type: typename,
+      id: yeastPlainObject.id,
+      name: yeastPlainObject.name,
+      attenuation: yeastPlainObject.attenuation,
+      brewingUnit: yeastPlainObject.brewingUnit,
+      recievingUnit: yeastPlainObject.recievingUnit,
+      stockingUnit: yeastPlainObject.stockingUnit,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (e: any) {
+    throw new Error(e.name);
+  }
+
+  return { id: yeast.id };
 }
