@@ -5,8 +5,6 @@ import {
   prefix,
 } from "@/models/inventory";
 import { createUUID } from "@/services/utils";
-import { getDBInstance } from "./pouchdb";
-import { instanceToPlain } from "class-transformer";
 import {
   InventoryIngredient,
   InventoryIngredientPlainObject,
@@ -30,8 +28,6 @@ import { Grain } from "@/models/ingredientGrain";
 import { Hop } from "@/models/ingredientHop";
 import { Yeast } from "@/models/ingredientYeast";
 import * as pouchdb from "@/repositories/pouchdb";
-import { ignorableWatch } from "@vueuse/core";
-import { calendarEmits } from "element-plus";
 
 export async function fetchAll(): Promise<{
   result: Inventory[];

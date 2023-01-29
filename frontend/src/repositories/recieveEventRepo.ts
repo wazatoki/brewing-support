@@ -1,22 +1,35 @@
-import { RecieveEvent, RecieveEventMember } from "@/models/recieveEvent";
+import {
+  RecieveEvent,
+  RecieveEventPlainObject,
+  typename,
+  prefix,
+} from "@/models/recieveEvent";
 
 import { createUUID } from "@/services/utils";
-import { getDBInstance } from "./pouchdb";
-import { instanceToPlain } from "class-transformer";
-import { RecievedIngredient } from "@/models/recievedIngredient";
+import {
+  RecievedIngredient,
+  RecievedIngredientPlainObject,
+} from "@/models/recievedIngredient";
 import { Ingredient } from "@/models/ingredient";
 import { IngredientClassification } from "@/models/ingredientClassification";
 import { Unit } from "@/models/unit";
-import { RecievedIngredientGrain } from "@/models/recievedIngredientGrain";
-import { RecievedIngredientHop } from "@/models/recievedIngredientHop";
+import {
+  RecievedIngredientGrain,
+  RecievedIngredientGrainPlainObject,
+} from "@/models/recievedIngredientGrain";
+import {
+  RecievedIngredientHop,
+  RecievedIngredientHopPlainObject,
+} from "@/models/recievedIngredientHop";
 import { Grain } from "@/models/ingredientGrain";
 import { Hop } from "@/models/ingredientHop";
-import { RecievedIngredientYeast } from "@/models/recievedIngredientYeast";
+import {
+  RecievedIngredientYeast,
+  RecievedIngredientYeastPlainObject,
+} from "@/models/recievedIngredientYeast";
 import { Yeast } from "@/models/ingredientYeast";
 import { Supplier } from "@/models/supplier";
-
-const typename = "recieve_event";
-const prefix = typename + "-";
+import * as pouchdb from "@/repositories/pouchdb";
 
 export async function fetchAll(): Promise<{
   result: RecieveEvent[];
@@ -24,195 +37,242 @@ export async function fetchAll(): Promise<{
   const result: RecieveEvent[] = [];
 
   try {
-    const fetchResult = await getDBInstance().allDocs<RecieveEventMember>({
-      include_docs: true,
-      startkey: prefix,
-      endkey: prefix + "\ufff0",
+    const fetchResult =
+      await pouchdb.fetchAllDocuments<RecieveEventPlainObject>(prefix);
+
+    fetchResult.forEach((recieveEventPO) => {
+      const ingredients = [] as RecievedIngredient[];
+      recieveEventPO.ingredients.forEach(
+        (ingredientPO: RecievedIngredientPlainObject) => {
+          const ingredient = new RecievedIngredient(
+            ingredientPO.id,
+            new Ingredient(
+              ingredientPO.ingredient.id,
+              ingredientPO.ingredient.name,
+              new IngredientClassification(
+                ingredientPO.ingredient.ingredientClassification.id,
+                ingredientPO.ingredient.ingredientClassification.name
+              ),
+              new Unit(
+                ingredientPO.ingredient.brewingUnit.id,
+                ingredientPO.ingredient.brewingUnit.name,
+                ingredientPO.ingredient.brewingUnit.conversionFactor,
+                ingredientPO.ingredient.brewingUnit.baseUnit
+                  ? new Unit(
+                      ingredientPO.ingredient.brewingUnit.baseUnit.id,
+                      ingredientPO.ingredient.brewingUnit.baseUnit.name,
+                      ingredientPO.ingredient.brewingUnit.baseUnit.conversionFactor,
+                      null
+                    )
+                  : null
+              ),
+              new Unit(
+                ingredientPO.ingredient.recievingUnit.id,
+                ingredientPO.ingredient.recievingUnit.name,
+                ingredientPO.ingredient.recievingUnit.conversionFactor,
+                ingredientPO.ingredient.recievingUnit.baseUnit
+                  ? new Unit(
+                      ingredientPO.ingredient.recievingUnit.baseUnit.id,
+                      ingredientPO.ingredient.recievingUnit.baseUnit.name,
+                      ingredientPO.ingredient.recievingUnit.baseUnit.conversionFactor,
+                      null
+                    )
+                  : null
+              ),
+              new Unit(
+                ingredientPO.ingredient.stockingUnit.id,
+                ingredientPO.ingredient.stockingUnit.name,
+                ingredientPO.ingredient.stockingUnit.conversionFactor,
+                ingredientPO.ingredient.stockingUnit.baseUnit
+                  ? new Unit(
+                      ingredientPO.ingredient.stockingUnit.baseUnit.id,
+                      ingredientPO.ingredient.stockingUnit.baseUnit.name,
+                      ingredientPO.ingredient.stockingUnit.baseUnit.conversionFactor,
+                      null
+                    )
+                  : null
+              )
+            ),
+            ingredientPO.quantity
+          );
+          ingredients.push(ingredient);
+        }
+      );
+      const grains = [] as RecievedIngredientGrain[];
+      recieveEventPO.grains.forEach(
+        (grainPO: RecievedIngredientGrainPlainObject) => {
+          const grain = new RecievedIngredientGrain(
+            grainPO.id,
+            new Grain(
+              grainPO.grain.id,
+              grainPO.grain.name,
+              grainPO.grain.potential,
+              new Unit(
+                grainPO.grain.brewingUnit.id,
+                grainPO.grain.brewingUnit.name,
+                grainPO.grain.brewingUnit.conversionFactor,
+                grainPO.grain.brewingUnit.baseUnit
+                  ? new Unit(
+                      grainPO.grain.brewingUnit.baseUnit.id,
+                      grainPO.grain.brewingUnit.baseUnit.name,
+                      grainPO.grain.brewingUnit.baseUnit.conversionFactor,
+                      null
+                    )
+                  : null
+              ),
+              new Unit(
+                grainPO.grain.recievingUnit.id,
+                grainPO.grain.recievingUnit.name,
+                grainPO.grain.recievingUnit.conversionFactor,
+                grainPO.grain.recievingUnit.baseUnit
+                  ? new Unit(
+                      grainPO.grain.recievingUnit.baseUnit.id,
+                      grainPO.grain.recievingUnit.baseUnit.name,
+                      grainPO.grain.recievingUnit.baseUnit.conversionFactor,
+                      null
+                    )
+                  : null
+              ),
+              new Unit(
+                grainPO.grain.stockingUnit.id,
+                grainPO.grain.stockingUnit.name,
+                grainPO.grain.stockingUnit.conversionFactor,
+                grainPO.grain.stockingUnit.baseUnit
+                  ? new Unit(
+                      grainPO.grain.stockingUnit.baseUnit.id,
+                      grainPO.grain.stockingUnit.baseUnit.name,
+                      grainPO.grain.stockingUnit.baseUnit.conversionFactor,
+                      null
+                    )
+                  : null
+              )
+            ),
+            grainPO.quantity
+          );
+          grains.push(grain);
+        }
+      );
+      const hops = [] as RecievedIngredientHop[];
+      recieveEventPO.hops.forEach((hopPO: RecievedIngredientHopPlainObject) => {
+        const hop = new RecievedIngredientHop(
+          hopPO.id,
+          new Hop(
+            hopPO.hop.id,
+            hopPO.hop.name,
+            hopPO.hop.alphaAcid,
+            new Unit(
+              hopPO.hop.brewingUnit.id,
+              hopPO.hop.brewingUnit.name,
+              hopPO.hop.brewingUnit.conversionFactor,
+              hopPO.hop.brewingUnit.baseUnit
+                ? new Unit(
+                    hopPO.hop.brewingUnit.baseUnit.id,
+                    hopPO.hop.brewingUnit.baseUnit.name,
+                    hopPO.hop.brewingUnit.baseUnit.conversionFactor,
+                    null
+                  )
+                : null
+            ),
+            new Unit(
+              hopPO.hop.recievingUnit.id,
+              hopPO.hop.recievingUnit.name,
+              hopPO.hop.recievingUnit.conversionFactor,
+              hopPO.hop.recievingUnit.baseUnit
+                ? new Unit(
+                    hopPO.hop.recievingUnit.baseUnit.id,
+                    hopPO.hop.recievingUnit.baseUnit.name,
+                    hopPO.hop.recievingUnit.baseUnit.conversionFactor,
+                    null
+                  )
+                : null
+            ),
+            new Unit(
+              hopPO.hop.stockingUnit.id,
+              hopPO.hop.stockingUnit.name,
+              hopPO.hop.stockingUnit.conversionFactor,
+              hopPO.hop.stockingUnit.baseUnit
+                ? new Unit(
+                    hopPO.hop.stockingUnit.baseUnit.id,
+                    hopPO.hop.stockingUnit.baseUnit.name,
+                    hopPO.hop.stockingUnit.baseUnit.conversionFactor,
+                    null
+                  )
+                : null
+            )
+          ),
+          hopPO.quantity
+        );
+        hops.push(hop);
+      });
+      const yeasts = [] as RecievedIngredientYeast[];
+      recieveEventPO.yeasts.forEach(
+        (yeastPO: RecievedIngredientYeastPlainObject) => {
+          const yeast = new RecievedIngredientYeast(
+            yeastPO.id,
+            new Yeast(
+              yeastPO.yeast.id,
+              yeastPO.yeast.name,
+              yeastPO.yeast.attenuation,
+              new Unit(
+                yeastPO.yeast.brewingUnit.id,
+                yeastPO.yeast.brewingUnit.name,
+                yeastPO.yeast.brewingUnit.conversionFactor,
+                yeastPO.yeast.brewingUnit.baseUnit
+                  ? new Unit(
+                      yeastPO.yeast.brewingUnit.baseUnit.id,
+                      yeastPO.yeast.brewingUnit.baseUnit.name,
+                      yeastPO.yeast.brewingUnit.baseUnit.conversionFactor,
+                      null
+                    )
+                  : null
+              ),
+              new Unit(
+                yeastPO.yeast.recievingUnit.id,
+                yeastPO.yeast.recievingUnit.name,
+                yeastPO.yeast.recievingUnit.conversionFactor,
+                yeastPO.yeast.recievingUnit.baseUnit
+                  ? new Unit(
+                      yeastPO.yeast.recievingUnit.baseUnit.id,
+                      yeastPO.yeast.recievingUnit.baseUnit.name,
+                      yeastPO.yeast.recievingUnit.baseUnit.conversionFactor,
+                      null
+                    )
+                  : null
+              ),
+              new Unit(
+                yeastPO.yeast.stockingUnit.id,
+                yeastPO.yeast.stockingUnit.name,
+                yeastPO.yeast.stockingUnit.conversionFactor,
+                yeastPO.yeast.stockingUnit.baseUnit
+                  ? new Unit(
+                      yeastPO.yeast.stockingUnit.baseUnit.id,
+                      yeastPO.yeast.stockingUnit.baseUnit.name,
+                      yeastPO.yeast.stockingUnit.baseUnit.conversionFactor,
+                      null
+                    )
+                  : null
+              )
+            ),
+            yeastPO.quantity
+          );
+          yeasts.push(yeast);
+        }
+      );
+      const recieveEvent = new RecieveEvent(
+        recieveEventPO.id,
+        recieveEventPO.noteNO,
+        recieveEventPO.noteDate,
+        new Supplier(recieveEventPO.supplier.id, recieveEventPO.supplier.name),
+        recieveEventPO.recieveDate,
+        ingredients,
+        grains,
+        hops,
+        yeasts,
+        recieveEventPO.footNote
+      );
+      result.push(recieveEvent);
     });
 
-    fetchResult.rows.forEach(
-      (item: {
-        doc?:
-          | PouchDB.Core.ExistingDocument<
-              RecieveEventMember & PouchDB.Core.AllDocsMeta
-            >
-          | undefined;
-        id: string;
-        key: string;
-        value: {
-          rev: string;
-          deleted?: boolean | undefined;
-        };
-      }) => {
-        if (item.doc) {
-          const supplier: Supplier = new Supplier();
-          if (item.doc.supplier) {
-            supplier.id = item.doc.supplier.id;
-            supplier.name = item.doc.supplier.name;
-          }
-          const ingredients: RecievedIngredient[] = [];
-          if (item.doc.ingredients) {
-            item.doc.ingredients.forEach((item) => {
-              if (item.ingredient) {
-                ingredients.push(
-                  new RecievedIngredient(
-                    item.id,
-                    new Ingredient(
-                      item.ingredient.id,
-                      item.ingredient.name,
-                      new IngredientClassification(
-                        item.ingredient.ingredientClassification.id,
-                        item.ingredient.ingredientClassification.name
-                      ),
-                      new Unit(
-                        item.ingredient.brewingUnit.id,
-                        item.ingredient.brewingUnit.name,
-                        item.ingredient.brewingUnit.conversionFactor,
-                        item.ingredient.brewingUnit.baseUnit
-                      ),
-                      new Unit(
-                        item.ingredient.recievingUnit.id,
-                        item.ingredient.recievingUnit.name,
-                        item.ingredient.recievingUnit.conversionFactor,
-                        item.ingredient.recievingUnit.baseUnit
-                      ),
-                      new Unit(
-                        item.ingredient.stockingUnit.id,
-                        item.ingredient.stockingUnit.name,
-                        item.ingredient.stockingUnit.conversionFactor,
-                        item.ingredient.stockingUnit.baseUnit
-                      )
-                    ),
-                    item.quantity
-                  )
-                );
-              }
-            });
-          }
-          const grains: RecievedIngredientGrain[] = [];
-          if (item.doc.grains) {
-            item.doc.grains.forEach((item) => {
-              if (item.grain) {
-                grains.push(
-                  new RecievedIngredientGrain(
-                    item.id,
-                    new Grain(
-                      item.grain.id,
-                      item.grain.name,
-                      item.grain.potential,
-                      new Unit(
-                        item.grain.brewingUnit.id,
-                        item.grain.brewingUnit.name,
-                        item.grain.brewingUnit.conversionFactor,
-                        item.grain.brewingUnit.baseUnit
-                      ),
-                      new Unit(
-                        item.grain.recievingUnit.id,
-                        item.grain.recievingUnit.name,
-                        item.grain.recievingUnit.conversionFactor,
-                        item.grain.recievingUnit.baseUnit
-                      ),
-                      new Unit(
-                        item.grain.stockingUnit.id,
-                        item.grain.stockingUnit.name,
-                        item.grain.stockingUnit.conversionFactor,
-                        item.grain.stockingUnit.baseUnit
-                      )
-                    ),
-                    item.quantity
-                  )
-                );
-              }
-            });
-          }
-          const hops: RecievedIngredientHop[] = [];
-          if (item.doc.hops) {
-            item.doc.hops.forEach((item) => {
-              if (item.hop) {
-                hops.push(
-                  new RecievedIngredientHop(
-                    item.id,
-                    new Hop(
-                      item.hop.id,
-                      item.hop.name,
-                      item.hop.alphaAcid,
-                      new Unit(
-                        item.hop.brewingUnit.id,
-                        item.hop.brewingUnit.name,
-                        item.hop.brewingUnit.conversionFactor,
-                        item.hop.brewingUnit.baseUnit
-                      ),
-                      new Unit(
-                        item.hop.recievingUnit.id,
-                        item.hop.recievingUnit.name,
-                        item.hop.recievingUnit.conversionFactor,
-                        item.hop.recievingUnit.baseUnit
-                      ),
-                      new Unit(
-                        item.hop.stockingUnit.id,
-                        item.hop.stockingUnit.name,
-                        item.hop.stockingUnit.conversionFactor,
-                        item.hop.stockingUnit.baseUnit
-                      )
-                    ),
-                    item.quantity
-                  )
-                );
-              }
-            });
-          }
-          const yeasts: RecievedIngredientYeast[] = [];
-          if (item.doc.yeasts) {
-            item.doc.yeasts.forEach((item) => {
-              if (item.yeast) {
-                yeasts.push(
-                  new RecievedIngredientYeast(
-                    item.id,
-                    new Yeast(
-                      item.yeast.id,
-                      item.yeast.name,
-                      item.yeast.attenuation,
-                      new Unit(
-                        item.yeast.brewingUnit.id,
-                        item.yeast.brewingUnit.name,
-                        item.yeast.brewingUnit.conversionFactor,
-                        item.yeast.brewingUnit.baseUnit
-                      ),
-                      new Unit(
-                        item.yeast.recievingUnit.id,
-                        item.yeast.recievingUnit.name,
-                        item.yeast.recievingUnit.conversionFactor,
-                        item.yeast.recievingUnit.baseUnit
-                      ),
-                      new Unit(
-                        item.yeast.stockingUnit.id,
-                        item.yeast.stockingUnit.name,
-                        item.yeast.stockingUnit.conversionFactor,
-                        item.yeast.stockingUnit.baseUnit
-                      )
-                    ),
-                    item.quantity
-                  )
-                );
-              }
-            });
-          }
-          const recieveEvent = new RecieveEvent(
-            item.doc.id,
-            item.doc.noteNO,
-            item.doc.noteDate,
-            supplier,
-            new Date(item.doc.recieveDate),
-            ingredients,
-            grains,
-            hops,
-            yeasts,
-            item.doc.footNote
-          );
-          result.push(recieveEvent);
-        }
-      }
-    );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.log(e);
@@ -224,15 +284,8 @@ export async function fetchAll(): Promise<{
 
 export async function remove(recieveEvent: RecieveEvent) {
   try {
-    const doc = await getDBInstance().get<RecieveEventMember>(recieveEvent.id);
+    await pouchdb.remove<RecieveEventPlainObject>(recieveEvent.id);
 
-    try {
-      await getDBInstance().remove(doc);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      console.log(e);
-      throw new Error(e.name);
-    }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.log(e);
@@ -243,58 +296,31 @@ export async function remove(recieveEvent: RecieveEvent) {
 export async function save(
   recieveEvent: RecieveEvent
 ): Promise<{ id: string }> {
-  const id = recieveEvent.id || prefix + createUUID();
-
-  try {
-    const doc = await getDBInstance().get<RecieveEventMember>(id);
-    doc.noteNO = recieveEvent.noteNO;
-    doc.noteDate = recieveEvent.noteDate;
-    doc.supplier = recieveEvent.supplier;
-    doc.recieveDate = recieveEvent.recieveDate;
-    doc.ingredients = recieveEvent.ingredients;
-    doc.grains = recieveEvent.grains;
-    doc.hops = recieveEvent.hops;
-    doc.yeasts = recieveEvent.yeasts;
-    doc.footNote = recieveEvent.footNote;
-
-    try {
-      await getDBInstance().put(instanceToPlain(doc));
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      console.log(e);
-      throw new Error(e.name);
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (e: any) {
-    // ID検索の結果not_foundが返る => 新規保存
-    if (e.name === "not_found") {
-      const doc = {
-        _id: id,
-        type: typename,
-        id: id,
-        noteNO: recieveEvent.noteNO,
-        noteDate: recieveEvent.noteDate,
-        supplier: recieveEvent.supplier,
-        recieveDate: recieveEvent.recieveDate,
-        ingredients: recieveEvent.ingredients,
-        grains: recieveEvent.grains,
-        hops: recieveEvent.hops,
-        yeasts: recieveEvent.yeasts,
-        footNote: recieveEvent.footNote,
-      };
-      try {
-        await getDBInstance().put(instanceToPlain(doc));
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (e: any) {
-        console.log(e);
-        throw new Error(e.name);
-      }
-      // ID検索の結果 DBでエラー発生
-    } else {
-      console.log(e);
-      throw new Error(e.name);
-    }
+  if (!recieveEvent.id) {
+    recieveEvent.id = prefix + createUUID();
   }
 
-  return { id: id };
+  const recieveEventPlainObject = recieveEvent.toPlainObject();
+
+  try {
+    await pouchdb.save<RecieveEventPlainObject>({
+      type: typename,
+      id: recieveEventPlainObject.id,
+      noteNO: recieveEventPlainObject.noteNO,
+      noteDate: recieveEventPlainObject.noteDate,
+      supplier: recieveEventPlainObject.supplier,
+      recieveDate: recieveEventPlainObject.recieveDate,
+      ingredients: recieveEventPlainObject.ingredients,
+      grains: recieveEventPlainObject.grains,
+      hops: recieveEventPlainObject.hops,
+      yeasts: recieveEventPlainObject.yeasts,
+      footNote: recieveEventPlainObject.footNote,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (e: any) {
+    throw new Error(e.name);
+  }
+
+  return { id: recieveEvent.id };
 }
