@@ -1,11 +1,13 @@
-import { Ingredient, IngredientMember } from "@/models/ingredient";
+import {
+  Ingredient,
+  IngredientPlainObject,
+  typename,
+  prefix,
+} from "@/models/ingredient";
 import { createUUID } from "@/services/utils";
-import { getDBInstance } from "./pouchdb";
-import { instanceToPlain } from "class-transformer";
 import { Unit } from "@/models/unit";
-
-const typename = "ingredient";
-const prefix = typename + "-";
+import * as pouchdb from "@/repositories/pouchdb";
+import { IngredientClassification } from "@/models/ingredientClassification";
 
 export async function fetchAll(): Promise<{
   result: Ingredient[];
@@ -13,55 +15,61 @@ export async function fetchAll(): Promise<{
   const result: Ingredient[] = [];
 
   try {
-    const fetchResult = await getDBInstance().allDocs<IngredientMember>({
-      include_docs: true,
-      startkey: prefix,
-      endkey: prefix + "\ufff0",
+    const fetchResult = await pouchdb.fetchAllDocuments<IngredientPlainObject>(
+      prefix
+    );
+
+    fetchResult.forEach((ingredientPO) => {
+      const ingredient = new Ingredient(
+        ingredientPO.id,
+        ingredientPO.name,
+        new IngredientClassification(
+          ingredientPO.ingredientClassification.id,
+          ingredientPO.ingredientClassification.name
+        ),
+        new Unit(
+          ingredientPO.brewingUnit.id,
+          ingredientPO.brewingUnit.name,
+          ingredientPO.brewingUnit.conversionFactor,
+          ingredientPO.brewingUnit.baseUnit
+            ? new Unit(
+                ingredientPO.brewingUnit.baseUnit.id,
+                ingredientPO.brewingUnit.baseUnit.name,
+                ingredientPO.brewingUnit.baseUnit.conversionFactor,
+                null
+              )
+            : null
+        ),
+        new Unit(
+          ingredientPO.recievingUnit.id,
+          ingredientPO.recievingUnit.name,
+          ingredientPO.recievingUnit.conversionFactor,
+          ingredientPO.recievingUnit.baseUnit
+            ? new Unit(
+                ingredientPO.recievingUnit.baseUnit.id,
+                ingredientPO.recievingUnit.baseUnit.name,
+                ingredientPO.recievingUnit.baseUnit.conversionFactor,
+                null
+              )
+            : null
+        ),
+        new Unit(
+          ingredientPO.stockingUnit.id,
+          ingredientPO.stockingUnit.name,
+          ingredientPO.stockingUnit.conversionFactor,
+          ingredientPO.stockingUnit.baseUnit
+            ? new Unit(
+                ingredientPO.stockingUnit.baseUnit.id,
+                ingredientPO.stockingUnit.baseUnit.name,
+                ingredientPO.stockingUnit.baseUnit.conversionFactor,
+                null
+              )
+            : null
+        )
+      );
+      result.push(ingredient);
     });
 
-    fetchResult.rows.forEach(
-      (item: {
-        doc?:
-          | PouchDB.Core.ExistingDocument<
-              IngredientMember & PouchDB.Core.AllDocsMeta
-            >
-          | undefined;
-        id: string;
-        key: string;
-        value: {
-          rev: string;
-          deleted?: boolean | undefined;
-        };
-      }) => {
-        if (item.doc) {
-          const u = new Ingredient(
-            item.doc.id,
-            item.doc.name,
-            item.doc.ingredientClassification,
-            new Unit(
-              item.doc.brewingUnit.id,
-              item.doc.brewingUnit.name,
-              item.doc.brewingUnit.conversionFactor,
-              item.doc.brewingUnit.baseUnit
-            ),
-            new Unit(
-              item.doc.recievingUnit.id,
-              item.doc.recievingUnit.name,
-              item.doc.recievingUnit.conversionFactor,
-              item.doc.recievingUnit.baseUnit
-            ),
-            new Unit(
-              item.doc.stockingUnit.id,
-              item.doc.stockingUnit.name,
-              item.doc.stockingUnit.conversionFactor,
-              item.doc.stockingUnit.baseUnit
-            )
-          );
-          u.brewingUnit = item.doc.brewingUnit;
-          result.push(u);
-        }
-      }
-    );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.log(e);
@@ -73,15 +81,8 @@ export async function fetchAll(): Promise<{
 
 export async function remove(ingredient: Ingredient) {
   try {
-    const doc = await getDBInstance().get<IngredientMember>(ingredient.id);
+    await pouchdb.remove<IngredientPlainObject>(ingredient.id);
 
-    try {
-      await getDBInstance().remove(doc);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      console.log(e);
-      throw new Error(e.name);
-    }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.log(e);
@@ -90,49 +91,27 @@ export async function remove(ingredient: Ingredient) {
 }
 
 export async function save(ingredient: Ingredient): Promise<{ id: string }> {
-  const id = ingredient.id || prefix + createUUID();
-
-  try {
-    const doc = await getDBInstance().get<IngredientMember>(id);
-    doc.name = ingredient.name;
-    doc.ingredientClassification = ingredient.ingredientClassification;
-    doc.brewingUnit = ingredient.brewingUnit;
-    doc.recievingUnit = ingredient.recievingUnit;
-    doc.stockingUnit = ingredient.stockingUnit;
-    try {
-      await getDBInstance().put(instanceToPlain(doc));
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      console.log(e);
-      throw new Error(e.name);
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (e: any) {
-    // ID検索の結果not_foundが返る => 新規保存
-    if (e.name === "not_found") {
-      const doc = {
-        _id: id,
-        type: typename,
-        id: id,
-        name: ingredient.name,
-        ingredientClassification: ingredient.ingredientClassification,
-        brewingUnit: ingredient.brewingUnit,
-        recievingUnit: ingredient.recievingUnit,
-        stockingUnit: ingredient.stockingUnit,
-      };
-      try {
-        await getDBInstance().put(instanceToPlain(doc));
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (e: any) {
-        console.log(e);
-        throw new Error(e.name);
-      }
-      // ID検索の結果 DBでエラー発生
-    } else {
-      console.log(e);
-      throw new Error(e.name);
-    }
+  if (!ingredient.id) {
+    ingredient.id = prefix + createUUID();
   }
 
-  return { id: id };
+  const ingredientPlainObject = ingredient.toPlainObject();
+
+  try {
+    await pouchdb.save<IngredientPlainObject>({
+      type: typename,
+      id: ingredientPlainObject.id,
+      name: ingredientPlainObject.name,
+      ingredientClassification: ingredientPlainObject.ingredientClassification,
+      brewingUnit: ingredientPlainObject.brewingUnit,
+      recievingUnit: ingredientPlainObject.recievingUnit,
+      stockingUnit: ingredientPlainObject.stockingUnit,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (e: any) {
+    throw new Error(e.name);
+  }
+
+  return { id: ingredient.id };
 }

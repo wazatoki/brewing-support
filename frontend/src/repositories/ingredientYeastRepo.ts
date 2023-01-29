@@ -5,8 +5,6 @@ import {
   prefix,
 } from "@/models/ingredientYeast";
 import { createUUID } from "@/services/utils";
-import { getDBInstance } from "./pouchdb";
-import { instanceToPlain } from "class-transformer";
 import { Unit } from "@/models/unit";
 import * as pouchdb from "@/repositories/pouchdb";
 
@@ -21,7 +19,7 @@ export async function fetchAll(): Promise<{
     );
 
     fetchResult.forEach((yeastPO) => {
-      const g = new Yeast(
+      const y = new Yeast(
         yeastPO.id,
         yeastPO.name,
         yeastPO.attenuation,
@@ -65,7 +63,7 @@ export async function fetchAll(): Promise<{
             : null
         )
       );
-      result.push(g);
+      result.push(y);
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

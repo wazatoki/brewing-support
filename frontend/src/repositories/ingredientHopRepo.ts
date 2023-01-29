@@ -1,7 +1,5 @@
 import { Hop, HopPlainObject, typename, prefix } from "@/models/ingredientHop";
 import { createUUID } from "@/services/utils";
-import { getDBInstance } from "./pouchdb";
-import { instanceToPlain } from "class-transformer";
 import { Unit } from "@/models/unit";
 import * as pouchdb from "@/repositories/pouchdb";
 
