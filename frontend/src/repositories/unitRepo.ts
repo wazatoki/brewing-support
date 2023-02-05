@@ -1,11 +1,10 @@
-import { Unit, UnitMember, typename, prefix } from "@/models/unit";
+import { Unit, UnitPlainObject, typename, prefix } from "@/models/unit";
 import { unitReferencingList } from "@/services/unit";
 import { unitReferencingList as ingredientUnitReferencingList } from "@/services/ingredient";
 import { fetchAll as ingredientFetchAll } from "@/repositories/ingredientRepo";
 import { createUUID } from "@/services/utils";
-import { getDBInstance } from "./pouchdb";
-import { instanceToPlain } from "class-transformer";
 import { Ingredient } from "@/models/ingredient";
+import * as pouchdb from "@/repositories/pouchdb";
 
 export async function fetchAll(): Promise<{
   result: Unit[];
@@ -13,35 +12,27 @@ export async function fetchAll(): Promise<{
   const result: Unit[] = [];
 
   try {
-    const fetchResult = await getDBInstance().allDocs<UnitMember>({
-      include_docs: true,
-      startkey: prefix,
-      endkey: prefix + "\ufff0",
+    const fetchResult = await pouchdb.fetchAllDocuments<UnitPlainObject>(
+      prefix
+    );
+
+    fetchResult.forEach((unitPO) => {
+      const unit = new Unit(
+        unitPO.id,
+        unitPO.name,
+        unitPO.conversionFactor,
+        unitPO.baseUnit
+          ? new Unit(
+              unitPO.baseUnit.id,
+              unitPO.baseUnit.name,
+              unitPO.baseUnit.conversionFactor,
+              null
+            )
+          : null
+      );
+      result.push(unit);
     });
 
-    fetchResult.rows.forEach(
-      (item: {
-        doc?:
-          | PouchDB.Core.ExistingDocument<UnitMember & PouchDB.Core.AllDocsMeta>
-          | undefined;
-        id: string;
-        key: string;
-        value: {
-          rev: string;
-          deleted?: boolean | undefined;
-        };
-      }) => {
-        if (item.doc) {
-          const u = new Unit(
-            item.doc.id,
-            item.doc.name,
-            item.doc.conversionFactor
-          );
-          u.baseUnit = item.doc.baseUnit;
-          result.push(u);
-        }
-      }
-    );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.log(e);
@@ -55,15 +46,8 @@ export async function remove(unit: Unit) {
   const checkRemovable = await isRemovable(unit);
   if (checkRemovable.result) {
     try {
-      const doc = await getDBInstance().get<UnitMember>(unit.id);
+      await pouchdb.remove<UnitPlainObject>(unit.id);
 
-      try {
-        await getDBInstance().remove(doc);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (e: any) {
-        console.log(e);
-        throw new Error(e.name);
-      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       console.log(e);
@@ -99,45 +83,25 @@ async function isRemovable(
 }
 
 export async function save(unit: Unit): Promise<{ id: string }> {
-  const id = unit.id || prefix + createUUID();
-
-  try {
-    const doc = await getDBInstance().get<UnitMember>(id);
-    doc.name = unit.name;
-    doc.conversionFactor = unit.conversionFactor;
-    doc.baseUnit = unit.baseUnit;
-    try {
-      await getDBInstance().put(instanceToPlain(doc));
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      console.log(e);
-      throw new Error(e.name);
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (e: any) {
-    // ID検索の結果not_foundが返る => 新規保存
-    if (e.name === "not_found") {
-      const doc = {
-        _id: id,
-        type: typename,
-        id: id,
-        name: unit.name,
-        conversionFactor: unit.conversionFactor,
-        baseUnit: unit.baseUnit,
-      };
-      try {
-        await getDBInstance().put(instanceToPlain(doc));
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (e: any) {
-        console.log(e);
-        throw new Error(e.name);
-      }
-      // ID検索の結果 DBでエラー発生
-    } else {
-      console.log(e);
-      throw new Error(e.name);
-    }
+  if (!unit.id) {
+    unit.id = prefix + createUUID();
   }
 
-  return { id: id };
+  const unitPlainObject = unit.toPlainObject();
+
+  try {
+    await pouchdb.save<UnitPlainObject>({
+      type: typename,
+      id: unitPlainObject.id,
+      name: unitPlainObject.name,
+      conversionFactor: unitPlainObject.conversionFactor,
+      baseUnit: unitPlainObject.baseUnit,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (e: any) {
+    throw new Error(e.name);
+  }
+
+  return { id: unit.id };
 }
