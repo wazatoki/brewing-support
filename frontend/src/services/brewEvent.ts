@@ -11,12 +11,14 @@ export const consumedIngredientSum = (
 ) => {
   const buffer = [] as ConsumedIngredient[];
   brewEvents.forEach((item) => {
-    const filteredConsumedIngredients = item.ingredients.filter(
-      (consumedIngredient) =>
-        consumedIngredient.ingredient &&
-        consumedIngredient.ingredient.id === ingredientID
-    );
-    filteredConsumedIngredients.forEach((item) => buffer.push(item));
+    if (item.from < onDate) {
+      const filteredConsumedIngredients = item.ingredients.filter(
+        (consumedIngredient) =>
+          consumedIngredient.ingredient &&
+          consumedIngredient.ingredient.id === ingredientID
+      );
+      filteredConsumedIngredients.forEach((item) => buffer.push(item));
+    }
   });
 
   const result = buffer
@@ -33,11 +35,14 @@ export const consumedIngredientGrainSum = (
 ) => {
   const buffer = [] as ConsumedIngredientGrain[];
   brewEvents.forEach((item) => {
-    const filteredConsumedIngredients = item.grains.filter(
-      (consumedIngredient) =>
-        consumedIngredient.grain && consumedIngredient.grain.id === ingredientID
-    );
-    filteredConsumedIngredients.forEach((item) => buffer.push(item));
+    if (item.from < onDate) {
+      const filteredConsumedIngredients = item.grains.filter(
+        (consumedIngredient) =>
+          consumedIngredient.grain &&
+          consumedIngredient.grain.id === ingredientID
+      );
+      filteredConsumedIngredients.forEach((item) => buffer.push(item));
+    }
   });
 
   const result = buffer
