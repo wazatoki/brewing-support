@@ -36,7 +36,7 @@ export function sortByNameAndConversionFactor(units: Unit[]): Unit[] {
     }
 
     // 基礎単位名が同じ場合は換算係数で並べ替え
-    if (item_a.conversionFactor < item_b.conversionFactor) {
+    if (item_a.conversionFactor > item_b.conversionFactor) {
       return 1;
     } else {
       return -1;
