@@ -16,7 +16,7 @@ export function unitReferencingList(targetHops: Hop[], unit: Unit): Hop[] {
 export function sortByName(hops: Hop[]): Hop[] {
   hops.sort((item_a, item_b) => {
     // 名称で並べ替え
-    if (item_a.name < item_b.name) {
+    if (item_a.name > item_b.name) {
       return 1;
     } else {
       return -1;
