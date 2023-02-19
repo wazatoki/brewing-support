@@ -3,6 +3,7 @@ import { fetchAll, save, remove } from "@/repositories/brewPlanRepo";
 import { reactive, ref, onMounted } from "vue";
 import BrewingPlanForm from "@/components/BrewingPlanForm.vue";
 import { BrewPlan } from "@/models/brewPlan";
+import { Yeast } from "@/models/ingredientYeast";
 import { sortByBatchNumber } from "@/services/brewPlan";
 import { ElMessageBox } from "element-plus";
 import * as ingredientRepo from "@/repositories/ingredientRepo";
@@ -58,6 +59,7 @@ const onClickEdit = (index) => {
   selectedData.grains = item.grains;
   selectedData.hops = item.hops;
   selectedData.yeastPlan = item.yeastPlan;
+  selectedData.ingredients = item.ingredients;
   selectedData.events = item.events;
   brewingPlanFormDialogVisible.value = true;
 };
@@ -175,6 +177,7 @@ const fetchYeastMst = async () => {
         :grainMst="grainMst"
         :hopMst="hopMst"
         :yeastMst="yeastMst"
+        :ingredientntntMst="itemMsts"
         @submit="onSubmitBrewPlan($event)"
         @cancel="onClickBrewingPlanFormFormCancel"
       >

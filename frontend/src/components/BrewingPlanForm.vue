@@ -4,6 +4,8 @@ import { BrewPlan } from "@/models/brewPlan";
 import { Grain } from "@/models/ingredientGrain";
 import { Unit } from "@/models/unit";
 import { Hop } from "@/models/ingredientHop";
+import { Ingredient } from "@/models/ingredient";
+import { IngredientClassification } from "@/models/ingredientClassification";
 
 const formLabelWidth = 200;
 
@@ -12,29 +14,12 @@ const props = defineProps({
   grainMst: [],
   hopMst: [],
   yeastMst: [],
+  ingredientntntMst: [],
 });
 
 const emit = defineEmits(["submit", "cancel"]);
 
-const form = reactive(
-  new BrewPlan(
-    props.brewPlan.id,
-    props.brewPlan.batchNumber,
-    props.brewPlan.name,
-    props.brewPlan.batchSize,
-    props.brewPlan.originalGravity,
-    props.brewPlan.finalGravity,
-    props.brewPlan.brixLevel,
-    props.brewPlan.finalBrixLevel,
-    props.brewPlan.abv,
-    props.brewPlan.ibus,
-    props.brewPlan.mashEfficienty,
-    props.brewPlan.grains,
-    props.brewPlan.hops,
-    props.brewPlan.yeastPlan,
-    props.brewPlan.events
-  )
-);
+const form = reactive(props.brewPlan);
 
 const rules = reactive({
   name: [
@@ -145,6 +130,20 @@ const addHop = () => {
   });
 };
 
+const addIngredient = () => {
+  form.ingredients.push({
+    ingredient: new Ingredient(
+      "",
+      "",
+      new IngredientClassification(),
+      new Unit(),
+      new Unit(),
+      new Unit()
+    ),
+    quantity: 0,
+  });
+};
+
 const onChangeGrainParams = () => {
   calculateGrainQuantity();
 };
@@ -196,6 +195,7 @@ const onSubmit = async (formEl) => {
           form.grains,
           form.hops,
           form.yeastPlan,
+          form.ingredients,
           form.events
         )
       );
@@ -488,6 +488,46 @@ const onCancel = () => {
       <el-col :span="8">
         <el-input
           v-model="form.yeastPlan.yeast.attenuation"
+          autocomplete="off"
+        />
+      </el-col>
+    </el-row>
+
+    <el-divider />
+    <el-row>
+      <el-col :span="16">
+        <span>その他の材料</span>
+      </el-col>
+      <el-col :span="8">
+        <el-button type="primary" @click="addIngredient">Add</el-button>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="8"><span>名称</span></el-col>
+      <el-col :span="8"><span>量</span></el-col>
+    </el-row>
+    <el-row
+      v-for="(ingredientPlan, index) in form.ingredients"
+      :key="ingredientPlan.ingredient.id"
+    >
+      <el-col :span="8">
+        <el-select
+          v-model="form.ingredients[index].ingredient"
+          :teleported="false"
+          value-key="id"
+        >
+          <el-option
+            v-for="item in ingredientntntMst"
+            :key="item.id"
+            :label="item.name"
+            :value="item"
+          >
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="8">
+        <el-input
+          v-model="form.ingredients[index].quantity"
           autocomplete="off"
         />
       </el-col>

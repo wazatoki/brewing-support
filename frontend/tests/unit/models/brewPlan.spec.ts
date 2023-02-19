@@ -6,6 +6,8 @@ import {
   HopPlan,
   HopPlanPlainObject,
   YeastPlanPlainObject,
+  IngredientPlanPlainObject,
+  IngredientPlan,
 } from "@/models/brewPlan";
 import {
   createBrewEvents,
@@ -13,6 +15,7 @@ import {
   createGrainPlans,
   createHopPlans,
   createYeastPlans,
+  createIngredientPlans,
 } from "./helper";
 
 describe("brewPlan.ts", () => {
@@ -103,6 +106,14 @@ describe("brewPlan.ts", () => {
       yeast: yeastPlan.yeast.toPlainObject(),
       quantity: yeastPlan.quantity,
     };
+    const IngredientPlanPlainObjects = createIngredientPlans().map(
+      (ip: IngredientPlan): IngredientPlanPlainObject => {
+        return {
+          ingredient: ip.ingredient.toPlainObject(),
+          quantity: ip.quantity,
+        };
+      }
+    );
     const events = createBrewEvents().map(
       (event: BrewEvent): BrewEventPlainObject => event.toPlainObject()
     );
@@ -122,6 +133,7 @@ describe("brewPlan.ts", () => {
       grains: grainPlanPlainObjects,
       hops: hopPlanPlainObjects,
       yeastPlan: yeastPlanObject,
+      ingredients: IngredientPlanPlainObjects,
       events: events,
     });
   });

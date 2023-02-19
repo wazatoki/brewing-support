@@ -3,6 +3,7 @@ import { Grain, GrainPlainObject } from "./ingredientGrain";
 import { Hop, HopPlainObject } from "./ingredientHop";
 import { Yeast, YeastPlainObject } from "./ingredientYeast";
 import { createUUID } from "@/services/utils";
+import { Ingredient, IngredientPlainObject } from "./ingredient";
 
 export const typename = "brew_plan";
 export const prefix = typename + "-";
@@ -22,6 +23,7 @@ export class BrewPlan {
   grains: GrainPlan[];
   hops: HopPlan[];
   yeastPlan: YeastPlan;
+  ingredients: IngredientPlan[];
   events: BrewEvent[];
 
   clear() {
@@ -41,6 +43,7 @@ export class BrewPlan {
       yeast: new Yeast(),
       quantity: 0,
     } as YeastPlan;
+    this.ingredients = [] as IngredientPlan[];
     this.events = [] as BrewEvent[];
   }
 
@@ -67,6 +70,14 @@ export class BrewPlan {
       yeast: this.yeastPlan.yeast.toPlainObject(),
       quantity: this.yeastPlan.quantity,
     };
+    const ingredientObjects = this.ingredients.map(
+      (ingredient: IngredientPlan): IngredientPlanPlainObject => {
+        return {
+          ingredient: ingredient.ingredient.toPlainObject(),
+          quantity: ingredient.quantity,
+        };
+      }
+    );
     const eventObject = this.events.map(
       (e: BrewEvent): BrewEventPlainObject => e.toPlainObject()
     );
@@ -85,6 +96,7 @@ export class BrewPlan {
       grains: grainObjects,
       hops: hopObjects,
       yeastPlan: yeastObject,
+      ingredients: ingredientObjects,
       events: eventObject,
     };
   }
@@ -107,6 +119,7 @@ export class BrewPlan {
       yeast: new Yeast(),
       quantity: 0,
     } as YeastPlan,
+    ingredients = [] as IngredientPlan[],
     events = [] as BrewEvent[]
   ) {
     this.id = id;
@@ -123,6 +136,7 @@ export class BrewPlan {
     this.grains = grains;
     this.hops = hops;
     this.yeastPlan = yeastPlan;
+    this.ingredients = ingredients;
     this.events = events;
   }
 }
@@ -142,6 +156,7 @@ export interface BrewPlanMember {
   grains: GrainPlan[];
   hops: HopPlan[];
   yeastPlan: YeastPlan;
+  ingredients: IngredientPlan[];
   events: BrewEvent[];
 }
 
@@ -164,6 +179,11 @@ export interface YeastPlan {
   quantity: number;
 }
 
+export interface IngredientPlan {
+  ingredient: Ingredient;
+  quantity: number;
+}
+
 export type GrainPlanPlainObject = {
   grain: GrainPlainObject;
   quantity: number;
@@ -183,6 +203,11 @@ export type YeastPlanPlainObject = {
   quantity: number;
 };
 
+export type IngredientPlanPlainObject = {
+  ingredient: IngredientPlainObject;
+  quantity: number;
+};
+
 export type BrewPlanPlainObject = {
   id: string;
   batchNumber: number;
@@ -198,5 +223,6 @@ export type BrewPlanPlainObject = {
   grains: GrainPlanPlainObject[];
   hops: HopPlanPlainObject[];
   yeastPlan: YeastPlanPlainObject;
+  ingredients: IngredientPlanPlainObject[];
   events: BrewEventPlainObject[];
 };

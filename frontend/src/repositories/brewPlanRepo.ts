@@ -8,6 +8,8 @@ import {
   HopPlan,
   HopPlanPlainObject,
   YeastPlan,
+  IngredientPlan,
+  IngredientPlanPlainObject,
 } from "@/models/brewPlan";
 import { createUUID } from "@/services/utils";
 import * as pouchdb from "@/repositories/pouchdb";
@@ -193,6 +195,58 @@ export async function fetchAll(): Promise<{
         ),
         quantity: brewPlanPO.yeastPlan.quantity,
       };
+      const ingredientPlans: IngredientPlan[] = brewPlanPO.ingredients.map(
+        (ingredientPlanPO: IngredientPlanPlainObject): IngredientPlan => {
+          const ingredient = ingredientPlanPO.ingredient;
+          return {
+            ingredient: new Ingredient(
+              ingredient.id,
+              ingredient.name,
+              new IngredientClassification(
+                ingredient.ingredientClassification.id,
+                ingredient.ingredientClassification.name
+              ),
+              new Unit(
+                ingredient.brewingUnit.id,
+                ingredient.brewingUnit.name,
+                ingredient.brewingUnit.conversionFactor,
+                ingredient.brewingUnit.baseUnit
+                  ? new Unit(
+                      ingredient.brewingUnit.baseUnit.id,
+                      ingredient.brewingUnit.baseUnit.name,
+                      ingredient.brewingUnit.baseUnit.conversionFactor
+                    )
+                  : null
+              ),
+              new Unit(
+                ingredient.recievingUnit.id,
+                ingredient.recievingUnit.name,
+                ingredient.recievingUnit.conversionFactor,
+                ingredient.recievingUnit.baseUnit
+                  ? new Unit(
+                      ingredient.recievingUnit.baseUnit.id,
+                      ingredient.recievingUnit.baseUnit.name,
+                      ingredient.recievingUnit.baseUnit.conversionFactor
+                    )
+                  : null
+              ),
+              new Unit(
+                ingredient.stockingUnit.id,
+                ingredient.stockingUnit.name,
+                ingredient.stockingUnit.conversionFactor,
+                ingredient.stockingUnit.baseUnit
+                  ? new Unit(
+                      ingredient.stockingUnit.baseUnit.id,
+                      ingredient.stockingUnit.baseUnit.name,
+                      ingredient.stockingUnit.baseUnit.conversionFactor
+                    )
+                  : null
+              )
+            ),
+            quantity: ingredientPlanPO.quantity,
+          };
+        }
+      );
       const events: BrewEvent[] = brewPlanPO.events.map(
         (eventPO: BrewEventPlainObject): BrewEvent => {
           const ingredients: ConsumedIngredient[] = eventPO.ingredients.map(
@@ -443,6 +497,7 @@ export async function fetchAll(): Promise<{
         grainPlans,
         hopPlans,
         yeastPlan,
+        ingredientPlans,
         events
       );
       result.push(bp);
@@ -492,6 +547,7 @@ export async function save(brewPlan: BrewPlan): Promise<{ id: string }> {
       grains: brewEventPlainObject.grains,
       hops: brewEventPlainObject.hops,
       yeastPlan: brewEventPlainObject.yeastPlan,
+      ingredients: brewEventPlainObject.ingredients,
       events: brewEventPlainObject.events,
     });
 

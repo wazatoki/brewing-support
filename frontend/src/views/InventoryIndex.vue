@@ -16,7 +16,6 @@ import * as ingredientYeastService from "@/services/ingredientYeast";
 import * as utils from "@/services/utils";
 import InventoryForm from "@/components/InventoryForm.vue";
 import { Inventory } from "@/models/inventory";
-import { inventory } from "@/models/processingType";
 
 const tableData = reactive([]);
 const itemMsts = reactive([]);

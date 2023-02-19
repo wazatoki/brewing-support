@@ -9,7 +9,13 @@ import { ConsumedIngredientYeast } from "@/models/consumedIngredientYeast";
 import { IngredientClassification } from "@/models/ingredientClassification";
 import { ConsumedIngredient } from "@/models/consumedIngredient";
 import { BrewEvent } from "@/models/brewEvent";
-import { BrewPlan, GrainPlan, HopPlan, YeastPlan } from "@/models/brewPlan";
+import {
+  BrewPlan,
+  GrainPlan,
+  HopPlan,
+  IngredientPlan,
+  YeastPlan,
+} from "@/models/brewPlan";
 import { InventoryIngredientGrain } from "@/models/inventoryIngredientGrain";
 import { InventoryIngredientHop } from "@/models/inventoryIngredientHop";
 import { InventoryIngredientYeast } from "@/models/inventoryIngredientYeast";
@@ -297,12 +303,25 @@ export const createYeastPlans = () => {
   return yeastPlans;
 };
 
+export const createIngredientPlans = () => {
+  const ingredientPlans: IngredientPlan[] = [] as IngredientPlan[];
+  const ingredients = createIngredients();
+  for (let i = 1; i < 10; i++) {
+    ingredientPlans.push({
+      ingredient: ingredients[i],
+      quantity: i,
+    });
+  }
+  return ingredientPlans;
+};
+
 export const createBrewPlans = () => {
   const plans: BrewPlan[] = [] as BrewPlan[];
   const events: BrewEvent[] = createBrewEvents();
   const grainPlans: GrainPlan[] = createGrainPlans();
   const hopPlans: HopPlan[] = createHopPlans();
   const yeastPlans: YeastPlan[] = createYeastPlans();
+  const ingredientPlans: IngredientPlan[] = createIngredientPlans();
   plans.push(
     new BrewPlan(
       "brew_Plan-test-id",
@@ -322,6 +341,7 @@ export const createBrewPlans = () => {
         yeast: new Yeast(),
         quantity: 0,
       } as YeastPlan,
+      [] as IngredientPlan[],
       [] as BrewEvent[]
     )
   );
@@ -341,6 +361,7 @@ export const createBrewPlans = () => {
       grainPlans,
       hopPlans,
       yeastPlans[0],
+      ingredientPlans,
       events
     )
   );
@@ -361,6 +382,7 @@ export const createBrewPlans = () => {
         grainPlans,
         hopPlans,
         yeastPlans[i - 1],
+        ingredientPlans,
         events
       )
     );
