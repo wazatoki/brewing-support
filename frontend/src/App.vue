@@ -7,9 +7,17 @@
       <el-menu-item index="1"
         ><router-link to="/about">About</router-link></el-menu-item
       >
-      <el-menu-item index="2"
-        ><router-link to="/brewing-record">醸造記録</router-link></el-menu-item
-      >
+      <el-sub-menu index="2">
+        <template #title>醸造</template>
+        <el-menu-item index="2-1"
+          ><router-link to="/brew-plan">醸造計画</router-link></el-menu-item
+        >
+        <el-menu-item index="2-2"
+          ><router-link to="/brewing-record"
+            >醸造記録</router-link
+          ></el-menu-item
+        >
+      </el-sub-menu>
       <el-menu-item index="3"
         ><router-link to="/stocks-recieving">入荷</router-link></el-menu-item
       >

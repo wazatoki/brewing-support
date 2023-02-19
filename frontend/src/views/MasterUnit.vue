@@ -41,6 +41,7 @@ const onClickEdit = (index) => {
 
 const onClickCreate = () => {
   a_unitData.clear();
+  a_unitData.id = "";
   masterUnitFormDialogVisible.value = true;
 };
 
