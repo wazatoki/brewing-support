@@ -532,23 +532,23 @@ const formatDate = (row, column, cellValue) => {
               prop="processingDate"
               :formatter="formatDate"
               label="日付"
-              width="180"
+              width="100"
             />
             <el-table-column
               prop="processingType"
               label="処理区分"
-              width="180"
+              width="100"
             />
             <el-table-column prop="supplier.name" label="仕入先" width="180" />
             <el-table-column
               prop="recievedQuantity"
               label="入荷量"
-              width="180"
+              width="100"
             />
             <el-table-column
               prop="ingredient.recievingUnit.name"
               label="単位"
-              width="180"
+              width="100"
             />
             <el-table-column
               prop="brewPlan.batchNumber"
@@ -563,17 +563,17 @@ const formatDate = (row, column, cellValue) => {
             <el-table-column
               prop="consumedQuantity"
               label="払出量"
-              width="180"
+              width="100"
             />
             <el-table-column
               prop="ingredient.brewingUnit.name"
               label="単位"
-              width="180"
+              width="100"
             />
             <el-table-column
               prop="stockingQuantity"
               label="在庫量"
-              width="180"
+              width="100"
             />
             <el-table-column prop="unitName" label="単位" />
           </el-table>

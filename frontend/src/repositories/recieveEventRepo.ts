@@ -261,9 +261,9 @@ export async function fetchAll(): Promise<{
       const recieveEvent = new RecieveEvent(
         recieveEventPO.id,
         recieveEventPO.noteNO,
-        recieveEventPO.noteDate,
+        new Date(recieveEventPO.noteDate),
         new Supplier(recieveEventPO.supplier.id, recieveEventPO.supplier.name),
-        recieveEventPO.recieveDate,
+        new Date(recieveEventPO.recieveDate),
         ingredients,
         grains,
         hops,
