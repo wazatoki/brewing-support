@@ -169,6 +169,8 @@ const onChangeIngredient = () => {
     }
   });
 
+  reportIngredientService.calcurateInventryQuantity(tableData);
+
   consumedIngredientSum.value = reportIngredientService.comsumedQuantity(
     selectedIngredient.value.id,
     reportDataBuffer,
@@ -442,7 +444,9 @@ const pushInventoryData = () => {
   });
 };
 
-const formatDate = (row, column, cellValue) => utils.formatDateTime(cellValue);
+const formatDate = (row, column, cellValue) => {
+  return utils.formatDateTime(cellValue);
+};
 </script>
 
 <template>
@@ -535,8 +539,17 @@ const formatDate = (row, column, cellValue) => utils.formatDateTime(cellValue);
               label="処理区分"
               width="180"
             />
-            <el-table-column prop="ingredient.name" label="名称" width="180" />
             <el-table-column prop="supplier.name" label="仕入先" width="180" />
+            <el-table-column
+              prop="recievedQuantity"
+              label="入荷量"
+              width="180"
+            />
+            <el-table-column
+              prop="ingredient.recievingUnit.name"
+              label="単位"
+              width="180"
+            />
             <el-table-column
               prop="brewPlan.batchNumber"
               label="batch NO"
@@ -547,8 +560,22 @@ const formatDate = (row, column, cellValue) => utils.formatDateTime(cellValue);
               label="batch name"
               width="180"
             />
-            <el-table-column prop="quantity" label="数量" />
-            <el-table-column prop="unitName" label="在庫単位" />
+            <el-table-column
+              prop="consumedQuantity"
+              label="払出量"
+              width="180"
+            />
+            <el-table-column
+              prop="ingredient.brewingUnit.name"
+              label="単位"
+              width="180"
+            />
+            <el-table-column
+              prop="stockingQuantity"
+              label="在庫量"
+              width="180"
+            />
+            <el-table-column prop="unitName" label="単位" />
           </el-table>
         </el-row>
       </el-col>

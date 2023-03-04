@@ -53,4 +53,28 @@ describe("reportIngredient.ts", () => {
       unitName: units[1].name,
     });
   });
+
+  it("get consumedQuantity", () => {
+    const reportIngredients = createReportIngredient();
+    expect(reportIngredients[1].consumedQuantity).toEqual("");
+    expect(reportIngredients[2].consumedQuantity).toEqual("");
+    expect(reportIngredients[3].consumedQuantity).toEqual(1);
+  });
+
+  it("get recievedQuantity", () => {
+    const reportIngredients = createReportIngredient();
+    expect(reportIngredients[1].recievedQuantity).toEqual(100);
+    expect(reportIngredients[2].recievedQuantity).toEqual(10);
+    expect(reportIngredients[3].recievedQuantity).toEqual("");
+  });
+
+  it("setStockingQuantity", () => {
+    const reportIngredients = createReportIngredient();
+    reportIngredients[1].setStockingQuantity(10);
+    expect(reportIngredients[1].stockingQuantity).toEqual(110);
+    reportIngredients[2].setStockingQuantity(100);
+    expect(reportIngredients[2].stockingQuantity).toEqual(110);
+    reportIngredients[3].setStockingQuantity(100);
+    expect(reportIngredients[3].stockingQuantity).toEqual(99);
+  });
 });

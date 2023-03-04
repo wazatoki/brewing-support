@@ -19,6 +19,39 @@ export class ReportIngredient {
   brewPlan: BrewPlan | null;
   quantity: number;
   unitName: string;
+  stockingQuantity: number;
+
+  get consumedQuantity(): number | string {
+    if (
+      this.processingType === processingTp.brewing ||
+      (this.processingType === processingTp.inventory && this.quantity < 0)
+    ) {
+      return Math.abs(this.quantity);
+    }
+    return "";
+  }
+
+  get recievedQuantity(): number | string {
+    if (
+      this.processingType === processingTp.recieving ||
+      (this.processingType === processingTp.inventory && this.quantity > 0)
+    ) {
+      return Math.abs(this.quantity);
+    }
+    return "";
+  }
+
+  setStockingQuantity(lastQuantity: number) {
+    if (this.processingType === processingTp.brewing) {
+      this.stockingQuantity = lastQuantity - this.quantity;
+    }
+    if (
+      this.processingType === processingTp.recieving ||
+      this.processingType === processingTp.inventory
+    ) {
+      this.stockingQuantity = lastQuantity + this.quantity;
+    }
+  }
 
   constructor(
     id = prefix + createUUID(),
@@ -38,6 +71,7 @@ export class ReportIngredient {
     this.brewPlan = brewPlan;
     this.quantity = quantity;
     this.unitName = unitName;
+    this.stockingQuantity = 0;
   }
 
   toPlainObject(): ReportIngredientplainObject {

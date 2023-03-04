@@ -111,3 +111,28 @@ export const carryOver = (
 
   return inventorySum + recievingSum - brewingSum;
 };
+
+export const calcurateInventryQuantity = (
+  reportIngredients: ReportIngredient[]
+) => {
+  if (reportIngredients.length > 0) {
+    reportIngredients[0].stockingQuantity = reportIngredients[0].quantity;
+    for (let i = 1; i < reportIngredients.length; i++) {
+      if (reportIngredients[i].processingType === processingType.brewing) {
+        reportIngredients[i].stockingQuantity =
+          reportIngredients[i - 1].stockingQuantity -
+          reportIngredients[i].quantity;
+      }
+      if (reportIngredients[i].processingType === processingType.recieving) {
+        reportIngredients[i].stockingQuantity =
+          reportIngredients[i - 1].stockingQuantity +
+          reportIngredients[i].quantity;
+      }
+      if (reportIngredients[i].processingType === processingType.inventory) {
+        reportIngredients[i].stockingQuantity =
+          reportIngredients[i - 1].stockingQuantity +
+          reportIngredients[i].quantity;
+      }
+    }
+  }
+};
