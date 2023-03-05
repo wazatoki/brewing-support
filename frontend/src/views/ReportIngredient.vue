@@ -447,6 +447,23 @@ const pushInventoryData = () => {
 const formatDate = (row, column, cellValue) => {
   return utils.formatDateTime(cellValue);
 };
+
+const formatUnit = (row) => {
+  switch (row.processingType) {
+    case processingType.brewing:
+      return row.ingredient.brewingUnit.name;
+
+    case processingType.recieving:
+      return row.ingredient.recievingUnit.name;
+
+    case processingType.inventory:
+      return row.ingredient.stockingUnit.name;
+
+    default:
+      row.unitName;
+      break;
+  }
+};
 </script>
 
 <template>
@@ -545,11 +562,7 @@ const formatDate = (row, column, cellValue) => {
               label="入荷量"
               width="100"
             />
-            <el-table-column
-              prop="ingredient.recievingUnit.name"
-              label="単位"
-              width="100"
-            />
+            <el-table-column :formatter="formatUnit" label="単位" width="100" />
             <el-table-column
               prop="brewPlan.batchNumber"
               label="batch NO"
@@ -565,11 +578,7 @@ const formatDate = (row, column, cellValue) => {
               label="払出量"
               width="100"
             />
-            <el-table-column
-              prop="ingredient.brewingUnit.name"
-              label="単位"
-              width="100"
-            />
+            <el-table-column :formatter="formatUnit" label="単位" width="100" />
             <el-table-column
               prop="stockingQuantity"
               label="在庫量"

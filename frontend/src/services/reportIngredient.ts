@@ -121,17 +121,23 @@ export const calcurateInventryQuantity = (
       if (reportIngredients[i].processingType === processingType.brewing) {
         reportIngredients[i].stockingQuantity =
           reportIngredients[i - 1].stockingQuantity -
-          reportIngredients[i].quantity;
+          reportIngredients[i].ingredient.brewingUnit.convertToBaseUnit(
+            reportIngredients[i].quantity
+          ).quantity;
       }
       if (reportIngredients[i].processingType === processingType.recieving) {
         reportIngredients[i].stockingQuantity =
           reportIngredients[i - 1].stockingQuantity +
-          reportIngredients[i].quantity;
+          reportIngredients[i].ingredient.recievingUnit.convertToBaseUnit(
+            reportIngredients[i].quantity
+          ).quantity;
       }
       if (reportIngredients[i].processingType === processingType.inventory) {
         reportIngredients[i].stockingQuantity =
           reportIngredients[i - 1].stockingQuantity +
-          reportIngredients[i].quantity;
+          reportIngredients[i].ingredient.stockingUnit.convertToBaseUnit(
+            reportIngredients[i].quantity
+          ).quantity;
       }
     }
   }
