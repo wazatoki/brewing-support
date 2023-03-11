@@ -79,7 +79,7 @@ describe("brewEvent.ts", () => {
       grains: grains,
       hops: hops,
       yeasts: yeasts,
-      brewPlanID: "brew_plan-test-2",
+      brewPlanID: "brew_plan-test-id-2",
     });
   });
 });

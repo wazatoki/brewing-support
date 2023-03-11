@@ -6,6 +6,7 @@ import {
   inventoryAdjustedQuantity,
   carryOver,
   calcurateInventryQuantity,
+  createReportIngredient,
 } from "@/services/reportIngredient";
 import * as processingType from "@/models/processingType";
 import * as modelHelper from "../models/helper";
@@ -95,5 +96,280 @@ describe("services/reportIngredient.ts", () => {
     expect(reportIngredients[1].stockingQuantity).toEqual(1100);
     expect(reportIngredients[2].stockingQuantity).toEqual(1110);
     expect(reportIngredients[3].stockingQuantity).toEqual(1109);
+  });
+
+  it("createReportIngredient", () => {
+    const grains = modelHelper.createGrains();
+    const hops = modelHelper.createHops();
+    const yeasts = modelHelper.createYeasts();
+    const ingredients = modelHelper.createIngredients();
+    const brewPlans = modelHelper.createBrewPlans();
+    const brewEvents = modelHelper.createBrewEvents();
+    const recieveEvents = modelHelper.createRecieveEvents();
+    const inventories = modelHelper.createInventories();
+
+    const grainReportResurt = createReportIngredient(
+      grains[2],
+      brewPlans,
+      brewEvents,
+      recieveEvents,
+      inventories,
+      "grains"
+    );
+    const hopReportResurt = createReportIngredient(
+      hops[2],
+      brewPlans,
+      brewEvents,
+      recieveEvents,
+      inventories,
+      "hops"
+    );
+    const yeastReportResurt = createReportIngredient(
+      yeasts[2],
+      brewPlans,
+      brewEvents,
+      recieveEvents,
+      inventories,
+      "yeasts"
+    );
+    const ingredientReportResurt = createReportIngredient(
+      ingredients[2],
+      brewPlans,
+      brewEvents,
+      recieveEvents,
+      inventories,
+      "others"
+    );
+
+    const grainReportExpects = [] as ReportIngredient[];
+    grainReportExpects.push(
+      new ReportIngredient(
+        "",
+        brewEvents[1].from,
+        processingType.brewing,
+        brewEvents[1].grains[2].grain,
+        null,
+        null,
+        brewEvents[1].grains[2].convertToStockingUnit.quantity,
+        brewEvents[1].grains[2].convertToStockingUnit.stockingUnit.name
+      )
+    );
+    for (let i = 2; i < 10; i++) {
+      grainReportExpects.push(
+        new ReportIngredient(
+          "",
+          brewEvents[i].from,
+          processingType.brewing,
+          brewEvents[i].grains[2].grain,
+          null,
+          brewPlans[i],
+          brewEvents[i].grains[2].convertToStockingUnit.quantity,
+          brewEvents[i].grains[2].convertToStockingUnit.stockingUnit.name
+        )
+      );
+    }
+    for (let i = 1; i < 10; i++) {
+      grainReportExpects.push(
+        new ReportIngredient(
+          "",
+          recieveEvents[i].recieveDate,
+          processingType.recieving,
+          recieveEvents[i].grains[2].grain,
+          recieveEvents[i].supplier,
+          null,
+          recieveEvents[i].grains[2].convertToStockingUnit.quantity,
+          recieveEvents[i].grains[2].convertToStockingUnit.stockingUnit.name
+        )
+      );
+    }
+    for (let i = 1; i < 10; i++) {
+      grainReportExpects.push(
+        new ReportIngredient(
+          "",
+          inventories[i].onDate,
+          processingType.inventory,
+          inventories[i].grains[2].grain,
+          null,
+          null,
+          inventories[i].grains[2].adjustedValue,
+          inventories[i].grains[2].grain.stockingUnit.name
+        )
+      );
+    }
+
+    const hopReportExpects = [] as ReportIngredient[];
+    hopReportExpects.push(
+      new ReportIngredient(
+        "",
+        brewEvents[1].from,
+        processingType.brewing,
+        brewEvents[1].hops[2].hop,
+        null,
+        null,
+        brewEvents[1].hops[2].convertToStockingUnit.quantity,
+        brewEvents[1].hops[2].convertToStockingUnit.stockingUnit.name
+      )
+    );
+    for (let i = 2; i < 10; i++) {
+      hopReportExpects.push(
+        new ReportIngredient(
+          "",
+          brewEvents[i].from,
+          processingType.brewing,
+          brewEvents[i].hops[2].hop,
+          null,
+          brewPlans[i],
+          brewEvents[i].hops[2].convertToStockingUnit.quantity,
+          brewEvents[i].hops[2].convertToStockingUnit.stockingUnit.name
+        )
+      );
+    }
+    for (let i = 1; i < 10; i++) {
+      hopReportExpects.push(
+        new ReportIngredient(
+          "",
+          recieveEvents[i].recieveDate,
+          processingType.recieving,
+          recieveEvents[i].hops[2].hop,
+          recieveEvents[i].supplier,
+          null,
+          recieveEvents[i].hops[2].convertToStockingUnit.quantity,
+          recieveEvents[i].hops[2].convertToStockingUnit.stockingUnit.name
+        )
+      );
+    }
+    for (let i = 1; i < 10; i++) {
+      hopReportExpects.push(
+        new ReportIngredient(
+          "",
+          inventories[i].onDate,
+          processingType.inventory,
+          inventories[i].hops[2].hop,
+          null,
+          null,
+          inventories[i].hops[2].adjustedValue,
+          inventories[i].hops[2].hop.stockingUnit.name
+        )
+      );
+    }
+
+    const yeastReportExpects = [] as ReportIngredient[];
+    yeastReportExpects.push(
+      new ReportIngredient(
+        "",
+        brewEvents[1].from,
+        processingType.brewing,
+        brewEvents[1].yeasts[2].yeast,
+        null,
+        null,
+        brewEvents[1].yeasts[2].convertToStockingUnit.quantity,
+        brewEvents[1].yeasts[2].convertToStockingUnit.stockingUnit.name
+      )
+    );
+    for (let i = 2; i < 10; i++) {
+      yeastReportExpects.push(
+        new ReportIngredient(
+          "",
+          brewEvents[i].from,
+          processingType.brewing,
+          brewEvents[i].yeasts[2].yeast,
+          null,
+          brewPlans[i],
+          brewEvents[i].yeasts[2].convertToStockingUnit.quantity,
+          brewEvents[i].yeasts[2].convertToStockingUnit.stockingUnit.name
+        )
+      );
+    }
+    for (let i = 1; i < 10; i++) {
+      yeastReportExpects.push(
+        new ReportIngredient(
+          "",
+          recieveEvents[i].recieveDate,
+          processingType.recieving,
+          recieveEvents[i].yeasts[2].yeast,
+          recieveEvents[i].supplier,
+          null,
+          recieveEvents[i].yeasts[2].convertToStockingUnit.quantity,
+          recieveEvents[i].yeasts[2].convertToStockingUnit.stockingUnit.name
+        )
+      );
+    }
+    for (let i = 1; i < 10; i++) {
+      yeastReportExpects.push(
+        new ReportIngredient(
+          "",
+          inventories[i].onDate,
+          processingType.inventory,
+          inventories[i].yeasts[2].yeast,
+          null,
+          null,
+          inventories[i].yeasts[2].adjustedValue,
+          inventories[i].yeasts[2].yeast.stockingUnit.name
+        )
+      );
+    }
+
+    const ingredientReportExpects = [] as ReportIngredient[];
+    ingredientReportExpects.push(
+      new ReportIngredient(
+        "",
+        brewEvents[1].from,
+        processingType.brewing,
+        brewEvents[1].ingredients[2].ingredient,
+        null,
+        null,
+        brewEvents[1].ingredients[2].convertToStockingUnit.quantity,
+        brewEvents[1].ingredients[2].convertToStockingUnit.stockingUnit.name
+      )
+    );
+    for (let i = 2; i < 10; i++) {
+      ingredientReportExpects.push(
+        new ReportIngredient(
+          "",
+          brewEvents[i].from,
+          processingType.brewing,
+          brewEvents[i].ingredients[2].ingredient,
+          null,
+          brewPlans[i],
+          brewEvents[i].ingredients[2].convertToStockingUnit.quantity,
+          brewEvents[i].ingredients[2].convertToStockingUnit.stockingUnit.name
+        )
+      );
+    }
+    for (let i = 1; i < 10; i++) {
+      ingredientReportExpects.push(
+        new ReportIngredient(
+          "",
+          recieveEvents[i].recieveDate,
+          processingType.recieving,
+          recieveEvents[i].ingredients[2].ingredient,
+          recieveEvents[i].supplier,
+          null,
+          recieveEvents[i].ingredients[2].convertToStockingUnit.quantity,
+          recieveEvents[
+            i
+          ].ingredients[2].convertToStockingUnit.stockingUnit.name
+        )
+      );
+    }
+    for (let i = 1; i < 10; i++) {
+      ingredientReportExpects.push(
+        new ReportIngredient(
+          "",
+          inventories[i].onDate,
+          processingType.inventory,
+          inventories[i].ingredients[2].ingredient,
+          null,
+          null,
+          inventories[i].ingredients[2].adjustedValue,
+          inventories[i].ingredients[2].ingredient.stockingUnit.name
+        )
+      );
+    }
+
+    expect(grainReportResurt).toEqual(grainReportExpects);
+    expect(hopReportResurt).toEqual(hopReportExpects);
+    expect(yeastReportResurt).toEqual(yeastReportExpects);
+    expect(ingredientReportResurt).toEqual(ingredientReportExpects);
   });
 });

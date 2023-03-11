@@ -256,7 +256,7 @@ export const createBrewEvents = () => {
         grains,
         hops,
         yeasts,
-        "brew_plan-test-" + i
+        "brew_plan-test-id-" + i
       )
     );
   }
