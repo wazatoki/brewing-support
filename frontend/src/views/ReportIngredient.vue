@@ -7,7 +7,6 @@ import * as ingredientRepo from "@/repositories/ingredientRepo";
 import * as grainRepo from "@/repositories/ingredientGrainRepo";
 import * as hopRepo from "@/repositories/ingredientHopRepo";
 import * as yeastRepo from "@/repositories/ingredientYeastRepo";
-
 import * as inventoryRepo from "@/repositories/inventoryRepo";
 import * as ingredientClassificationRepo from "@/repositories/ingredientClassificationRepo";
 import * as reportIngredientService from "@/services/reportIngredient";
@@ -16,6 +15,7 @@ import { ReportIngredient } from "@/models/reportIngredient";
 import * as processingType from "@/models/processingType";
 import { Ingredient } from "@/models/ingredient";
 import { Unit } from "@/models/unit";
+import ExcelJS from "exceljs";
 
 const ingredientClassifications = reactive([]);
 const ingredients = reactive([]);
@@ -40,15 +40,19 @@ const inventoryIngredientAjustSum = ref(0);
 const inventoryQuantity = ref(0);
 const selectedCategory = ref("");
 const isIngredientClassificationVisible = ref(false);
-const fromDateStr = ref();
-const toDateStr = ref(new Date());
+const today = new Date();
+const fromDateStr = ref(
+  new Date(today.getFullYear() - 1, today.getMonth(), today.getDate())
+);
+const toDateStr = ref(today);
+const exportExcelDialogVisible = ref(false);
 
 const fromDate = () => {
   return new Date(fromDateStr.value);
 };
 const toDate = () => {
   const d = new Date(toDateStr.value);
-  return new Date(d.getFullYear(), d.getMonth(), d.getDay(), 23, 59, 59, 999);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
 };
 
 onMounted(async () => {
@@ -56,6 +60,9 @@ onMounted(async () => {
   recieveEventsBuffer.splice(0);
   brewEventsBuffer.splice(0);
   ingredientsBuffer.splice(0);
+  grainsBuffer.splice(0);
+  hopsBuffer.splice(0);
+  yeastsBuffer.splice(0);
   inventoryBuffer.splice(0);
   ingredientClassifications.splice(0);
   (await brewPlanRepo.fetchAll()).result.forEach((item) => {
@@ -137,9 +144,17 @@ const onChangeIngredientClassification = () => {
 const onChangeIngredient = () => {
   reportDataBuffer.splice(0);
 
-  pushBrewEventData();
-  pushRecieveEventData();
-  pushInventoryData();
+  const reportIngredients = reportIngredientService.createReportIngredient(
+    selectedIngredient.value,
+    brewPlansBuffer,
+    brewEventsBuffer,
+    recieveEventsBuffer,
+    inventoryBuffer,
+    selectedCategory.value
+  );
+  reportIngredients.forEach((item) => {
+    reportDataBuffer.push(item);
+  });
 
   const sortedBuffer = reportIngredientService.sortByDate(reportDataBuffer);
 
@@ -164,7 +179,7 @@ const onChangeIngredient = () => {
     )
   );
   sortedBuffer.forEach((item) => {
-    if (item.processingDate > fromDate()) {
+    if (item.processingDate > fromDate() && item.processingDate <= toDate()) {
       tableData.push(item);
     }
   });
@@ -196,273 +211,309 @@ const onChangeIngredient = () => {
     inventoryIngredientAjustSum.value;
 };
 
-const pushBrewEventData = () => {
-  const funcs = {
-    grains: (brewEvent) => {
-      brewEvent.grains.forEach((consumedIngredient) => {
-        if (consumedIngredient.grain.id === selectedIngredient.value.id) {
-          reportDataBuffer.push(
-            new ReportIngredient(
-              "",
-              brewEvent.from,
-              processingType.brewing,
-              consumedIngredient.grain,
-              null,
-              brewPlansBuffer.find((item) => item.id === brewEvent.brewPlanID),
-              consumedIngredient.convertToStockingUnit.quantity,
-              consumedIngredient.convertToStockingUnit.stockingUnit.name
-            )
-          );
-        }
-      });
-    },
-    hops: (brewEvent) => {
-      brewEvent.hops.forEach((consumedIngredient) => {
-        if (consumedIngredient.hop.id === selectedIngredient.value.id) {
-          reportDataBuffer.push(
-            new ReportIngredient(
-              "",
-              brewEvent.from,
-              processingType.brewing,
-              consumedIngredient.hop,
-              null,
-              brewPlansBuffer.find((item) => item.id === brewEvent.brewPlanID),
-              consumedIngredient.convertToStockingUnit.quantity,
-              consumedIngredient.convertToStockingUnit.stockingUnit.name
-            )
-          );
-        }
-      });
-    },
-    yeasts: (brewEvent) => {
-      brewEvent.yeasts.forEach((consumedIngredient) => {
-        if (consumedIngredient.yeast.id === selectedIngredient.value.id) {
-          reportDataBuffer.push(
-            new ReportIngredient(
-              "",
-              brewEvent.from,
-              processingType.brewing,
-              consumedIngredient.yeast,
-              null,
-              brewPlansBuffer.find((item) => item.id === brewEvent.brewPlanID),
-              consumedIngredient.convertToStockingUnit.quantity,
-              consumedIngredient.convertToStockingUnit.stockingUnit.name
-            )
-          );
-        }
-      });
-    },
-    others: (brewEvent) => {
-      brewEvent.ingredients.forEach((consumedIngredient) => {
-        if (consumedIngredient.ingredient.id === selectedIngredient.value.id) {
-          reportDataBuffer.push(
-            new ReportIngredient(
-              "",
-              brewEvent.from,
-              processingType.brewing,
-              consumedIngredient.ingredient,
-              null,
-              brewPlansBuffer.find((item) => item.id === brewEvent.brewPlanID),
-              consumedIngredient.convertToStockingUnit.quantity,
-              consumedIngredient.convertToStockingUnit.stockingUnit.name
-            )
-          );
-        }
-      });
-    },
-  };
-  brewEventsBuffer.forEach((brewEvent) => {
-    if (funcs[selectedCategory.value] != null) {
-      funcs[selectedCategory.value](brewEvent);
-    }
-  });
-};
-
-const pushRecieveEventData = () => {
-  const funcs = {
-    grains: (recieveEvent) => {
-      recieveEvent.grains.forEach((recievedIngredient) => {
-        if (recievedIngredient.grain.id === selectedIngredient.value.id) {
-          reportDataBuffer.push(
-            new ReportIngredient(
-              "",
-              recieveEvent.recieveDate,
-              processingType.recieving,
-              recievedIngredient.grain,
-              recieveEvent.supplier,
-              null,
-              recievedIngredient.convertToStockingUnit.quantity,
-              recievedIngredient.convertToStockingUnit.stockingUnit.name
-            )
-          );
-        }
-      });
-    },
-    hops: (recieveEvent) => {
-      recieveEvent.hops.forEach((recievedIngredient) => {
-        if (recievedIngredient.hop.id === selectedIngredient.value.id) {
-          reportDataBuffer.push(
-            new ReportIngredient(
-              "",
-              recieveEvent.recieveDate,
-              processingType.recieving,
-              recievedIngredient.hop,
-              recieveEvent.supplier,
-              null,
-              recievedIngredient.convertToStockingUnit.quantity,
-              recievedIngredient.convertToStockingUnit.stockingUnit.name
-            )
-          );
-        }
-      });
-    },
-    yeasts: (recieveEvent) => {
-      recieveEvent.yeasts.forEach((recievedIngredient) => {
-        if (recievedIngredient.yeast.id === selectedIngredient.value.id) {
-          reportDataBuffer.push(
-            new ReportIngredient(
-              "",
-              recieveEvent.recieveDate,
-              processingType.recieving,
-              recievedIngredient.yeast,
-              recieveEvent.supplier,
-              null,
-              recievedIngredient.convertToStockingUnit.quantity,
-              recievedIngredient.convertToStockingUnit.stockingUnit.name
-            )
-          );
-        }
-      });
-    },
-    others: (recieveEvent) => {
-      recieveEvent.ingredients.forEach((recievedIngredient) => {
-        if (recievedIngredient.ingredient.id === selectedIngredient.value.id) {
-          reportDataBuffer.push(
-            new ReportIngredient(
-              "",
-              recieveEvent.recieveDate,
-              processingType.recieving,
-              recievedIngredient.ingredient,
-              recieveEvent.supplier,
-              null,
-              recievedIngredient.convertToStockingUnit.quantity,
-              recievedIngredient.convertToStockingUnit.stockingUnit.name
-            )
-          );
-        }
-      });
-    },
-  };
-
-  recieveEventsBuffer.forEach((recieveEvent) => {
-    if (funcs[selectedCategory.value] != null) {
-      funcs[selectedCategory.value](recieveEvent);
-    }
-  });
-};
-
-const pushInventoryData = () => {
-  const funcs = {
-    grains: (inventory) => {
-      inventory.grains.forEach((inventoryIngredient) => {
-        if (inventoryIngredient.grain.id === selectedIngredient.value.id) {
-          reportDataBuffer.push(
-            new ReportIngredient(
-              "",
-              inventory.onDate,
-              processingType.inventory,
-              inventoryIngredient.grain,
-              null,
-              null,
-              inventoryIngredient.adjustedValue,
-              inventoryIngredient.grain.stockingUnit.name
-            )
-          );
-        }
-      });
-    },
-    hops: (inventory) => {
-      inventory.hops.forEach((inventoryIngredient) => {
-        if (inventoryIngredient.hop.id === selectedIngredient.value.id) {
-          reportDataBuffer.push(
-            new ReportIngredient(
-              "",
-              inventory.onDate,
-              processingType.inventory,
-              inventoryIngredient.hop,
-              null,
-              null,
-              inventoryIngredient.adjustedValue,
-              inventoryIngredient.hop.stockingUnit.name
-            )
-          );
-        }
-      });
-    },
-    yeasts: (inventory) => {
-      inventory.yeasts.forEach((inventoryIngredient) => {
-        if (inventoryIngredient.yeast.id === selectedIngredient.value.id) {
-          reportDataBuffer.push(
-            new ReportIngredient(
-              "",
-              inventory.onDate,
-              processingType.inventory,
-              inventoryIngredient.yeast,
-              null,
-              null,
-              inventoryIngredient.adjustedValue,
-              inventoryIngredient.yeast.stockingUnit.name
-            )
-          );
-        }
-      });
-    },
-    others: (inventory) => {
-      inventory.ingredients.forEach((inventoryIngredient) => {
-        if (inventoryIngredient.ingredient.id === selectedIngredient.value.id) {
-          reportDataBuffer.push(
-            new ReportIngredient(
-              "",
-              inventory.onDate,
-              processingType.inventory,
-              inventoryIngredient.ingredient,
-              null,
-              null,
-              inventoryIngredient.adjustedValue,
-              inventoryIngredient.ingredient.stockingUnit.name
-            )
-          );
-        }
-      });
-    },
-  };
-
-  inventoryBuffer.forEach((inventory) => {
-    if (funcs[selectedCategory.value] != null) {
-      funcs[selectedCategory.value](inventory);
-    }
-  });
-};
-
 const formatDate = (row, column, cellValue) => {
   return utils.formatDateTime(cellValue);
 };
 
-const formatUnit = (row) => {
+const formatBrewingUnit = (row) => {
   switch (row.processingType) {
     case processingType.brewing:
       return row.ingredient.brewingUnit.name;
 
     case processingType.recieving:
-      return row.ingredient.recievingUnit.name;
+      return "";
 
     case processingType.inventory:
-      return row.ingredient.stockingUnit.name;
+      if (row.quantity <= 0) {
+        return row.ingredient.stockingUnit.name;
+      }
+      return "";
 
     default:
       row.unitName;
       break;
   }
+};
+
+const formatRecievingUnit = (row) => {
+  switch (row.processingType) {
+    case processingType.brewing:
+      return "";
+
+    case processingType.recieving:
+      return row.ingredient.recievingUnit.name;
+
+    case processingType.inventory:
+      if (row.quantity >= 0) {
+        return row.ingredient.stockingUnit.name;
+      }
+      return "";
+
+    default:
+      row.unitName;
+      break;
+  }
+};
+
+const onClickExportExcel = () => {
+  exportExcelDialogVisible.value = true;
+  exportData();
+  exportExcelDialogVisible.value = false;
+};
+
+const exportData = async () => {
+  const excelTableData = [];
+  const ingredientClassifications = [];
+  const reportDataBuffer = [];
+  let consumedIngredientSum = 0;
+  let recievedIngredientSum = 0;
+  let inventoryIngredientAjustSum = 0;
+  let inventoryQuantity = 0;
+  let allConsumedIngredientSum = 0;
+  let allRecievedIngredientSum = 0;
+  let allInventoryIngredientAjustSum = 0;
+  let allInventoryQuantity = 0;
+
+  const createExcelTableData = (ingredient) => {
+    const sortedBuffer = reportIngredientService.sortByDate(reportDataBuffer);
+    const carryOver = () =>
+      reportIngredientService.carryOver(
+        ingredient.id,
+        reportDataBuffer,
+        fromDate()
+      );
+    excelTableData.splice(0);
+    excelTableData.push(
+      new ReportIngredient(
+        "",
+        fromDate(),
+        processingType.inventory,
+        ingredient,
+        null,
+        null,
+        carryOver(),
+        ingredient.stockingUnit.name
+      )
+    );
+    sortedBuffer.forEach((item) => {
+      if (item.processingDate > fromDate() && item.processingDate <= toDate()) {
+        excelTableData.push(item);
+      }
+    });
+
+    reportIngredientService.calcurateInventryQuantity(excelTableData);
+  };
+
+  const createHeaderData = (ingredient) => {
+    consumedIngredientSum = reportIngredientService.comsumedQuantity(
+      ingredient.id,
+      reportDataBuffer,
+      toDate()
+    );
+
+    recievedIngredientSum = reportIngredientService.recievedQuantity(
+      ingredient.id,
+      reportDataBuffer,
+      toDate()
+    );
+
+    inventoryIngredientAjustSum =
+      reportIngredientService.inventoryAdjustedQuantity(
+        ingredient.id,
+        reportDataBuffer,
+        toDate()
+      );
+
+    inventoryQuantity =
+      recievedIngredientSum -
+      consumedIngredientSum +
+      inventoryIngredientAjustSum;
+
+    allConsumedIngredientSum = allConsumedIngredientSum + consumedIngredientSum;
+    allRecievedIngredientSum = allRecievedIngredientSum + recievedIngredientSum;
+    allInventoryIngredientAjustSum =
+      allInventoryIngredientAjustSum + inventoryIngredientAjustSum;
+    allInventoryQuantity = allInventoryQuantity + inventoryQuantity;
+  };
+
+  const workbook = new ExcelJS.Workbook();
+
+  workbook.addWorksheet("grains");
+  const grainWorksheet = workbook.getWorksheet("grains");
+
+  allConsumedIngredientSum = 0;
+  allRecievedIngredientSum = 0;
+  allInventoryIngredientAjustSum = 0;
+  allInventoryQuantity = 0;
+  grainsBuffer.forEach((grain) => {
+    reportDataBuffer.splice(0);
+
+    const reportIngredients = reportIngredientService.createReportIngredient(
+      grain,
+      brewPlansBuffer,
+      brewEventsBuffer,
+      recieveEventsBuffer,
+      inventoryBuffer,
+      "grains"
+    );
+    reportIngredients.forEach((item) => {
+      reportDataBuffer.push(item);
+    });
+
+    consumedIngredientSum = 0;
+    recievedIngredientSum = 0;
+    inventoryIngredientAjustSum = 0;
+    inventoryQuantity = 0;
+    createExcelTableData(grain);
+    createHeaderData(grain);
+
+    if (excelTableData.length != 1 || excelTableData[0].stockingQuantity != 0) {
+      grainWorksheet.addRow([]);
+      grainWorksheet.addRow([grain.name]);
+      grainWorksheet.addRow([
+        "入荷合計",
+        recievedIngredientSum,
+        grain.stockingUnit.name,
+      ]);
+      grainWorksheet.addRow([
+        "使用合計",
+        consumedIngredientSum,
+        grain.stockingUnit.name,
+      ]);
+      grainWorksheet.addRow([
+        "棚卸調整合計",
+        inventoryIngredientAjustSum,
+        grain.stockingUnit.name,
+      ]);
+      grainWorksheet.addRow([
+        "在庫数",
+        inventoryQuantity,
+        grain.stockingUnit.name,
+      ]);
+      grainWorksheet.addRow([
+        "日付",
+        "処理区分",
+        "仕入先",
+        "入荷量",
+        "単位",
+        "batch NO",
+        "batch name",
+        "払出量",
+        "単位",
+        "在庫量",
+        "単位",
+      ]);
+      for (let i = 0; i < excelTableData.length; i++) {
+        grainWorksheet.addRow([
+          excelTableData[i].processingDate,
+          excelTableData[i].processingType,
+          excelTableData[i].supplier ? excelTableData[i].supplier.name : "",
+          excelTableData[i].recievedQuantity,
+          formatRecievingUnit(excelTableData[i]),
+          excelTableData[i].brewPlan
+            ? excelTableData[i].brewPlan.batchNumber
+            : "",
+          excelTableData[i].brewPlan ? excelTableData[i].brewPlan.name : "",
+          excelTableData[i].consumedQuantity,
+          formatBrewingUnit(excelTableData[i]),
+          excelTableData[i].stockingQuantity,
+          excelTableData[i].unitName,
+        ]);
+      }
+    }
+  });
+
+  workbook.addWorksheet("hops");
+  const hopWorksheet = workbook.getWorksheet("hops");
+
+  allConsumedIngredientSum = 0;
+  allRecievedIngredientSum = 0;
+  allInventoryIngredientAjustSum = 0;
+  allInventoryQuantity = 0;
+  hopsBuffer.forEach((hop) => {
+    reportDataBuffer.splice(0);
+
+    const reportIngredients = reportIngredientService.createReportIngredient(
+      hop,
+      brewPlansBuffer,
+      brewEventsBuffer,
+      recieveEventsBuffer,
+      inventoryBuffer,
+      "hops"
+    );
+    reportIngredients.forEach((item) => {
+      reportDataBuffer.push(item);
+    });
+
+    consumedIngredientSum = 0;
+    recievedIngredientSum = 0;
+    inventoryIngredientAjustSum = 0;
+    inventoryQuantity = 0;
+    createExcelTableData(hop);
+    createHeaderData(hop);
+  });
+
+  workbook.addWorksheet("yeasts");
+  const yeastsWorksheet = workbook.getWorksheet("yeasts");
+
+  allConsumedIngredientSum = 0;
+  allRecievedIngredientSum = 0;
+  allInventoryIngredientAjustSum = 0;
+  allInventoryQuantity = 0;
+  yeastsBuffer.forEach((yeast) => {
+    reportDataBuffer.splice(0);
+
+    const reportIngredients = reportIngredientService.createReportIngredient(
+      yeast,
+      brewPlansBuffer,
+      brewEventsBuffer,
+      recieveEventsBuffer,
+      inventoryBuffer,
+      "yeasts"
+    );
+    reportIngredients.forEach((item) => {
+      reportDataBuffer.push(item);
+    });
+
+    consumedIngredientSum = 0;
+    recievedIngredientSum = 0;
+    inventoryIngredientAjustSum = 0;
+    inventoryQuantity = 0;
+    createExcelTableData(yeast);
+    createHeaderData(yeast);
+  });
+
+  ingredientsBuffer.forEach((ingredient) => {
+    reportDataBuffer.splice(0);
+
+    const reportIngredients = reportIngredientService.createReportIngredient(
+      ingredient,
+      brewPlansBuffer,
+      brewEventsBuffer,
+      recieveEventsBuffer,
+      inventoryBuffer,
+      "yeasts"
+    );
+    reportIngredients.forEach((item) => {
+      reportDataBuffer.push(item);
+    });
+
+    consumedIngredientSum = 0;
+    recievedIngredientSum = 0;
+    inventoryIngredientAjustSum = 0;
+    inventoryQuantity = 0;
+    createExcelTableData(ingredient);
+    createHeaderData(ingredient);
+  });
+
+  // ③ファイル生成
+  const uint8Array = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([uint8Array], { type: "application/octet-binary" });
+  const a = document.createElement("a");
+  a.href = (window.URL || window.webkitURL).createObjectURL(blob);
+  a.download = `output.xlsx`;
+  a.click();
+  a.remove();
 };
 </script>
 
@@ -520,7 +571,15 @@ const formatUnit = (row) => {
             >
           </el-radio-group>
         </el-row>
+        <el-row>
+          <el-menu>
+            <el-menu-item @click="onClickExportExcel"
+              >エクセル出力</el-menu-item
+            >
+          </el-menu>
+        </el-row>
       </el-col>
+
       <el-col :span="18">
         <el-row>
           <el-col :span="6">
@@ -562,7 +621,11 @@ const formatUnit = (row) => {
               label="入荷量"
               width="100"
             />
-            <el-table-column :formatter="formatUnit" label="単位" width="100" />
+            <el-table-column
+              :formatter="formatRecievingUnit"
+              label="単位"
+              width="100"
+            />
             <el-table-column
               prop="brewPlan.batchNumber"
               label="batch NO"
@@ -578,7 +641,11 @@ const formatUnit = (row) => {
               label="払出量"
               width="100"
             />
-            <el-table-column :formatter="formatUnit" label="単位" width="100" />
+            <el-table-column
+              :formatter="formatBrewingUnit"
+              label="単位"
+              width="100"
+            />
             <el-table-column
               prop="stockingQuantity"
               label="在庫量"
@@ -590,4 +657,9 @@ const formatUnit = (row) => {
       </el-col>
     </el-row>
   </div>
+  <el-dialog v-model="exportExcelDialogVisible">
+    <p>
+      <span>出力データを作成しています。</span>
+    </p>
+  </el-dialog>
 </template>

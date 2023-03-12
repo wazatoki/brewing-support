@@ -12,4 +12,9 @@ module.exports = defineConfig({
       title: "brewing support",
     },
   },
+  // configureWebpack: {
+  //   resolve: {
+  //     fallback: { crypto: false, fs: false, stream: false },
+  //   },
+  // },
 });
