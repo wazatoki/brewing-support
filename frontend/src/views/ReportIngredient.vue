@@ -218,7 +218,7 @@ const formatDate = (row, column, cellValue) => {
 const formatBrewingUnit = (row) => {
   switch (row.processingType) {
     case processingType.brewing:
-      return row.ingredient.brewingUnit.name;
+      return row.ingredient.stockingUnit.name;
 
     case processingType.recieving:
       return "";
@@ -241,7 +241,7 @@ const formatRecievingUnit = (row) => {
       return "";
 
     case processingType.recieving:
-      return row.ingredient.recievingUnit.name;
+      return row.ingredient.stockingUnit.name;
 
     case processingType.inventory:
       if (row.quantity >= 0) {
