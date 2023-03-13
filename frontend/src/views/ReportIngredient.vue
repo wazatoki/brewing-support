@@ -420,6 +420,29 @@ const exportData = async () => {
           excelTableData[i].unitName,
         ]);
       }
+
+      grainWorksheet.addRow([]);
+      grainWorksheet.addRow(["all grains"]);
+      grainWorksheet.addRow([
+        "入荷合計",
+        allRecievedIngredientSum,
+        grain.stockingUnit.name,
+      ]);
+      grainWorksheet.addRow([
+        "使用合計",
+        allConsumedIngredientSum,
+        grain.stockingUnit.name,
+      ]);
+      grainWorksheet.addRow([
+        "棚卸調整合計",
+        allInventoryIngredientAjustSum,
+        grain.stockingUnit.name,
+      ]);
+      grainWorksheet.addRow([
+        "在庫数",
+        allInventoryQuantity,
+        grain.stockingUnit.name,
+      ]);
     }
   });
 
