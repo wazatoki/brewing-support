@@ -474,10 +474,84 @@ const exportData = async () => {
     inventoryQuantity = 0;
     createExcelTableData(hop);
     createHeaderData(hop);
+
+    if (excelTableData.length != 1 || excelTableData[0].stockingQuantity != 0) {
+      hopWorksheet.addRow([]);
+      hopWorksheet.addRow([hop.name]);
+      hopWorksheet.addRow([
+        "入荷合計",
+        recievedIngredientSum,
+        hop.stockingUnit.name,
+      ]);
+      hopWorksheet.addRow([
+        "使用合計",
+        consumedIngredientSum,
+        hop.stockingUnit.name,
+      ]);
+      hopWorksheet.addRow([
+        "棚卸調整合計",
+        inventoryIngredientAjustSum,
+        hop.stockingUnit.name,
+      ]);
+      hopWorksheet.addRow(["在庫数", inventoryQuantity, hop.stockingUnit.name]);
+      hopWorksheet.addRow([
+        "日付",
+        "処理区分",
+        "仕入先",
+        "入荷量",
+        "単位",
+        "batch NO",
+        "batch name",
+        "払出量",
+        "単位",
+        "在庫量",
+        "単位",
+      ]);
+      for (let i = 0; i < excelTableData.length; i++) {
+        hopWorksheet.addRow([
+          excelTableData[i].processingDate,
+          excelTableData[i].processingType,
+          excelTableData[i].supplier ? excelTableData[i].supplier.name : "",
+          excelTableData[i].recievedQuantity,
+          formatRecievingUnit(excelTableData[i]),
+          excelTableData[i].brewPlan
+            ? excelTableData[i].brewPlan.batchNumber
+            : "",
+          excelTableData[i].brewPlan ? excelTableData[i].brewPlan.name : "",
+          excelTableData[i].consumedQuantity,
+          formatBrewingUnit(excelTableData[i]),
+          excelTableData[i].stockingQuantity,
+          excelTableData[i].unitName,
+        ]);
+      }
+
+      hopWorksheet.addRow([]);
+      hopWorksheet.addRow(["all hops"]);
+      hopWorksheet.addRow([
+        "入荷合計",
+        allRecievedIngredientSum,
+        hop.stockingUnit.name,
+      ]);
+      hopWorksheet.addRow([
+        "使用合計",
+        allConsumedIngredientSum,
+        hop.stockingUnit.name,
+      ]);
+      hopWorksheet.addRow([
+        "棚卸調整合計",
+        allInventoryIngredientAjustSum,
+        hop.stockingUnit.name,
+      ]);
+      hopWorksheet.addRow([
+        "在庫数",
+        allInventoryQuantity,
+        hop.stockingUnit.name,
+      ]);
+    }
   });
 
   workbook.addWorksheet("yeasts");
-  const yeastsWorksheet = workbook.getWorksheet("yeasts");
+  const yeastWorksheet = workbook.getWorksheet("yeasts");
 
   allConsumedIngredientSum = 0;
   allRecievedIngredientSum = 0;
@@ -504,6 +578,84 @@ const exportData = async () => {
     inventoryQuantity = 0;
     createExcelTableData(yeast);
     createHeaderData(yeast);
+
+    if (excelTableData.length != 1 || excelTableData[0].stockingQuantity != 0) {
+      yeastWorksheet.addRow([]);
+      yeastWorksheet.addRow([yeast.name]);
+      yeastWorksheet.addRow([
+        "入荷合計",
+        recievedIngredientSum,
+        yeast.stockingUnit.name,
+      ]);
+      yeastWorksheet.addRow([
+        "使用合計",
+        consumedIngredientSum,
+        yeast.stockingUnit.name,
+      ]);
+      yeastWorksheet.addRow([
+        "棚卸調整合計",
+        inventoryIngredientAjustSum,
+        yeast.stockingUnit.name,
+      ]);
+      yeastWorksheet.addRow([
+        "在庫数",
+        inventoryQuantity,
+        yeast.stockingUnit.name,
+      ]);
+      yeastWorksheet.addRow([
+        "日付",
+        "処理区分",
+        "仕入先",
+        "入荷量",
+        "単位",
+        "batch NO",
+        "batch name",
+        "払出量",
+        "単位",
+        "在庫量",
+        "単位",
+      ]);
+      for (let i = 0; i < excelTableData.length; i++) {
+        yeastWorksheet.addRow([
+          excelTableData[i].processingDate,
+          excelTableData[i].processingType,
+          excelTableData[i].supplier ? excelTableData[i].supplier.name : "",
+          excelTableData[i].recievedQuantity,
+          formatRecievingUnit(excelTableData[i]),
+          excelTableData[i].brewPlan
+            ? excelTableData[i].brewPlan.batchNumber
+            : "",
+          excelTableData[i].brewPlan ? excelTableData[i].brewPlan.name : "",
+          excelTableData[i].consumedQuantity,
+          formatBrewingUnit(excelTableData[i]),
+          excelTableData[i].stockingQuantity,
+          excelTableData[i].unitName,
+        ]);
+      }
+
+      yeastWorksheet.addRow([]);
+      yeastWorksheet.addRow(["all yeasts"]);
+      yeastWorksheet.addRow([
+        "入荷合計",
+        allRecievedIngredientSum,
+        yeast.stockingUnit.name,
+      ]);
+      yeastWorksheet.addRow([
+        "使用合計",
+        allConsumedIngredientSum,
+        yeast.stockingUnit.name,
+      ]);
+      yeastWorksheet.addRow([
+        "棚卸調整合計",
+        allInventoryIngredientAjustSum,
+        yeast.stockingUnit.name,
+      ]);
+      yeastWorksheet.addRow([
+        "在庫数",
+        allInventoryQuantity,
+        yeast.stockingUnit.name,
+      ]);
+    }
   });
 
   ingredientsBuffer.forEach((ingredient) => {
