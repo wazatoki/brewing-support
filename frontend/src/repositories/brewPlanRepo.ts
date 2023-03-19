@@ -492,6 +492,11 @@ export async function fetchAll(): Promise<{
         brewPlanPO.brixLevel,
         brewPlanPO.finalBrixLevel,
         brewPlanPO.abv,
+        brewPlanPO.measuredOriginalGravity,
+        brewPlanPO.measuredFinalGravity,
+        brewPlanPO.measuredBrixLevel,
+        brewPlanPO.measuredFinalBrixLevel,
+        brewPlanPO.measuredAbv,
         brewPlanPO.ibus,
         brewPlanPO.mashEfficienty,
         grainPlans,
@@ -528,27 +533,32 @@ export async function save(brewPlan: BrewPlan): Promise<{ id: string }> {
     brewPlan.id = prefix + createUUID();
   }
 
-  const brewEventPlainObject = brewPlan.toPlainObject();
+  const brewPlanPlainObject = brewPlan.toPlainObject();
 
   try {
     await pouchdb.save<BrewPlanPlainObject>({
       type: typename,
-      id: brewEventPlainObject.id,
-      batchNumber: brewEventPlainObject.batchNumber,
-      name: brewEventPlainObject.name,
-      batchSize: brewEventPlainObject.batchSize,
-      originalGravity: brewEventPlainObject.originalGravity,
-      finalGravity: brewEventPlainObject.finalGravity,
-      brixLevel: brewEventPlainObject.brixLevel,
-      finalBrixLevel: brewEventPlainObject.finalBrixLevel,
-      abv: brewEventPlainObject.abv,
-      ibus: brewEventPlainObject.ibus,
-      mashEfficienty: brewEventPlainObject.mashEfficienty,
-      grains: brewEventPlainObject.grains,
-      hops: brewEventPlainObject.hops,
-      yeastPlan: brewEventPlainObject.yeastPlan,
-      ingredients: brewEventPlainObject.ingredients,
-      events: brewEventPlainObject.events,
+      id: brewPlanPlainObject.id,
+      batchNumber: brewPlanPlainObject.batchNumber,
+      name: brewPlanPlainObject.name,
+      batchSize: brewPlanPlainObject.batchSize,
+      originalGravity: brewPlanPlainObject.originalGravity,
+      finalGravity: brewPlanPlainObject.finalGravity,
+      brixLevel: brewPlanPlainObject.brixLevel,
+      finalBrixLevel: brewPlanPlainObject.finalBrixLevel,
+      abv: brewPlanPlainObject.abv,
+      measuredOriginalGravity: brewPlanPlainObject.measuredOriginalGravity,
+      measuredFinalGravity: brewPlanPlainObject.measuredFinalGravity,
+      measuredBrixLevel: brewPlanPlainObject.measuredBrixLevel,
+      measuredFinalBrixLevel: brewPlanPlainObject.measuredFinalBrixLevel,
+      measuredAbv: brewPlanPlainObject.measuredAbv,
+      ibus: brewPlanPlainObject.ibus,
+      mashEfficienty: brewPlanPlainObject.mashEfficienty,
+      grains: brewPlanPlainObject.grains,
+      hops: brewPlanPlainObject.hops,
+      yeastPlan: brewPlanPlainObject.yeastPlan,
+      ingredients: brewPlanPlainObject.ingredients,
+      events: brewPlanPlainObject.events,
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

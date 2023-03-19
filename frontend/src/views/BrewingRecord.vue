@@ -368,22 +368,43 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
           </el-row>
           <el-row>
             <el-col :span="6"> 初期比重 </el-col>
-            <el-col :span="6">
+            <el-col :span="3">
               {{ brewPlan.originalGravity }}
             </el-col>
+            <el-col :span="3">
+              <el-input
+                v-model="brewPlan.measuredOriginalGravity"
+                autocomplete="off"
+              />
+            </el-col>
             <el-col :span="6"> 糖度 </el-col>
-            <el-col :span="6">
+            <el-col :span="3">
               {{ brewPlan.brixLevel }}
+            </el-col>
+            <el-col :span="3">
+              <el-input
+                v-model="brewPlan.measuredBrixLevel"
+                autocomplete="off"
+              />
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="6"> 最終比重 </el-col>
-            <el-col :span="6">
+            <el-col :span="3">
               {{ brewPlan.finalGravity }}
             </el-col>
+            <el-col :span="3">
+              <el-input
+                v-model="brewPlan.measuredFinalGravity"
+                autocomplete="off"
+              />
+            </el-col>
             <el-col :span="6"> ABV </el-col>
-            <el-col :span="6">
+            <el-col :span="3">
               {{ brewPlan.abv }}
+            </el-col>
+            <el-col :span="3">
+              <el-input v-model="brewPlan.measuredAbv" autocomplete="off" />
             </el-col>
           </el-row>
           <el-divider />
