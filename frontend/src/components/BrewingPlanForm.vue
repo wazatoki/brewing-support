@@ -51,6 +51,8 @@ const calculateOG = () => {
 const calculateBrixLevel = () => {
   form.brixLevel =
     Math.round((((Number(form.originalGravity) - 1) * 1000) / 4) * 10) / 10;
+  form.finalBrixLevel =
+    Math.round((((Number(form.finalGravity) - 1) * 1000) / 4) * 10) / 10;
 };
 
 const calculateIBUs = () => {
@@ -82,9 +84,9 @@ const calculateGrainQuantity = () => {
   });
 };
 
-const calculateFinalGravity = () => {
-  form.finalGravity = (form.finalBrixLevel * 4) / 1000 + 1;
-};
+// const calculateFinalGravity = () => {
+//   form.finalGravity = (form.finalBrixLevel * 4) / 1000 + 1;
+// };
 
 const grainQuantitySum = computed(() => {
   return form.grains
@@ -158,11 +160,6 @@ const onChangeAbv = () => {
 };
 
 const onChangeFinalGravity = () => {
-  calculateOG();
-};
-
-const onChangeBrixLevel = () => {
-  calculateFinalGravity();
   calculateOG();
 };
 
@@ -313,11 +310,7 @@ const onCancel = () => {
           :label-width="formLabelWidth"
           prop="finalBrixLevel"
         >
-          <el-input
-            v-model="form.finalBrixLevel"
-            @blur="onChangeBrixLevel"
-            autocomplete="off"
-          />
+          <span>{{ form.finalBrixLevel }}</span>
         </el-form-item>
       </el-col>
     </el-row>
