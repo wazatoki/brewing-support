@@ -91,10 +91,10 @@ const onSubmit = () => {
       form.desc,
       form.from,
       form.to,
-      form.ingredients,
-      form.grains,
-      form.hops,
-      form.yeasts,
+      form.ingredients.value,
+      form.grains.value,
+      form.hops.value,
+      form.yeasts.value,
       plan.id
     )
   );

@@ -99,6 +99,7 @@ function onSelectCalender(info) {
 
   if (brewPlan.id) {
     brewEventClear();
+    a_brewEvent.id = "";
     a_brewEvent.from = info.start;
     a_brewEvent.to = info.end;
     a_brewEvent.brewPlanID = brewPlan.id;
@@ -136,7 +137,6 @@ async function onClickCalenderEvent(info) {
 
 async function onSubmitBrewEvent(submitedBrewEvent) {
   brewEventDialogVisible.value = false; // 編集用ダイアログを閉じる
-  console.log(submitedBrewEvent);
   try {
     // db送信
     await brewEventRepo.save(submitedBrewEvent);
