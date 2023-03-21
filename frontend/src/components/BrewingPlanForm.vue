@@ -150,8 +150,12 @@ const onChangeGrainParams = () => {
   calculateGrainQuantity();
 };
 
-const onChangeHopParams = (index) => {
+const onChangeHop = (index) => {
   form.hops[index].alphaAcid = form.hops[index].hop.alphaAcid;
+  calculateIBUs();
+};
+
+const onChangeHopParams = () => {
   calculateIBUs();
 };
 
@@ -407,7 +411,7 @@ const onCancel = () => {
           v-model="form.hops[index].hop"
           :teleported="false"
           value-key="id"
-          @change="onChangeHopParams(index)"
+          @change="onChangeHop(index)"
         >
           <el-option
             v-for="item in hopMst"
@@ -419,23 +423,19 @@ const onCancel = () => {
         </el-select>
       </el-col>
       <el-col :span="4">
-        <el-input
-          v-model="form.hops[index].alphaAcid"
-          @blur="onChangeHopParams(index)"
-          autocomplete="off"
-        />
+        <el-input v-model="form.hops[index].alphaAcid" autocomplete="off" />
       </el-col>
       <el-col :span="4">
         <el-input
           v-model="form.hops[index].quantity"
-          @blur="onChangeHopParams(index)"
+          @blur="onChangeHopParams()"
           autocomplete="off"
         />
       </el-col>
       <el-col :span="4">
         <el-input
           v-model="form.hops[index].boilTime"
-          @blur="onChangeHopParams(index)"
+          @blur="onChangeHopParams()"
           autocomplete="off"
         />
       </el-col>
