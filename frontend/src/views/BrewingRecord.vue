@@ -3,6 +3,7 @@ import "@fullcalendar/core/vdom"; // solves problem with Vite
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
+import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction";
 import BrewingRecordForm from "@/components/BrewingRecordForm.vue";
 import BrewingPlanForm from "@/components/BrewingPlanForm.vue";
@@ -36,11 +37,11 @@ const brewPlanSelectFormDialogVisible = ref(false);
 const calendarEvents = reactive([]);
 
 const calendarOptions = reactive({
-  plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+  plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin],
   headerToolbar: {
     left: "prev,next today",
     center: "title",
-    right: "dayGridMonth,timeGridWeek,timeGridDay",
+    right: "dayGridMonth,timeGridWeek,timeGridDay,listYear",
   },
   initialView: "timeGridWeek",
   selectable: true,

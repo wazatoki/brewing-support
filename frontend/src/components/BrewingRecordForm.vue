@@ -128,7 +128,7 @@ const onDelete = () => {
     <el-row>
       <el-col :span="24">
         <el-form-item label="event title" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off" />
+          <el-input type="textarea" v-model="form.name" autocomplete="off" />
         </el-form-item>
       </el-col>
     </el-row>
