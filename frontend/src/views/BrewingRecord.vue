@@ -63,16 +63,24 @@ const yeastMst = reactive([]);
 
 const brewEventDialogVisible = ref(false);
 const brewPlanFormDialogVisible = ref(false);
-const brewEvents = [];
+const brewEvents = reactive([]);
 const a_brewEvent = reactive(new BrewEvent());
 
 let calendarApi;
 
-const grainQuantitySum = computed(() => {
+const grainPlanQuantitySum = computed(() => {
   return brewPlan.grains
     .map((grainPlan) => {
       return grainPlan.quantity;
     })
+    .reduce((acc, elem) => Number(acc) + Number(elem), 0);
+});
+
+const consumedGrainQuantitySum = computed(() => {
+  return brewEvents
+    .filter((brewEvent) => brewEvent.brewPlanID === brewPlan.id)
+    .flatMap((brewEvent) => brewEvent.grains)
+    .map((consumedGrain) => consumedGrain.quantity)
     .reduce((acc, elem) => Number(acc) + Number(elem), 0);
 });
 
@@ -84,6 +92,64 @@ const grainRatioSum = computed(() => {
       })
       .reduce((acc, elem) => Number(acc) + Number(elem), 0)
   );
+});
+
+const consumedGrainQuantity = computed(() => (id) => {
+  return brewEvents
+    .filter((brewEvent) => brewEvent.brewPlanID === brewPlan.id)
+    .flatMap((brewEvent) => brewEvent.grains)
+    .filter((consumedGrain) => consumedGrain.grain.id === id)
+    .map((consumedGrain) => consumedGrain.quantity)
+    .reduce((acc, elem) => Number(acc) + Number(elem), 0);
+});
+
+// return [...{grain: grain, quantity: quantity}]
+const consumedOtherGrains = computed(() => {
+  //Mapから配列を作る
+  const result = Array.from(
+    brewEvents
+      // 選択したPlanに所属するイベントのみを取り出す
+      .filter((brewEvent) => brewEvent.brewPlanID === brewPlan.id)
+      // consumedGrainのみの配列を作る
+      .flatMap((brewEvent) => brewEvent.grains)
+      .filter((consumedGrain) =>
+        // planの中のgrainsに該当するidを含むものがあれば除く
+        brewPlan.grains.find((g) => g.grain.id === consumedGrain.grain.id)
+          ? false
+          : true
+      )
+      //grain.id毎に消費数量を合計したMapを作る
+      .reduce(
+        (acc, consumedGrain) =>
+          acc.set(consumedGrain.grain.id, {
+            grain: consumedGrain.grain,
+            quantity:
+              (acc.get(consumedGrain.grain.id) ? Number(acc.quantity) : 0) +
+              Number(consumedGrain.quantity),
+          }),
+        new Map()
+      )
+      .values()
+  );
+  return result;
+});
+
+const consumedHopQuantity = computed(() => (id) => {
+  return brewEvents
+    .filter((brewEvent) => brewEvent.brewPlanID === brewPlan.id)
+    .flatMap((brewEvent) => brewEvent.hops)
+    .filter((consumedHop) => consumedHop.hop.id === id)
+    .map((consumedHop) => consumedHop.quantity)
+    .reduce((acc, elem) => Number(acc) + Number(elem), 0);
+});
+
+const consumedYeastQuantity = computed(() => (id) => {
+  return brewEvents
+    .filter((brewEvent) => brewEvent.brewPlanID === brewPlan.id)
+    .flatMap((brewEvent) => brewEvent.yeasts)
+    .filter((consumedYeast) => consumedYeast.yeast.id === id)
+    .map((consumedYeast) => consumedYeast.quantity)
+    .reduce((acc, elem) => Number(acc) + Number(elem), 0);
 });
 
 const totalIBUs = computed(() => {
@@ -257,6 +323,7 @@ const fetchYeastMst = async () => {
 };
 
 const onClickBrewPlanCreate = () => {
+  brewPlan.id = "";
   brewPlan.clear();
   brewPlanFormDialogVisible.value = true;
 };
@@ -341,7 +408,7 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
           </el-col>
           <el-col :span="6">
             <el-button type="primary" @click="onClickBrewPlanSelect()"
-              >変更</el-button
+              >選択</el-button
             >
           </el-col>
         </el-row>
@@ -432,17 +499,40 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
             <el-col :span="8">
               {{ grainPlan.grain.name }}
             </el-col>
-            <el-col :span="8">
+            <el-col :span="4">
               <span>{{ grainPlan.quantity }}</span>
+            </el-col>
+            <el-col :span="4">
+              <span>{{ consumedGrainQuantity(grainPlan.grain.id) }}</span>
             </el-col>
             <el-col :span="8">
               {{ grainPlan.ratio }}
             </el-col>
           </el-row>
+          <el-row
+            v-for="otherGrain in consumedOtherGrains"
+            :key="otherGrain.grain.id"
+          >
+            <el-col :span="8">
+              {{ otherGrain.grain.name }}
+            </el-col>
+            <el-col :span="4">
+              <span> </span>
+            </el-col>
+            <el-col :span="4">
+              <span>{{ otherGrain.quantity }}</span>
+            </el-col>
+            <el-col :span="8">
+              <span> </span>
+            </el-col>
+          </el-row>
           <el-row>
             <el-col :span="8"><span>合計</span></el-col>
-            <el-col :span="8"
-              ><span>{{ grainQuantitySum }}</span></el-col
+            <el-col :span="4"
+              ><span>{{ grainPlanQuantitySum }}</span></el-col
+            >
+            <el-col :span="4"
+              ><span>{{ consumedGrainQuantitySum }}</span></el-col
             >
             <el-col :span="8"
               ><span>{{ grainRatioSum }}</span></el-col
@@ -479,8 +569,11 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
             <el-col :span="4">
               <span>{{ hopPlan.alphaAcid }}</span>
             </el-col>
-            <el-col :span="4">
+            <el-col :span="2">
               {{ hopPlan.quantity }}
+            </el-col>
+            <el-col :span="2">
+              {{ consumedHopQuantity(hopPlan.hop.id) }}
             </el-col>
             <el-col :span="4">
               {{ hopPlan.boilTime }}
@@ -511,8 +604,11 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
             <el-col :span="8">
               {{ brewPlan.yeastPlan.yeast.name }}
             </el-col>
-            <el-col :span="8">
+            <el-col :span="4">
               {{ brewPlan.yeastPlan.quantity }}
+            </el-col>
+            <el-col :span="4">
+              {{ consumedYeastQuantity(brewPlan.yeastPlan.id) }}
             </el-col>
             <el-col :span="8">
               {{ brewPlan.yeastPlan.yeast.attenuation }}
