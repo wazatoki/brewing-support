@@ -52,6 +52,11 @@
         <el-menu-item index="6-4"
           ><router-link to="/master-supplier">取引先</router-link></el-menu-item
         >
+        <el-menu-item index="6-5"
+          ><router-link to="/master-backup"
+            >バックアップ</router-link
+          ></el-menu-item
+        >
       </el-sub-menu>
     </el-menu>
 
