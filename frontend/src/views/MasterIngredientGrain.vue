@@ -48,6 +48,7 @@ const onClickEdit = (index) => {
 };
 
 const onClickCreate = () => {
+  a_grainData.id = "";
   a_grainData.clear();
   masterIngredientGrainFormDialogVisible.value = true;
 };

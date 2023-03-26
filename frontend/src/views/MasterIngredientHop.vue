@@ -48,6 +48,7 @@ const onClickEdit = (index) => {
 };
 
 const onClickCreate = () => {
+  a_hopData.id = "";
   a_hopData.clear();
   masterIngredientHopFormDialogVisible.value = true;
 };

@@ -48,6 +48,7 @@ const onClickEdit = (index) => {
 };
 
 const onClickCreate = () => {
+  a_yeastData.id = "";
   a_yeastData.clear();
   masterIngredientYeastFormDialogVisible.value = true;
 };

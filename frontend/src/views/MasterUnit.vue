@@ -40,8 +40,8 @@ const onClickEdit = (index) => {
 };
 
 const onClickCreate = () => {
-  a_unitData.clear();
   a_unitData.id = "";
+  a_unitData.clear();
   masterUnitFormDialogVisible.value = true;
 };
 

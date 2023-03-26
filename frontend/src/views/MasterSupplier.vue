@@ -38,8 +38,8 @@ const onClickEdit = (index) => {
 };
 
 const onClickCreate = () => {
-  a_supplierData.clear();
   a_supplierData.id = "";
+  a_supplierData.clear();
   masterSupplierFormDialogVisible.value = true;
 };
 

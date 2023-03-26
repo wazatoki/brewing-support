@@ -60,6 +60,7 @@ const onClickEdit = (index) => {
 };
 
 const onClickCreate = () => {
+  inventoryData.id = "";
   inventoryData.clear();
   InventoryFormDialogVisible.value = true;
 };
