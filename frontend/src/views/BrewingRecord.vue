@@ -143,6 +143,37 @@ const consumedHopQuantity = computed(() => (id) => {
     .reduce((acc, elem) => Number(acc) + Number(elem), 0);
 });
 
+// return [...{hop: hop, quantity: quantity}]
+const consumedOtherHops = computed(() => {
+  //Mapから配列を作る
+  const result = Array.from(
+    brewEvents
+      // 選択したPlanに所属するイベントのみを取り出す
+      .filter((brewEvent) => brewEvent.brewPlanID === brewPlan.id)
+      // consumedHopのみの配列を作る
+      .flatMap((brewEvent) => brewEvent.hops)
+      .filter((consumedHop) =>
+        // planの中のhopsに該当するidを含むものがあれば除く
+        brewPlan.hops.find((h) => h.hop.id === consumedHop.hop.id)
+          ? false
+          : true
+      )
+      //grain.id毎に消費数量を合計したMapを作る
+      .reduce(
+        (acc, consumedHop) =>
+          acc.set(consumedHop.hop.id, {
+            hop: consumedHop.hop,
+            quantity:
+              (acc.get(consumedHop.hop.id) ? Number(acc.quantity) : 0) +
+              Number(consumedHop.quantity),
+          }),
+        new Map()
+      )
+      .values()
+  );
+  return result;
+});
+
 const consumedYeastQuantity = computed(() => (id) => {
   return brewEvents
     .filter((brewEvent) => brewEvent.brewPlanID === brewPlan.id)
@@ -580,6 +611,26 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
             </el-col>
             <el-col :span="4">
               <span>{{ hopPlan.ibus }}</span>
+            </el-col>
+          </el-row>
+          <el-row v-for="otherHop in consumedOtherHops" :key="otherHop.hop.id">
+            <el-col :span="4">
+              {{ otherHop.hop.name }}
+            </el-col>
+            <el-col :span="4">
+              <span>{{ otherHop.hop.alphaAcid }}</span>
+            </el-col>
+            <el-col :span="2">
+              <span> </span>
+            </el-col>
+            <el-col :span="2">
+              {{ otherHop.quantity }}
+            </el-col>
+            <el-col :span="4">
+              <span> </span>
+            </el-col>
+            <el-col :span="4">
+              <span> </span>
             </el-col>
           </el-row>
           <el-row>
