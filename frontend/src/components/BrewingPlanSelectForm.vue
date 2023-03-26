@@ -28,6 +28,7 @@ const rowClick = (selectedBrewPlan) => {
     selectedBrewPlan.grains,
     selectedBrewPlan.hops,
     selectedBrewPlan.yeastPlan,
+    selectedBrewPlan.ingredients,
     selectedBrewPlan.events
   );
   emit("selectBrewPlan", brewPlan);

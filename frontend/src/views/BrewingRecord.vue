@@ -158,7 +158,7 @@ const consumedOtherHops = computed(() => {
           ? false
           : true
       )
-      //grain.id毎に消費数量を合計したMapを作る
+      //hop.id毎に消費数量を合計したMapを作る
       .reduce(
         (acc, consumedHop) =>
           acc.set(consumedHop.hop.id, {
@@ -189,6 +189,49 @@ const totalIBUs = computed(() => {
       return hopplan.ibus;
     })
     .reduce((acc, elem) => Number(acc) + Number(elem), 0);
+});
+
+const consumedIngredientQuantity = computed(() => (id) => {
+  return brewEvents
+    .filter((brewEvent) => brewEvent.brewPlanID === brewPlan.id)
+    .flatMap((brewEvent) => brewEvent.ingredients)
+    .filter((consumedIngredient) => consumedIngredient.ingredient.id === id)
+    .map((consumedIngredient) => consumedIngredient.quantity)
+    .reduce((acc, elem) => Number(acc) + Number(elem), 0);
+});
+
+// return [...{ingredient: ingredient, quantity: quantity}]
+const consumedOtherIngredients = computed(() => {
+  //Mapから配列を作る
+  const result = Array.from(
+    brewEvents
+      // 選択したPlanに所属するイベントのみを取り出す
+      .filter((brewEvent) => brewEvent.brewPlanID === brewPlan.id)
+      // consumedIngredientのみの配列を作る
+      .flatMap((brewEvent) => brewEvent.ingredients)
+      .filter((consumedIngredient) =>
+        // planの中のingredientsに該当するidを含むものがあれば除く
+        brewPlan.ingredients.find(
+          (ip) => ip.ingredient.id === consumedIngredient.ingredient.id
+        )
+          ? false
+          : true
+      )
+      //ingredient.id毎に消費数量を合計したMapを作る
+      .reduce(
+        (acc, consumedIngredient) =>
+          acc.set(consumedIngredient.ingredient.id, {
+            ingredient: consumedIngredient.ingredient,
+            quantity:
+              (acc.get(consumedIngredient.ingredient.id)
+                ? Number(acc.quantity)
+                : 0) + Number(consumedIngredient.quantity),
+          }),
+        new Map()
+      )
+      .values()
+  );
+  return result;
 });
 
 function onSelectCalender(info) {
@@ -379,6 +422,7 @@ const onClickSubmitBrewPlanForm = async (brewPlanData) => {
     brewPlan.mashEfficienty = brewPlanData.mashEfficienty;
     brewPlan.grains = brewPlanData.grains;
     brewPlan.hops = brewPlanData.hops;
+    brewPlan.ingredients = brewPlanData.ingredients;
     brewPlan.yeastPlan = brewPlanData.yeastPlan;
     brewPlan.events = brewPlanData.events;
     fetchBrewPlans();
@@ -420,7 +464,9 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
   brewPlan.grains = selectedBrewPlan.grains;
   brewPlan.hops = selectedBrewPlan.hops;
   brewPlan.yeastPlan = selectedBrewPlan.yeastPlan;
+  brewPlan.ingredients = selectedBrewPlan.ingredients;
   brewPlan.events = selectedBrewPlan.events;
+  brewPlan.ingredients = selectedBrewPlan.ingredients;
   brewPlanSelectFormDialogVisible.value = false;
   fetchBrewEvents();
 };
@@ -659,10 +705,49 @@ const onSelectBrewPlan = (selectedBrewPlan) => {
               {{ brewPlan.yeastPlan.quantity }}
             </el-col>
             <el-col :span="4">
-              {{ consumedYeastQuantity(brewPlan.yeastPlan.id) }}
+              {{ consumedYeastQuantity(brewPlan.yeastPlan.yeast.id) }}
             </el-col>
             <el-col :span="8">
               {{ brewPlan.yeastPlan.yeast.attenuation }}
+            </el-col>
+          </el-row>
+
+          <el-divider />
+          <el-row>
+            <el-col :span="24">
+              <span>その他</span>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12"><span>名称</span></el-col>
+            <el-col :span="12"><span>量(g)</span></el-col>
+          </el-row>
+          <el-row
+            v-for="ingredientPlan in brewPlan.ingredients"
+            :key="ingredientPlan.ingredient.id"
+          >
+            <el-col :span="12">
+              {{ ingredientPlan.ingredient.name }}
+            </el-col>
+            <el-col :span="6">
+              {{ ingredientPlan.quantity }}
+            </el-col>
+            <el-col :span="6">
+              {{ consumedIngredientQuantity(ingredientPlan.ingredient.id) }}
+            </el-col>
+          </el-row>
+          <el-row
+            v-for="otherIngredient in consumedOtherIngredients"
+            :key="otherIngredient.ingredient.id"
+          >
+            <el-col :span="12">
+              {{ otherIngredient.ingredient.name }}
+            </el-col>
+            <el-col :span="6">
+              <span> </span>
+            </el-col>
+            <el-col :span="6">
+              {{ otherIngredient.quantity }}
             </el-col>
           </el-row>
         </div>
