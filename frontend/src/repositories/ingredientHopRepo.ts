@@ -79,12 +79,12 @@ export async function remove(hop: Hop) {
   }
 }
 
-export async function save(hop: Hop): Promise<{ id: string }> {
+export async function save(hop: Hop | HopPlainObject): Promise<{ id: string }> {
   if (!hop.id) {
     hop.id = prefix + createUUID();
   }
 
-  const hopPlainObject = hop.toPlainObject();
+  const hopPlainObject = hop instanceof Hop ? hop.toPlainObject() : hop;
 
   try {
     await pouchdb.save<HopPlainObject>({

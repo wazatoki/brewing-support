@@ -42,12 +42,15 @@ export async function remove(supplier: Supplier) {
   }
 }
 
-export async function save(supplier: Supplier): Promise<{ id: string }> {
+export async function save(
+  supplier: Supplier | SupplierPlainObject
+): Promise<{ id: string }> {
   if (!supplier.id) {
     supplier.id = prefix + createUUID();
   }
 
-  const supplierPlainObject = supplier.toPlainObject();
+  const supplierPlainObject =
+    supplier instanceof Supplier ? supplier.toPlainObject() : supplier;
 
   try {
     await pouchdb.save<SupplierPlainObject>({

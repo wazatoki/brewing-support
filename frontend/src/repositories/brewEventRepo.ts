@@ -299,12 +299,15 @@ export async function remove(brewEvent: BrewEvent) {
   }
 }
 
-export async function save(brewEvent: BrewEvent): Promise<{ id: string }> {
+export async function save(
+  brewEvent: BrewEvent | BrewEventPlainObject
+): Promise<{ id: string }> {
   if (!brewEvent.id) {
     brewEvent.id = prefix + createUUID();
   }
 
-  const brewEventPlainObject = brewEvent.toPlainObject();
+  const brewEventPlainObject =
+    brewEvent instanceof BrewEvent ? brewEvent.toPlainObject() : brewEvent;
   try {
     await pouchdb.save<BrewEventPlainObject>({
       type: typename,

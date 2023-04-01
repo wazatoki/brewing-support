@@ -294,13 +294,16 @@ export async function remove(recieveEvent: RecieveEvent) {
 }
 
 export async function save(
-  recieveEvent: RecieveEvent
+  recieveEvent: RecieveEvent | RecieveEventPlainObject
 ): Promise<{ id: string }> {
   if (!recieveEvent.id) {
     recieveEvent.id = prefix + createUUID();
   }
 
-  const recieveEventPlainObject = recieveEvent.toPlainObject();
+  const recieveEventPlainObject =
+    recieveEvent instanceof RecieveEvent
+      ? recieveEvent.toPlainObject()
+      : recieveEvent;
 
   try {
     await pouchdb.save<RecieveEventPlainObject>({

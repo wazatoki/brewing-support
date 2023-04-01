@@ -81,14 +81,18 @@ async function isRemovable(
 }
 
 export async function save(
-  ingredientClassification: IngredientClassification
+  ingredientClassification:
+    | IngredientClassification
+    | IngredientClassificationPlainObject
 ): Promise<{ id: string }> {
   if (!ingredientClassification.id) {
     ingredientClassification.id = prefix + createUUID();
   }
 
   const ingredientClassificationPlainObject =
-    ingredientClassification.toPlainObject();
+    ingredientClassification instanceof IngredientClassification
+      ? ingredientClassification.toPlainObject()
+      : ingredientClassification;
 
   try {
     await pouchdb.save<IngredientClassificationPlainObject>({

@@ -528,12 +528,15 @@ export async function remove(brewPlan: BrewPlan) {
   }
 }
 
-export async function save(brewPlan: BrewPlan): Promise<{ id: string }> {
+export async function save(
+  brewPlan: BrewPlan | BrewPlanPlainObject
+): Promise<{ id: string }> {
   if (!brewPlan.id) {
     brewPlan.id = prefix + createUUID();
   }
 
-  const brewPlanPlainObject = brewPlan.toPlainObject();
+  const brewPlanPlainObject =
+    brewPlan instanceof BrewPlan ? brewPlan.toPlainObject() : brewPlan;
 
   try {
     await pouchdb.save<BrewPlanPlainObject>({

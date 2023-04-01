@@ -301,12 +301,15 @@ export async function remove(inventory: Inventory) {
   }
 }
 
-export async function save(inventory: Inventory): Promise<{ id: string }> {
+export async function save(
+  inventory: Inventory | InventoryPlainObject
+): Promise<{ id: string }> {
   if (!inventory.id) {
     inventory.id = prefix + createUUID();
   }
 
-  const inventoryPlainObject = inventory.toPlainObject();
+  const inventoryPlainObject =
+    inventory instanceof Inventory ? inventory.toPlainObject() : inventory;
 
   try {
     await pouchdb.save<InventoryPlainObject>({

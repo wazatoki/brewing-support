@@ -86,12 +86,15 @@ export async function remove(yeast: Yeast) {
   }
 }
 
-export async function save(yeast: Yeast): Promise<{ id: string }> {
+export async function save(
+  yeast: Yeast | YeastPlainObject
+): Promise<{ id: string }> {
   if (!yeast.id) {
     yeast.id = prefix + createUUID();
   }
 
-  const yeastPlainObject = yeast.toPlainObject();
+  const yeastPlainObject =
+    yeast instanceof Yeast ? yeast.toPlainObject() : yeast;
 
   try {
     await pouchdb.save<YeastPlainObject>({

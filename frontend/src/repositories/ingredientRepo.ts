@@ -90,12 +90,15 @@ export async function remove(ingredient: Ingredient) {
   }
 }
 
-export async function save(ingredient: Ingredient): Promise<{ id: string }> {
+export async function save(
+  ingredient: Ingredient | IngredientPlainObject
+): Promise<{ id: string }> {
   if (!ingredient.id) {
     ingredient.id = prefix + createUUID();
   }
 
-  const ingredientPlainObject = ingredient.toPlainObject();
+  const ingredientPlainObject =
+    ingredient instanceof Ingredient ? ingredient.toPlainObject() : ingredient;
 
   try {
     await pouchdb.save<IngredientPlainObject>({

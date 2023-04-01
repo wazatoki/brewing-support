@@ -86,12 +86,15 @@ export async function remove(grain: Grain) {
   }
 }
 
-export async function save(grain: Grain): Promise<{ id: string }> {
+export async function save(
+  grain: Grain | GrainPlainObject
+): Promise<{ id: string }> {
   if (!grain.id) {
     grain.id = prefix + createUUID();
   }
 
-  const grainPlainObject = grain.toPlainObject();
+  const grainPlainObject =
+    grain instanceof Grain ? grain.toPlainObject() : grain;
 
   try {
     await pouchdb.save<GrainPlainObject>({

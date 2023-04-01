@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { genFileId } from "element-plus";
 import * as ingredientClassificationRepo from "@/repositories/ingredientClassificationRepo";
 import * as ingredientGrainRepo from "@/repositories/ingredientGrainRepo";
 import * as ingredientHopRepo from "@/repositories/ingredientHopRepo";
@@ -7,9 +8,68 @@ import * as ingredientRepo from "@/repositories/ingredientRepo";
 import * as ingredientYeastRepo from "@/repositories/ingredientYeastRepo";
 import * as supplierRepo from "@/repositories/supplierRepo";
 import * as unitRepo from "@/repositories/unitRepo";
+//import { createDatabase, destroyDatabase } from "@/repositories/pouchdb";
+import * as ingredientClassification from "@/models/ingredientClassification";
 
-const name = ref("");
 const backupData = {};
+const upload = ref();
+let sourceFile = null;
+
+const handleExceed = (files) => {
+  upload.value.clearFiles();
+  const file = files[0];
+  file.uid = genFileId();
+  upload.value.handleStart(file);
+};
+
+const onFileChange = (e) => {
+  sourceFile = e.raw;
+};
+
+const importData = async () => {
+  if (sourceFile) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const json = JSON.parse(e.target.result);
+
+      Object.keys(json).forEach((key) => {
+        switch (key) {
+          case "ingredientClassifications":
+            saveData(json[key], ingredientClassificationRepo);
+            break;
+          case "ingredientGrains":
+            saveData(json[key], ingredientGrainRepo);
+            break;
+          case "ingredientHops":
+            saveData(json[key], ingredientHopRepo);
+            break;
+          case "ingredientYeasts":
+            saveData(json[key], ingredientYeastRepo);
+            break;
+          case "ingredients":
+            saveData(json[key], ingredientRepo);
+            break;
+          case "suppliers":
+            saveData(json[key], supplierRepo);
+            break;
+          case "units":
+            saveData(json[key], unitRepo);
+            break;
+          default:
+            break;
+        }
+      });
+      upload.value.clearFiles();
+    };
+    reader.readAsText(sourceFile);
+  }
+};
+
+const saveData = (dataArray, repository) => {
+  dataArray.forEach((data) => {
+    repository.save(data);
+  });
+};
 
 const createBackupData = async () => {
   const ingredientClassifications = (
@@ -22,7 +82,6 @@ const createBackupData = async () => {
   const suppliers = (await supplierRepo.fetchAll()).result;
   const units = (await unitRepo.fetchAll()).result;
   backupData["ingredientClassifications"] = ingredientClassifications;
-  backupData["ingredientGrains"] = ingredientGrains;
   backupData["ingredientGrains"] = ingredientGrains;
   backupData["ingredientHops"] = ingredientHops;
   backupData["ingredientYeasts"] = ingredientYeasts;
@@ -48,10 +107,29 @@ onMounted(() => {
 <template>
   <div class="backup-master">
     <div>
-      <el-input type="file" v-model="name" autocomplete="off" />
+      <el-button @click="downloadFile">download</el-button>
     </div>
     <div>
-      <el-button @click="downloadFile">ダウンロード</el-button>
+      <el-upload
+        ref="upload"
+        action=""
+        :limit="1"
+        :on-exceed="handleExceed"
+        :on-change="onFileChange"
+        :auto-upload="false"
+      >
+        <template #trigger>
+          <el-button type="primary">select file</el-button>
+        </template>
+        <el-button class="ml-3" type="success" @click="importData">
+          import
+        </el-button>
+        <template #tip>
+          <div class="el-upload__tip text-red">
+            limit 1 file, new file will cover the old file
+          </div>
+        </template>
+      </el-upload>
     </div>
   </div>
 </template>

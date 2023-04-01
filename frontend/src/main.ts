@@ -6,7 +6,7 @@ import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
 import locale from "element-plus/lib/locale/lang/ja";
 import "reflect-metadata";
-import { getDBInstance, getRemoteDBInstance } from "@/repositories/pouchdb";
+import { createDatabase } from "@/repositories/pouchdb";
 
 createApp(App)
   .use(store)
@@ -14,6 +14,4 @@ createApp(App)
   .use(ElementPlus, { locale })
   .mount("#app");
 
-getDBInstance().sync(getRemoteDBInstance(), {
-  live: true,
-});
+createDatabase();

@@ -35,6 +35,16 @@ export function getRemoteDBInstance(
   }));
 }
 
+export async function createDatabase() {
+  return getDBInstance().sync(getRemoteDBInstance(), {
+    live: true,
+  });
+}
+
+export async function destroyDatabase() {
+  return getDBInstance().destroy();
+}
+
 export async function fetchAllDocuments<T>(
   startkey: string,
   dbName = ""

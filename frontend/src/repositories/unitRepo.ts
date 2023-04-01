@@ -82,12 +82,14 @@ async function isRemovable(
   }
 }
 
-export async function save(unit: Unit): Promise<{ id: string }> {
+export async function save(
+  unit: Unit | UnitPlainObject
+): Promise<{ id: string }> {
   if (!unit.id) {
     unit.id = prefix + createUUID();
   }
 
-  const unitPlainObject = unit.toPlainObject();
+  const unitPlainObject = unit instanceof Unit ? unit.toPlainObject() : unit;
 
   try {
     await pouchdb.save<UnitPlainObject>({
