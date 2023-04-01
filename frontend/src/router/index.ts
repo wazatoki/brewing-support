@@ -13,6 +13,7 @@ import StocksRecieving from "@/views/StocksRecieving.vue";
 import InventoryIndex from "@/views/InventoryIndex.vue";
 import BrewPlan from "@/views/BrewPlan.vue";
 import BackupMaster from "@/views/BackupMaster.vue";
+import SignIn from "@/views/SignIn.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -94,6 +95,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/master-backup",
     name: "master-backup",
     component: BackupMaster,
+  },
+  {
+    path: "/sign-in",
+    name: "sign-in",
+    component: SignIn,
   },
 ];
 

@@ -58,6 +58,11 @@
           ></el-menu-item
         >
       </el-sub-menu>
+      <div class="flex-grow" />
+      <el-menu-item index="5"
+        ><router-link to="/sign-in">Sign in</router-link
+        ><router-link to="/sign-out">Sign out</router-link></el-menu-item
+      >
     </el-menu>
 
     <router-view></router-view>
@@ -71,5 +76,9 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+
+.flex-grow {
+  flex-grow: 1;
 }
 </style>
