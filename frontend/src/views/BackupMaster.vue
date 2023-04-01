@@ -8,8 +8,6 @@ import * as ingredientRepo from "@/repositories/ingredientRepo";
 import * as ingredientYeastRepo from "@/repositories/ingredientYeastRepo";
 import * as supplierRepo from "@/repositories/supplierRepo";
 import * as unitRepo from "@/repositories/unitRepo";
-//import { createDatabase, destroyDatabase } from "@/repositories/pouchdb";
-import * as ingredientClassification from "@/models/ingredientClassification";
 
 const backupData = {};
 const upload = ref();
