@@ -60,14 +60,25 @@
       </el-sub-menu>
       <div class="flex-grow" />
       <el-menu-item index="5"
-        ><router-link to="/sign-in">Sign in</router-link
-        ><router-link to="/sign-out">Sign out</router-link></el-menu-item
+        ><span v-if="!isSignin"
+          ><router-link to="/sign-in">Sign in</router-link></span
+        ><span v-if="isSignin"
+          ><router-link to="/sign-out">Sign out</router-link></span
+        ></el-menu-item
       >
     </el-menu>
 
     <router-view></router-view>
   </div>
 </template>
+
+<script setup lang="ts">
+import { computed } from "vue";
+import { useStore } from "vuex";
+
+const store = useStore();
+const isSignin = computed(() => (store.getters.authUser ? true : false));
+</script>
 
 <style>
 #app {

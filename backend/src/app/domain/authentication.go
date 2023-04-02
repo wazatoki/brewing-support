@@ -3,10 +3,10 @@ package domain
 // Staff 利用者グループを示す構造体
 type Staff struct {
 	ID          string      `json:"id"`
-	AccountID   string      `json:"staffID"`
+	AccountID   string      `json:"accountID"`
 	Password    string      `json:"password"`
 	Name        string      `json:"name"`
-	StaffGroups StaffGroups `json:"staffGroups"`
+	StaffGroups StaffGroups `json:"appUserGroups"`
 }
 
 // Group 利用者グループを示す構造体

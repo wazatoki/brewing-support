@@ -30,7 +30,7 @@ func Login(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, "")
 	}
 
-	return c.JSON(http.StatusOK, echo.Map{"staff": staff, "jwtToken": token, "refreshToken": refreshToken})
+	return c.JSON(http.StatusOK, echo.Map{"appUser": staff, "jwtToken": token, "refreshToken": refreshToken})
 }
 
 /*
