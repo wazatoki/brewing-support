@@ -5,12 +5,12 @@ import (
 	"strings"
 )
 
-type StaffGroups []*StaffGroup
+type AppGroups []*AppGroup
 
 /*
-FilterByString is filter staffGroup slice by string
+FilterByString is filter appGroup slice by string
 */
-func (g *StaffGroups) FilterByString(strSlice ...string) (result StaffGroups) {
+func (g *AppGroups) FilterByString(strSlice ...string) (result AppGroups) {
 	staffGroups := *g
 
 	if len(strSlice) == 0 {
@@ -20,17 +20,17 @@ func (g *StaffGroups) FilterByString(strSlice ...string) (result StaffGroups) {
 		return
 	}
 
-	isContains := func(staffGroup *StaffGroup, str string) bool {
+	isContains := func(appGroup *AppGroup, str string) bool {
 
 		if str == "" {
 			return true
 		}
 
-		return strings.Contains(staffGroup.Name, str)
+		return strings.Contains(appGroup.Name, str)
 	}
 
 	for _, s := range strSlice {
-		result = StaffGroups{}
+		result = AppGroups{}
 		for _, group := range staffGroups {
 
 			if isContains(group, s) {
@@ -45,9 +45,9 @@ func (g *StaffGroups) FilterByString(strSlice ...string) (result StaffGroups) {
 }
 
 /*
-Sort is sort staffGroup slice by name
+Sort is sort appGroup slice by name
 */
-func (g *StaffGroups) Sort() StaffGroups {
+func (g *AppGroups) Sort() AppGroups {
 	staffGroups := *g
 	sort.Slice(staffGroups, func(i int, j int) bool {
 

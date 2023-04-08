@@ -17,7 +17,7 @@ func Login(c echo.Context) error {
 	m := echo.Map{}
 	c.Bind(&m)
 
-	repo := repositories.NewStaffRepo()
+	repo := repositories.NewAppUserRepo()
 
 	staff, token, err1 := usecases.Login(repo, m["id"].(string), m["password"].(string))
 

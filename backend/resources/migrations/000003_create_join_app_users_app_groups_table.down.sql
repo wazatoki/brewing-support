@@ -1,0 +1,1 @@
+drop table join_app_users_app_groups;

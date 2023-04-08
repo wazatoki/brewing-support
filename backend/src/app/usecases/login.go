@@ -11,11 +11,11 @@ import (
 
 // persistance API用のインターフェース
 type loginRepo interface {
-	SelectByAccountID(string) (*domain.Staff, error)
+	SelectByAccountID(string) (*domain.AppUser, error)
 }
 
 // Login 成功の場合accountIDに対応するstaffの構造体の参照と認証tokenを返す。
-func Login(staffRepo loginRepo, id string, pass string) (*domain.Staff, string, error) {
+func Login(staffRepo loginRepo, id string, pass string) (*domain.AppUser, string, error) {
 	s, err := staffRepo.SelectByAccountID(id)
 
 	if err != nil {

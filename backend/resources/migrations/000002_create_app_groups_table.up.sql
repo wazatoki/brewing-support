@@ -1,9 +1,9 @@
-create table staff_groups (
+create table app_groups (
 	id text primary key
 	, del boolean not null default false
 	, created_at timestamp
-	, cre_staff_id text
+	, cre_user_id text
 	, updated_at timestamp
-	, update_staff_id text
+	, update_user_id text
 	,name text not null
 );

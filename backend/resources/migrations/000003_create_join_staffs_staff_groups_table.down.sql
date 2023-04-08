@@ -1,1 +1,0 @@
-drop table join_staffs_staff_groups;
