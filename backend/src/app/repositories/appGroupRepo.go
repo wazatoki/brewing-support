@@ -11,7 +11,7 @@ import (
 )
 
 // Insert insert appGroup data to database
-func (repo *AppGroupRepo) Insert(appGroup domain.AppGroup, opeUserID sql.NullString) (string, error) {
+func (repo *AppGroupRepo) Insert(appGroup domain.AppGroup, opeUserID string) (string, error) {
 	if appGroup.ID == "" {
 		appGroup.ID = utils.CreateID()
 	}
@@ -19,11 +19,14 @@ func (repo *AppGroupRepo) Insert(appGroup domain.AppGroup, opeUserID sql.NullStr
 	repo.ID = appGroup.ID
 	repo.Name = appGroup.Name
 
-	repo.Cre_user_id = opeUserID
-	repo.Update_user_id = opeUserID
+	repo.Cre_user_id = sql.NullString{
+		String: opeUserID,
+		Valid:  true,
+	}
+	repo.Update_user_id = repo.Cre_user_id
 	repo.Created_at = sql.NullTime{
 		Time:  time.Now(),
-		Valid: false,
+		Valid: true,
 	}
 	repo.Updated_at = repo.Created_at
 
@@ -36,12 +39,13 @@ func (repo *AppGroupRepo) Insert(appGroup domain.AppGroup, opeUserID sql.NullStr
 			"name" +
 			") values (" +
 			":id, :del, :created_at, :cre_user_id, :updated_at, :update_user_id," +
-			":name"
+			":name" +
+			")"
 
 		// クエリをDBドライバに併せて再構築
 		queryStr = db.Rebind(queryStr)
 
-		// データ取得処理
+		// データ追加処理
 		_, err := db.NamedExec(queryStr, *repo)
 
 		return err
@@ -71,7 +75,7 @@ func (repo *AppGroupRepo) Select() ([]*domain.AppGroup, error) {
 
 	appGroups := domain.AppGroups{}
 	for _, appGroupRepo := range appGroupRepos {
-		appGroup := mapRepoObjToDomainObj(&appGroupRepo)
+		appGroup := appGroupRepo.mapRepoObjToDomainObj()
 		appGroups = append(appGroups, &appGroup)
 	}
 
@@ -99,12 +103,12 @@ func (repo *AppGroupRepo) SelectByID(id string) (*domain.AppGroup, error) {
 		return err
 	})
 
-	appGroup := mapRepoObjToDomainObj(repo)
+	appGroup := repo.mapRepoObjToDomainObj()
 
 	return &appGroup, err
 }
 
-func mapRepoObjToDomainObj(repo *AppGroupRepo) domain.AppGroup {
+func (repo *AppGroupRepo) mapRepoObjToDomainObj() domain.AppGroup {
 	domainObject := domain.AppGroup{
 		ID:   repo.ID,
 		Name: repo.Name,

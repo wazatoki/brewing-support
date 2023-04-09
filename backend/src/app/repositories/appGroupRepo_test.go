@@ -38,6 +38,14 @@ func createExpectedAppGroupEntity1Slice() domain.AppGroups {
 	}
 }
 
+func createExpectedAppGroupEntity2Slice() *domain.AppGroups {
+	return &domain.AppGroups{
+		createExpectedAppGroup1Entity(),
+		createExpectedAppGroup2Entity(),
+		createExpectedAppGroup3Entity(),
+	}
+}
+
 func TestAppGroupRepo_Insert(t *testing.T) {
 	viper.SetupTestConfig()
 	type fields struct {
@@ -52,7 +60,7 @@ func TestAppGroupRepo_Insert(t *testing.T) {
 	}
 	type args struct {
 		appGroup  domain.AppGroup
-		opeUserID sql.NullString
+		opeUserID string
 	}
 	tests := []struct {
 		name   string
@@ -64,11 +72,8 @@ func TestAppGroupRepo_Insert(t *testing.T) {
 			name:   "insert test data",
 			fields: fields(*NewAppGroupRepo()),
 			args: args{
-				appGroup: *createExpectedAppGroup1Entity(),
-				opeUserID: sql.NullString{
-					String: "opeUserID1",
-					Valid:  false,
-				},
+				appGroup:  *createExpectedAppGroup1Entity(),
+				opeUserID: "opeUserID1",
 			},
 			want: "app group name 1",
 		},
@@ -88,7 +93,7 @@ func TestAppGroupRepo_Insert(t *testing.T) {
 
 			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
 
-				queryStr := "delete from app_groups"
+				queryStr := "delete from app_groups;delete from app_users;delete from join_app_users_app_groups"
 
 				// クエリをDBドライバに併せて再構築
 				queryStr = db.Rebind(queryStr)
@@ -103,9 +108,12 @@ func TestAppGroupRepo_Insert(t *testing.T) {
 				t.Errorf("AppGroupRepo.Insert() error = %v", e)
 			}
 
-			repo.Insert(tt.args.appGroup, tt.args.opeUserID)
+			_, e = repo.Insert(tt.args.appGroup, tt.args.opeUserID)
+			if e != nil {
+				t.Errorf("AppGroupRepo.Insert() error = %v", e)
+			}
 
-			tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
+			e = tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
 
 				queryStr := "select from app_groups"
 
@@ -117,6 +125,9 @@ func TestAppGroupRepo_Insert(t *testing.T) {
 
 				return err
 			})
+			if e != nil {
+				t.Errorf("AppGroupRepo.Insert() error = %v", e)
+			}
 
 			if repo.Name != tt.want {
 				t.Errorf("AppGroupRepo.Insert() = %v, want %v", repo.Name, tt.want)
@@ -171,7 +182,7 @@ func TestAppGroupRepo_SelectByID(t *testing.T) {
 
 			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
 
-				deleteQueryStr := "delete from app_groups"
+				deleteQueryStr := "delete from app_groups;delete from app_users;delete from join_app_users_app_groups"
 
 				// クエリをDBドライバに併せて再構築
 				deleteQueryStr = db.Rebind(deleteQueryStr)
@@ -246,7 +257,7 @@ func TestAppGroupRepo_Select(t *testing.T) {
 
 			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
 
-				deleteQueryStr := "delete from app_groups"
+				deleteQueryStr := "delete from app_groups;delete from app_users;delete from join_app_users_app_groups"
 				// クエリをDBドライバに併せて再構築
 				deleteQueryStr = db.Rebind(deleteQueryStr)
 				// データ消去
@@ -273,7 +284,7 @@ func TestAppGroupRepo_Select(t *testing.T) {
 			})
 
 			if e != nil {
-				t.Errorf("AppGroupRepo.SelectByID() error = %v", e)
+				t.Errorf("AppGroupRepo.Select() error = %v", e)
 			}
 
 			got, err := repo.Select()
