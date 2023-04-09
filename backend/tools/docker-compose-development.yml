@@ -56,3 +56,13 @@ services:
       - ./execution_environment/letsencrypt:/etc/letsencrypt
       - ./execution_environment/reverse-proxy/doc:/var/www/html
     command: ["--version"]
+  test-golang:
+    container_name: test_golang
+    build: 
+      dockerfile: "Dockerfile"
+      context: "test_environment"
+    volumes:
+      - type: bind
+        source: ../src
+        target: /workspace
+    tty: true

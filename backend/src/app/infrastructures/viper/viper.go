@@ -46,7 +46,7 @@ func SetupTestConfig() {
 	// default setting
 	viper.SetDefault("mode", "test")
 	viper.SetDefault("httpPort", "8080")
-	viper.SetDefault("dbUrl", "brewing_support_db")
+	viper.SetDefault("dbUrl", "brewing_support_postgres_db")
 	viper.SetDefault("dbPort", "5432")
 	viper.SetDefault("dbUser", "brewing_support")
 	viper.SetDefault("dbPassword", "brewing_support")

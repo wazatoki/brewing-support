@@ -3,6 +3,7 @@ package repositories
 import (
 	"brewing_support/app/domain"
 	"brewing_support/app/utils"
+	"database/sql"
 	"errors"
 	"time"
 
@@ -10,20 +11,23 @@ import (
 )
 
 // Insert insert appGroup data to database
-func (repo *AppGroupRepo) Insert(appGroup domain.AppGroup, opeUserID string) (string, error) {
+func (repo *AppGroupRepo) Insert(appGroup domain.AppGroup, opeUserID sql.NullString) (string, error) {
 	if appGroup.ID == "" {
 		appGroup.ID = utils.CreateID()
 	}
 
-	repo.id = appGroup.ID
-	repo.name = appGroup.Name
+	repo.ID = appGroup.ID
+	repo.Name = appGroup.Name
 
-	repo.cre_user_id = opeUserID
-	repo.update_user_id = opeUserID
-	repo.created_at = time.Now()
-	repo.updated_at = repo.created_at
+	repo.Cre_user_id = opeUserID
+	repo.Update_user_id = opeUserID
+	repo.Created_at = sql.NullTime{
+		Time:  time.Now(),
+		Valid: false,
+	}
+	repo.Updated_at = repo.Created_at
 
-	repo.del = false
+	repo.Del = false
 
 	err := repo.database.WithDbContext(func(db *sqlx.DB) error {
 
@@ -43,7 +47,7 @@ func (repo *AppGroupRepo) Insert(appGroup domain.AppGroup, opeUserID string) (st
 		return err
 	})
 
-	return repo.id, err
+	return repo.ID, err
 
 }
 
@@ -57,7 +61,7 @@ func (repo *AppGroupRepo) SelectByID(id string) (*domain.AppGroup, error) {
 
 		queryStr := "select * " +
 			"from app_groups ag " +
-			"where ag.del == false and ag.id = ?"
+			"where ag.del = false and ag.id = ?"
 
 		// クエリをDBドライバに併せて再構築
 		queryStr = db.Rebind(queryStr)
@@ -69,8 +73,8 @@ func (repo *AppGroupRepo) SelectByID(id string) (*domain.AppGroup, error) {
 	})
 
 	appGroup := domain.AppGroup{
-		ID:   repo.id,
-		Name: repo.name,
+		ID:   repo.ID,
+		Name: repo.Name,
 	}
 
 	return &appGroup, err
@@ -84,11 +88,11 @@ func NewAppGroupRepo() *AppGroupRepo {
 // AppUserRepo repository struct
 type AppGroupRepo struct {
 	database       db
-	id             string    `db:"id"`
-	del            bool      `db:"del"`
-	created_at     time.Time `db:"created_at"`
-	cre_user_id    string    `db:"cre_user_id"`
-	updated_at     time.Time `db:"updated_at"`
-	update_user_id string    `db:"update_user_id"`
-	name           string    `db:"name"`
+	ID             string         `db:"id"`
+	Del            bool           `db:"del"`
+	Created_at     sql.NullTime   `db:"created_at"`
+	Cre_user_id    sql.NullString `db:"cre_user_id"`
+	Updated_at     sql.NullTime   `db:"updated_at"`
+	Update_user_id sql.NullString `db:"update_user_id"`
+	Name           string         `db:"name"`
 }
