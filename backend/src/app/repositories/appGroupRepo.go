@@ -51,6 +51,33 @@ func (repo *AppGroupRepo) Insert(appGroup domain.AppGroup, opeUserID sql.NullStr
 
 }
 
+// Select select all appGroup data from database
+func (repo *AppGroupRepo) Select() ([]*domain.AppGroup, error) {
+
+	appGroupRepos := []AppGroupRepo{}
+	err := repo.database.WithDbContext(func(db *sqlx.DB) error {
+		queryStr := "select * " +
+			"from app_groups ag " +
+			"where ag.del = false"
+
+		// クエリをDBドライバに併せて再構築
+		queryStr = db.Rebind(queryStr)
+
+		// データ取得処理
+		err := db.Select(&appGroupRepos, queryStr)
+
+		return err
+	})
+
+	appGroups := domain.AppGroups{}
+	for _, appGroupRepo := range appGroupRepos {
+		appGroup := mapRepoObjToDomainObj(&appGroupRepo)
+		appGroups = append(appGroups, &appGroup)
+	}
+
+	return appGroups, err
+}
+
 // SelectByID select appGroup data by accountID from database
 func (repo *AppGroupRepo) SelectByID(id string) (*domain.AppGroup, error) {
 	if id == "" {
@@ -72,12 +99,17 @@ func (repo *AppGroupRepo) SelectByID(id string) (*domain.AppGroup, error) {
 		return err
 	})
 
-	appGroup := domain.AppGroup{
+	appGroup := mapRepoObjToDomainObj(repo)
+
+	return &appGroup, err
+}
+
+func mapRepoObjToDomainObj(repo *AppGroupRepo) domain.AppGroup {
+	domainObject := domain.AppGroup{
 		ID:   repo.ID,
 		Name: repo.Name,
 	}
-
-	return &appGroup, err
+	return domainObject
 }
 
 // NewAppUserRepo constructor

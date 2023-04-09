@@ -20,9 +20,7 @@ clean:
 
 .PHONY: test
 test:
-	cd src && \
-	go test ./... && \
-	cd $(ROOT_DIR)
+	docker exec test_golang go test ./...
 
 .PHONY: buildProduction
 buildProduction: buildAll
