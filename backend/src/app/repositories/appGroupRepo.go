@@ -55,6 +55,41 @@ func (repo *AppGroupRepo) Insert(appGroup domain.AppGroup, opeUserID string) (st
 
 }
 
+// Update Update appGroup data to database
+func (repo *AppGroupRepo) Update(appGroup domain.AppGroup, opeUserID string) error {
+	if appGroup.ID == "" {
+		return errors.New("id must be required")
+	}
+
+	repo.ID = appGroup.ID
+	repo.Name = appGroup.Name
+
+	repo.Update_user_id = repo.Cre_user_id
+	repo.Updated_at = sql.NullTime{
+		Time:  time.Now(),
+		Valid: true,
+	}
+
+	err := repo.database.WithDbContext(func(db *sqlx.DB) error {
+
+		queryStr := "update app_groups set " +
+			"updated_at = :updated_at, update_user_id = :update_user_id," +
+			"name = :name " +
+			"where id = :id"
+
+		// クエリをDBドライバに併せて再構築
+		queryStr = db.Rebind(queryStr)
+
+		// データ更新処理
+		_, err := db.NamedExec(queryStr, *repo)
+
+		return err
+	})
+
+	return err
+
+}
+
 // Select select all appGroup data from database
 func (repo *AppGroupRepo) Select() ([]*domain.AppGroup, error) {
 

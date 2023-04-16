@@ -280,3 +280,105 @@ func TestAppGroupRepo_Select(t *testing.T) {
 		})
 	}
 }
+
+func TestAppGroupRepo_Update(t *testing.T) {
+	type fields struct {
+		database       db
+		ID             string
+		Del            bool
+		Created_at     sql.NullTime
+		Cre_user_id    sql.NullString
+		Updated_at     sql.NullTime
+		Update_user_id sql.NullString
+		Name           string
+	}
+	type args struct {
+		appGroup  domain.AppGroup
+		opeUserID string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    string
+		wantErr bool
+	}{
+		{
+			name:   "update test data",
+			fields: fields(*NewAppGroupRepo()),
+			args: args{
+				appGroup: domain.AppGroup{
+					ID:   "appGroupId1",
+					Name: "updated app group name 1",
+				},
+				opeUserID: "appUserId1",
+			},
+			want: "updated app group name 1",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := &AppGroupRepo{
+				database:       tt.fields.database,
+				ID:             tt.fields.ID,
+				Del:            tt.fields.Del,
+				Created_at:     tt.fields.Created_at,
+				Cre_user_id:    tt.fields.Cre_user_id,
+				Updated_at:     tt.fields.Updated_at,
+				Update_user_id: tt.fields.Update_user_id,
+				Name:           tt.fields.Name,
+			}
+
+			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
+
+				err := deleteDB(db)
+				if err != nil {
+					return err
+				}
+
+				insertQueryStr := "insert into app_groups (id, name) values ('appGroupId1', 'app group name 1')"
+				insertQueryStr = db.Rebind(insertQueryStr)
+				_, err = db.Exec(insertQueryStr)
+				if err != nil {
+					return err
+				}
+
+				insertQueryStr = "insert into app_groups (id, name) values ('appGroupId2', 'app group name 2')"
+				insertQueryStr = db.Rebind(insertQueryStr)
+				_, err = db.Exec(insertQueryStr)
+				if err != nil {
+					return err
+				}
+
+				return err
+			})
+			if e != nil {
+				t.Errorf("AppGroupRepo.Update() error = %v", e)
+			}
+
+			if err := repo.Update(tt.args.appGroup, tt.args.opeUserID); (err != nil) != tt.wantErr {
+				t.Errorf("AppGroupRepo.Update() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			e = tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
+
+				queryStr := "select from app_groups where id = 'appGroupId1'"
+
+				// クエリをDBドライバに併せて再構築
+				queryStr = db.Rebind(queryStr)
+
+				// データ取得
+				err := db.Get(repo, queryStr)
+
+				return err
+			})
+			if e != nil {
+				t.Errorf("AppGroupRepo.Update() error = %v", e)
+			}
+
+			if repo.Name != tt.want {
+				t.Errorf("AppGroupRepo.Update() = %v, want %v", repo.Name, tt.want)
+			}
+		})
+	}
+}

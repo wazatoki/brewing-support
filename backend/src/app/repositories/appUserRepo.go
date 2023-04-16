@@ -69,6 +69,65 @@ func (repo *AppUserRepo) Insert(appUser domain.AppUser, opeUserID string) (strin
 
 }
 
+// Update Update appGroup data to database
+func (repo *AppUserRepo) Update(appUser domain.AppUser, opeUserID string) error {
+	if appUser.ID == "" {
+		return errors.New("id must be required")
+	}
+
+	repo.ID = appUser.ID
+	repo.Account_id = appUser.AccountID
+	repo.Password = appUser.Password
+	repo.Name = appUser.Name
+
+	repo.Update_user_id = repo.Cre_user_id
+	repo.Updated_at = sql.NullTime{
+		Time:  time.Now(),
+		Valid: true,
+	}
+
+	err := repo.database.WithDbContext(func(db *sqlx.DB) error {
+
+		queryStr := "update app_users set " +
+			"updated_at = :updated_at, update_user_id = :update_user_id," +
+			"password = :password, name = :name " +
+			"where id = :id"
+
+		// クエリをDBドライバに併せて再構築
+		queryStr = db.Rebind(queryStr)
+
+		// データ更新処理
+		_, err := db.NamedExec(queryStr, *repo)
+		if err != nil {
+			return err
+		}
+
+		// リレーション削除
+		queryStr = "delete from join_app_users_app_groups where app_users_id = ?"
+		queryStr = db.Rebind(queryStr)
+		_, err = db.Exec(queryStr, repo.ID)
+		if err != nil {
+			return err
+		}
+
+		// リレーション挿入
+		queryStr = "insert into join_app_users_app_groups (" +
+			"app_users_id, app_groups_id" +
+			") values (" +
+			"?, ?" +
+			")"
+		queryStr = db.Rebind(queryStr)
+		for _, ag := range appUser.AppGroups {
+			_, err = db.Exec(queryStr, repo.ID, ag.ID)
+		}
+
+		return err
+	})
+
+	return err
+
+}
+
 // Select select all appUser data from database
 func (repo *AppUserRepo) Select() ([]*domain.AppUser, error) {
 
