@@ -183,6 +183,51 @@ func (repo *AppUserRepo) Select() ([]*domain.AppUser, error) {
 	return appUsers, err
 }
 
+// SelectByID select appUser data by ID from database
+func (repo *AppUserRepo) SelectByID(id string) (*domain.AppUser, error) {
+	if id == "" {
+		return nil, errors.New("id must be required")
+	}
+
+	appGroupIDs := []string{}
+	appGroupRepo := NewAppGroupRepo()
+	allAppGroups, err := appGroupRepo.Select()
+	if err != nil {
+		return nil, err
+	}
+
+	err = repo.database.WithDbContext(func(db *sqlx.DB) error {
+
+		queryStr := "select * " +
+			"from app_users au " +
+			"where au.del = false and au.id = ? " +
+			"limit 1"
+		queryStr = db.Rebind(queryStr)
+		err := db.Get(repo, queryStr, id)
+		if err != nil {
+			return err
+		}
+
+		queryStr = "select app_groups_id " +
+			"from join_app_users_app_groups " +
+			"where app_users_id = ? "
+		queryStr = db.Rebind(queryStr)
+		err = db.Select(&appGroupIDs, queryStr, repo.ID)
+		if err != nil {
+			return err
+		}
+
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	appUser := repo.mapRepoObjToDomainObj(appGroupIDs, allAppGroups)
+
+	return &appUser, err
+}
+
 // SelectByAccountID select appUser data by accountID from database
 func (repo *AppUserRepo) SelectByAccountID(accountID string) (*domain.AppUser, error) {
 	if accountID == "" {

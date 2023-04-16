@@ -93,7 +93,7 @@ func TestAppGroupRepo_Insert(t *testing.T) {
 
 			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
 
-				err := deleteDB(db)
+				err := deleteDbData(db)
 				return err
 			})
 
@@ -175,15 +175,12 @@ func TestAppGroupRepo_SelectByID(t *testing.T) {
 
 			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
 
-				err := deleteDB(db)
+				err := deleteDbData(db)
 				if err != nil {
 					return err
 				}
 
-				insertQueryStr := "insert into app_groups (id, name) values ('appGroupId1', 'app group name 1')"
-				insertQueryStr = db.Rebind(insertQueryStr)
-				_, err = db.Exec(insertQueryStr)
-
+				err = insertTestData(db)
 				return err
 			})
 
@@ -243,25 +240,12 @@ func TestAppGroupRepo_Select(t *testing.T) {
 
 			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
 
-				err := deleteDB(db)
+				err := deleteDbData(db)
 				if err != nil {
 					return err
 				}
 
-				insertQueryStr := "insert into app_groups (id, name) values ('appGroupId1', 'app group name 1')"
-				insertQueryStr = db.Rebind(insertQueryStr)
-				_, err = db.Exec(insertQueryStr)
-				if err != nil {
-					return err
-				}
-
-				insertQueryStr = "insert into app_groups (id, name) values ('appGroupId2', 'app group name 2')"
-				insertQueryStr = db.Rebind(insertQueryStr)
-				_, err = db.Exec(insertQueryStr)
-				if err != nil {
-					return err
-				}
-
+				err = insertTestData(db)
 				return err
 			})
 
@@ -331,25 +315,12 @@ func TestAppGroupRepo_Update(t *testing.T) {
 
 			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
 
-				err := deleteDB(db)
+				err := deleteDbData(db)
 				if err != nil {
 					return err
 				}
 
-				insertQueryStr := "insert into app_groups (id, name) values ('appGroupId1', 'app group name 1')"
-				insertQueryStr = db.Rebind(insertQueryStr)
-				_, err = db.Exec(insertQueryStr)
-				if err != nil {
-					return err
-				}
-
-				insertQueryStr = "insert into app_groups (id, name) values ('appGroupId2', 'app group name 2')"
-				insertQueryStr = db.Rebind(insertQueryStr)
-				_, err = db.Exec(insertQueryStr)
-				if err != nil {
-					return err
-				}
-
+				err = insertTestData(db)
 				return err
 			})
 			if e != nil {

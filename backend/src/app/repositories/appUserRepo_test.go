@@ -91,7 +91,7 @@ func TestAppUserRepo_Insert(t *testing.T) {
 
 			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
 
-				err := deleteDB(db)
+				err := deleteDbData(db)
 				if err != nil {
 					return err
 				}
@@ -163,7 +163,7 @@ func TestAppUserRepo_SelectByAccountID(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:   "select test data",
+			name:   "select test data by accountID",
 			fields: fields(*NewAppUserRepo()),
 			args: args{
 				accountID: "12345",
@@ -188,24 +188,12 @@ func TestAppUserRepo_SelectByAccountID(t *testing.T) {
 
 			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
 
-				err := deleteDB(db)
+				err := deleteDbData(db)
 				if err != nil {
 					return err
 				}
 
-				// テスト用データを追加
-				insertQueryStr := "insert into app_users (id, account_id, password, name) values " +
-					"('appUserId1', '12345', 'password 1', 'name 1')," +
-					"('appUserId2', '22345', 'password 2', 'name 2');" +
-					"insert into app_groups (id, name) values " +
-					"('appGroupId1', 'app group name 1')," +
-					"('appGroupId2', 'app group name 2');" +
-					"insert into join_app_users_app_groups (app_users_id, app_groups_id) values " +
-					"('appUserId1', 'appGroupId1')," +
-					"('appUserId1', 'appGroupId2');"
-				insertQueryStr = db.Rebind(insertQueryStr)
-				_, err = db.Exec(insertQueryStr)
-
+				err = insertTestData(db)
 				return err
 			})
 			if e != nil {
@@ -266,25 +254,12 @@ func TestAppUserRepo_Select(t *testing.T) {
 
 			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
 
-				err := deleteDB(db)
+				err := deleteDbData(db)
 				if err != nil {
 					return err
 				}
 
-				// テスト用データを追加
-				insertQueryStr := "insert into app_users (id, account_id, password, name) values " +
-					"('appUserId1', '12345', 'password 1', 'name 1')," +
-					"('appUserId2', '22345', 'password 2', 'name 2');" +
-					"insert into app_groups (id, name) values " +
-					"('appGroupId1', 'app group name 1')," +
-					"('appGroupId2', 'app group name 2');" +
-					"insert into join_app_users_app_groups (app_users_id, app_groups_id) values " +
-					"('appUserId1', 'appGroupId1')," +
-					"('appUserId1', 'appGroupId2')," +
-					"('appUserId2', 'appGroupId1');"
-				insertQueryStr = db.Rebind(insertQueryStr)
-				_, err = db.Exec(insertQueryStr)
-
+				err = insertTestData(db)
 				return err
 			})
 			if e != nil {
@@ -373,25 +348,12 @@ func TestAppUserRepo_Update(t *testing.T) {
 
 			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
 
-				err := deleteDB(db)
+				err := deleteDbData(db)
 				if err != nil {
 					return err
 				}
 
-				// テスト用データを追加
-				insertQueryStr := "insert into app_users (id, account_id, password, name) values " +
-					"('appUserId1', '12345', 'password 1', 'name 1')," +
-					"('appUserId2', '22345', 'password 2', 'name 2');" +
-					"insert into app_groups (id, name) values " +
-					"('appGroupId1', 'app group name 1')," +
-					"('appGroupId2', 'app group name 2');" +
-					"insert into join_app_users_app_groups (app_users_id, app_groups_id) values " +
-					"('appUserId1', 'appGroupId1')," +
-					"('appUserId1', 'appGroupId2')," +
-					"('appUserId2', 'appGroupId1');"
-				insertQueryStr = db.Rebind(insertQueryStr)
-				_, err = db.Exec(insertQueryStr)
-
+				err = insertTestData(db)
 				return err
 			})
 			if e != nil {
@@ -417,6 +379,79 @@ func TestAppUserRepo_Update(t *testing.T) {
 				t.Errorf("AppUserRepo.Update() = %v, want %v", user.AppGroups, tt.want.groups)
 			}
 
+		})
+	}
+}
+
+func TestAppUserRepo_SelectByID(t *testing.T) {
+	type fields struct {
+		database       db
+		ID             string
+		Del            bool
+		Created_at     sql.NullTime
+		Cre_user_id    sql.NullString
+		Updated_at     sql.NullTime
+		Update_user_id sql.NullString
+		Account_id     string
+		Password       string
+		Name           string
+	}
+	type args struct {
+		id string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *domain.AppUser
+		wantErr bool
+	}{
+		{
+			name:   "select test data by ID",
+			fields: fields(*NewAppUserRepo()),
+			args: args{
+				id: "appUserId1",
+			},
+			want: createExpectedAppUser1Entity(),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := &AppUserRepo{
+				database:       tt.fields.database,
+				ID:             tt.fields.ID,
+				Del:            tt.fields.Del,
+				Created_at:     tt.fields.Created_at,
+				Cre_user_id:    tt.fields.Cre_user_id,
+				Updated_at:     tt.fields.Updated_at,
+				Update_user_id: tt.fields.Update_user_id,
+				Account_id:     tt.fields.Account_id,
+				Password:       tt.fields.Password,
+				Name:           tt.fields.Name,
+			}
+
+			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
+
+				err := deleteDbData(db)
+				if err != nil {
+					return err
+				}
+
+				err = insertTestData(db)
+				return err
+			})
+			if e != nil {
+				t.Errorf("AppUserRepo.SelectByID() error = %v", e)
+			}
+
+			got, err := repo.SelectByID(tt.args.id)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("AppUserRepo.SelectByID() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("AppUserRepo.SelectByID() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }
