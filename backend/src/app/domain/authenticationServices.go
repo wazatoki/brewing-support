@@ -6,6 +6,7 @@ import (
 )
 
 type AppGroups []*AppGroup
+type AppUsers []*AppUser
 
 /*
 FilterByString is filter appGroup slice by string

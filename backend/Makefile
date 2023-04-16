@@ -22,6 +22,10 @@ clean:
 test:
 	docker exec test_golang go test ./...
 
+.PHONY: testClean
+testClean:
+	docker exec test_golang sh -c 'go clean -testcache && go test ./...'
+
 .PHONY: buildProduction
 buildProduction: buildAll
 	rm -f ./tools/docker-compose.yml

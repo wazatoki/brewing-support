@@ -93,14 +93,7 @@ func TestAppGroupRepo_Insert(t *testing.T) {
 
 			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
 
-				queryStr := "delete from app_groups;delete from app_users;delete from join_app_users_app_groups"
-
-				// クエリをDBドライバに併せて再構築
-				queryStr = db.Rebind(queryStr)
-
-				// データ消去
-				_, err := db.Exec(queryStr)
-
+				err := deleteDB(db)
 				return err
 			})
 
@@ -182,14 +175,7 @@ func TestAppGroupRepo_SelectByID(t *testing.T) {
 
 			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
 
-				deleteQueryStr := "delete from app_groups;delete from app_users;delete from join_app_users_app_groups"
-
-				// クエリをDBドライバに併せて再構築
-				deleteQueryStr = db.Rebind(deleteQueryStr)
-
-				// データ消去
-				_, err := db.Exec(deleteQueryStr)
-
+				err := deleteDB(db)
 				if err != nil {
 					return err
 				}
@@ -257,11 +243,7 @@ func TestAppGroupRepo_Select(t *testing.T) {
 
 			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
 
-				deleteQueryStr := "delete from app_groups;delete from app_users;delete from join_app_users_app_groups"
-				// クエリをDBドライバに併せて再構築
-				deleteQueryStr = db.Rebind(deleteQueryStr)
-				// データ消去
-				_, err := db.Exec(deleteQueryStr)
+				err := deleteDB(db)
 				if err != nil {
 					return err
 				}
