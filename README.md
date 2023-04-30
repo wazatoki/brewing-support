@@ -1,5 +1,14 @@
 # brewing-support
 
+## install go tools
+
+```
+go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15
+go install github.com/golang/mock/mockgen@v1.6.0
+export PATH=$PATH:$GOPATH/bin
+
+```
+
 ## install go dependencies
 
 ```

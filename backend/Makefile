@@ -70,3 +70,10 @@ migrateDOWN:
 migrateCreate:
 	ARG=""
 	migrate create -ext sql -dir migrations -seq ${ARG}
+
+.PHONY: createTestMock
+createTestMock:
+	cd $(ROOT_DIR)src && \
+	rm -rf ./app/mock/* && \
+	go generate ./... && \
+	cd $(ROOT_DIR)
