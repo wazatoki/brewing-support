@@ -131,7 +131,7 @@ func (repo *AppUserRepo) Update(appUser domain.AppUser, opeUserID string) error 
 
 }
 
-// Update Update appGroup data to database
+// Update Delete appGroup data to database
 func (repo *AppUserRepo) Delete(id string, opeUserID string) error {
 	if id == "" {
 		return errors.New("id must be required")

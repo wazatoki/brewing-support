@@ -353,3 +353,73 @@ func TestAppGroupRepo_Update(t *testing.T) {
 		})
 	}
 }
+
+func TestAppGroupRepo_Delete(t *testing.T) {
+	type fields struct {
+		database       db
+		ID             string
+		Del            bool
+		Created_at     sql.NullTime
+		Cre_user_id    sql.NullString
+		Updated_at     sql.NullTime
+		Update_user_id sql.NullString
+		Name           string
+	}
+	type args struct {
+		id        string
+		opeUserID string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{name: "delete test data",
+			fields: fields(*NewAppGroupRepo()),
+			args: args{
+				id:        "appGroupId1",
+				opeUserID: "appUserId1",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := &AppGroupRepo{
+				database:       tt.fields.database,
+				ID:             tt.fields.ID,
+				Del:            tt.fields.Del,
+				Created_at:     tt.fields.Created_at,
+				Cre_user_id:    tt.fields.Cre_user_id,
+				Updated_at:     tt.fields.Updated_at,
+				Update_user_id: tt.fields.Update_user_id,
+				Name:           tt.fields.Name,
+			}
+			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
+
+				err := deleteDbData(db)
+				if err != nil {
+					return err
+				}
+
+				err = insertTestData(db)
+				return err
+			})
+			if e != nil {
+				t.Errorf("AppGroupRepo.Delete() error = %v", e)
+			}
+
+			if err := repo.Delete(tt.args.id, tt.args.opeUserID); (err != nil) != tt.wantErr {
+				t.Errorf("AppGroupRepo.Delete() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			user, err1 := repo.SelectByID("appGroupId1")
+			if err1.Error() != "your search yielded no data" {
+				t.Errorf("AppGroupRepo.Delete() error = %v, wantErr %v", err1, tt.wantErr)
+			}
+
+			if user != nil {
+				t.Errorf("AppGroupRepo.Delete() = %v, want %v", user.ID, "")
+			}
+		})
+	}
+}
