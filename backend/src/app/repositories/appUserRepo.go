@@ -80,7 +80,10 @@ func (repo *AppUserRepo) Update(appUser domain.AppUser, opeUserID string) error 
 	repo.Password = appUser.Password
 	repo.Name = appUser.Name
 
-	repo.Update_user_id = repo.Cre_user_id
+	repo.Update_user_id = sql.NullString{
+		String: opeUserID,
+		Valid:  true,
+	}
 	repo.Updated_at = sql.NullTime{
 		Time:  time.Now(),
 		Valid: true,
@@ -119,6 +122,45 @@ func (repo *AppUserRepo) Update(appUser domain.AppUser, opeUserID string) error 
 		queryStr = db.Rebind(queryStr)
 		for _, ag := range appUser.AppGroups {
 			_, err = db.Exec(queryStr, repo.ID, ag.ID)
+		}
+
+		return err
+	})
+
+	return err
+
+}
+
+// Update Update appGroup data to database
+func (repo *AppUserRepo) Delete(id string, opeUserID string) error {
+	if id == "" {
+		return errors.New("id must be required")
+	}
+
+	repo.ID = id
+	repo.Update_user_id = sql.NullString{
+		String: opeUserID,
+		Valid:  true,
+	}
+	repo.Updated_at = sql.NullTime{
+		Time:  time.Now(),
+		Valid: true,
+	}
+
+	err := repo.database.WithDbContext(func(db *sqlx.DB) error {
+
+		queryStr := "update app_users set " +
+			"updated_at = :updated_at, update_user_id = :update_user_id," +
+			"del = true " +
+			"where id = :id"
+
+		// クエリをDBドライバに併せて再構築
+		queryStr = db.Rebind(queryStr)
+
+		// データ更新処理
+		_, err := db.NamedExec(queryStr, *repo)
+		if err != nil {
+			return err
 		}
 
 		return err
@@ -220,7 +262,13 @@ func (repo *AppUserRepo) SelectByID(id string) (*domain.AppUser, error) {
 		return err
 	})
 	if err != nil {
-		return nil, err
+		if err.Error() == "sql: no rows in result set" {
+
+			return nil, errors.New("your search yielded no data")
+
+		} else {
+			return nil, err
+		}
 	}
 
 	appUser := repo.mapRepoObjToDomainObj(appGroupIDs, allAppGroups)
@@ -265,7 +313,13 @@ func (repo *AppUserRepo) SelectByAccountID(accountID string) (*domain.AppUser, e
 		return err
 	})
 	if err != nil {
-		return nil, err
+		if err.Error() == "sql: no rows in result set" {
+
+			return nil, errors.New("your search yielded no data")
+
+		} else {
+			return nil, err
+		}
 	}
 
 	appUser := repo.mapRepoObjToDomainObj(appGroupIDs, allAppGroups)

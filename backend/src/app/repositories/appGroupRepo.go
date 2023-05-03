@@ -138,6 +138,16 @@ func (repo *AppGroupRepo) SelectByID(id string) (*domain.AppGroup, error) {
 		return err
 	})
 
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+
+			return nil, errors.New("your search yielded no data")
+
+		} else {
+			return nil, err
+		}
+	}
+
 	appGroup := repo.mapRepoObjToDomainObj()
 
 	return &appGroup, err
