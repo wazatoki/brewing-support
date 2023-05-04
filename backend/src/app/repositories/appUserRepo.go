@@ -171,7 +171,7 @@ func (repo *AppUserRepo) Delete(id string, opeUserID string) error {
 }
 
 // Select select all appUser data from database
-func (repo *AppUserRepo) Select() ([]*domain.AppUser, error) {
+func (repo *AppUserRepo) Select() (domain.AppUsers, error) {
 
 	userGroupIDs := []joinUserIDGroupID{}
 	appGroupRepo := NewAppGroupRepo()
@@ -325,6 +325,67 @@ func (repo *AppUserRepo) SelectByAccountID(accountID string) (*domain.AppUser, e
 	appUser := repo.mapRepoObjToDomainObj(appGroupIDs, allAppGroups)
 
 	return &appUser, err
+}
+
+// SelectByAppGroupID select appUser data by appGroupID from database
+func (repo *AppUserRepo) SelectByAppGroupID(appGroupID string) (domain.AppUsers, error) {
+	if appGroupID == "" {
+		return nil, errors.New("appGroupID must be required")
+	}
+
+	userGroupIDs := []joinUserIDGroupID{}
+	appGroupRepo := NewAppGroupRepo()
+	allAppGroups, err := appGroupRepo.Select()
+	if err != nil {
+		return nil, err
+	}
+	appUserRepos := []AppUserRepo{}
+
+	err = repo.database.WithDbContext(func(db *sqlx.DB) error {
+		queryStr := "select " +
+			"id , del , created_at , cre_user_id , updated_at , update_user_id , " +
+			"account_id , password , name " +
+			"from app_users au " +
+			"inner join join_app_users_app_groups ug on au.id = ug.app_users_id " +
+			"where au.del = false and ug.app_groups_id = ?"
+
+		// クエリをDBドライバに併せて再構築
+		queryStr = db.Rebind(queryStr)
+
+		// データ取得処理
+		err := db.Select(&appUserRepos, queryStr, appGroupID)
+		if err != nil {
+			return err
+		}
+
+		queryStr = "select app_users_id, app_groups_id " +
+			"from join_app_users_app_groups "
+		queryStr = db.Rebind(queryStr)
+		err = db.Select(&userGroupIDs, queryStr)
+		if err != nil {
+			return err
+		}
+
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	appUsers := domain.AppUsers{}
+	for _, appUserRepo := range appUserRepos {
+		appGroupIDs := []string{}
+		for _, userIDGroupID := range userGroupIDs {
+			if userIDGroupID.UserID == appUserRepo.ID {
+				appGroupIDs = append(appGroupIDs, userIDGroupID.GroupID)
+			}
+		}
+
+		appUser := appUserRepo.mapRepoObjToDomainObj(appGroupIDs, allAppGroups)
+		appUsers = append(appUsers, &appUser)
+	}
+
+	return appUsers, err
 }
 
 func (repo *AppUserRepo) mapRepoObjToDomainObj(appGroupIDs []string, allAppGroups domain.AppGroups) domain.AppUser {

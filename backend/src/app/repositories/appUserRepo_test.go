@@ -228,7 +228,7 @@ func TestAppUserRepo_Select(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
-		want    []*domain.AppUser
+		want    domain.AppUsers
 		wantErr bool
 	}{
 		{
@@ -525,6 +525,78 @@ func TestAppUserRepo_Delete(t *testing.T) {
 
 			if user != nil {
 				t.Errorf("AppUserRepo.Delete() = %v, want %v", user.ID, "")
+			}
+		})
+	}
+}
+
+func TestAppUserRepo_SelectByAppGroupID(t *testing.T) {
+	type fields struct {
+		database       db
+		ID             string
+		Del            bool
+		Created_at     sql.NullTime
+		Cre_user_id    sql.NullString
+		Updated_at     sql.NullTime
+		Update_user_id sql.NullString
+		Account_id     string
+		Password       string
+		Name           string
+	}
+	type args struct {
+		appGroupID string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    domain.AppUsers
+		wantErr bool
+	}{
+		{
+			name:   "select test data",
+			fields: fields(*NewAppUserRepo()),
+			args: args{
+				appGroupID: "appGroupId1",
+			},
+			want: createExpectedAppUserEntitySlice(),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := &AppUserRepo{
+				database:       tt.fields.database,
+				ID:             tt.fields.ID,
+				Del:            tt.fields.Del,
+				Created_at:     tt.fields.Created_at,
+				Cre_user_id:    tt.fields.Cre_user_id,
+				Updated_at:     tt.fields.Updated_at,
+				Update_user_id: tt.fields.Update_user_id,
+				Account_id:     tt.fields.Account_id,
+				Password:       tt.fields.Password,
+				Name:           tt.fields.Name,
+			}
+
+			e := tt.fields.database.WithDbContext(func(db *sqlx.DB) error {
+
+				err := deleteDbData(db)
+				if err != nil {
+					return err
+				}
+
+				err = insertTestData(db)
+				return err
+			})
+			if e != nil {
+				t.Errorf("AppUserRepo.SelectByAppGroupID() error = %v", e)
+			}
+			got, err := repo.SelectByAppGroupID(tt.args.appGroupID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("AppUserRepo.SelectByAppGroupID() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("AppUserRepo.SelectByAppGroupID() = %v, want %v", got, tt.want)
 			}
 		})
 	}
