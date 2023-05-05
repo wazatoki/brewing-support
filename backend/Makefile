@@ -20,11 +20,11 @@ clean:
 
 .PHONY: test
 test:
-	docker exec test_golang go test ./...
+	docker exec test_golang sh -c 'cd ./src && go test ./...'
 
 .PHONY: testClean
 testClean:
-	docker exec test_golang sh -c 'go clean -testcache && go test ./...'
+	docker exec test_golang sh -c 'cd ./src && go clean -testcache && go test ./...'
 
 .PHONY: buildProduction
 buildProduction: buildAll
@@ -60,11 +60,11 @@ build: clean
 
 .PHONY: migrateUP
 migrateUP:
-	migrate -path resources/migrations -database postgres://brewing_support:brewing_support@brewing_support_postgres_db:5432/brewing_supportdb?sslmode=disable up
+	docker exec test_golang sh -c 'migrate -path ./resources/migrations -database postgres://brewing_support:brewing_support@brewing_support_postgres_db:5432/brewing_supportdb?sslmode=disable up'
 
 .PHONY: migrateDOWN
 migrateDOWN:
-	migrate -path resources/migrations -database postgres://brewing_support:brewing_support@brewing_support_postgres_db:5432/brewing_supportdb?sslmode=disable down
+	docker exec test_golang sh -c 'migrate -path ./resources/migrations -database postgres://brewing_support:brewing_support@brewing_support_postgres_db:5432/brewing_supportdb?sslmode=disable down -all'
 
 .PHONY: migrateCreate
 migrateCreate:

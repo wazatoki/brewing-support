@@ -64,5 +64,8 @@ services:
     volumes:
       - type: bind
         source: ../src
-        target: /workspace
+        target: /workspace/src
+      - type: bind
+        source: ../resources
+        target: /workspace/resources
     tty: true
