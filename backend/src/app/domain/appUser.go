@@ -1,5 +1,7 @@
 package domain
 
+import "strings"
+
 // Staff 利用者グループを示す構造体
 type AppUser struct {
 	ID        string    `json:"id"`
@@ -9,8 +11,14 @@ type AppUser struct {
 	AppGroups AppGroups `json:"appGroups"`
 }
 
-// Group 利用者グループを示す構造体
-type AppGroup struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+func (u *AppUser) MatchAccountID(str string) bool {
+	return u.AccountID == str
+}
+
+func (u *AppUser) MatchName(str string) bool {
+	return u.Name == str
+}
+
+func (u *AppUser) LikeName(str string) bool {
+	return strings.Contains(u.Name, str)
 }
