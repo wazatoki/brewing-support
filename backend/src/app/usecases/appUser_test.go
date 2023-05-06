@@ -6,10 +6,9 @@ import (
 	"brewing_support/app/testutils"
 	"testing"
 
+	gomock "github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-
-	gomock "github.com/golang/mock/gomock"
 )
 
 func createExpectedAppUser0Entity() *domain.AppUser {
@@ -143,6 +142,50 @@ func TestAppUserSave(t *testing.T) {
 			}
 			if gotId != tt.wantId {
 				t.Errorf("AppUserSave() = %v, want %v", gotId, tt.wantId)
+			}
+		})
+	}
+}
+
+func TestAppUserRemove(t *testing.T) {
+	// mockのコントローラを作成する
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// appUserRepo interfaceのmockを作成する
+	appUserRepoMock := mock_usecases.NewMockappUserRepo(ctrl)
+
+	setUpDeleteMock := func(mock *mock_usecases.MockappUserRepo, id string, opeUserID string) *mock_usecases.MockappUserRepo {
+		mock.EXPECT().Delete(gomock.Eq(id), gomock.Eq(opeUserID)).Return(nil)
+		return mock
+	}
+
+	type args struct {
+		appUser   domain.AppUser
+		opeUserID string
+		repo      appUserRepo
+	}
+	tests := []struct {
+		name    string
+		mock    *mock_usecases.MockappUserRepo
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "Remove with id shall called delete",
+			mock: setUpDeleteMock(appUserRepoMock, "appUserId1", "appUserId1"),
+			args: args{
+				appUser:   *(createExpectedAppUser1Entity()),
+				opeUserID: "appUserId1",
+				repo:      appUserRepoMock,
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := AppUserRemove(tt.args.appUser, tt.args.opeUserID, tt.args.repo); (err != nil) != tt.wantErr {
+				t.Errorf("AppUserRemove() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

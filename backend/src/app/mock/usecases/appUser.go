@@ -34,6 +34,20 @@ func (m *MockappUserRepo) EXPECT() *MockappUserRepoMockRecorder {
 	return m.recorder
 }
 
+// Delete mocks base method.
+func (m *MockappUserRepo) Delete(id, opeUserID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Delete", id, opeUserID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Delete indicates an expected call of Delete.
+func (mr *MockappUserRepoMockRecorder) Delete(id, opeUserID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockappUserRepo)(nil).Delete), id, opeUserID)
+}
+
 // Insert mocks base method.
 func (m *MockappUserRepo) Insert(appUser domain.AppUser, opeUserID string) (string, error) {
 	m.ctrl.T.Helper()
