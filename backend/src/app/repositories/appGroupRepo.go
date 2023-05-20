@@ -110,6 +110,17 @@ func (repo *AppGroupRepo) Delete(id string, opeUserID string) error {
 		Valid: true,
 	}
 
+	// リレーション関係のチェックをする
+	userRepo := NewAppUserRepo()
+
+	users, user_err := userRepo.SelectByAppGroupID(id)
+	if user_err != nil {
+		return user_err
+	}
+	if len(users) > 0 {
+		return errors.New("group has referenced data")
+	}
+
 	err := repo.database.WithDbContext(func(db *sqlx.DB) error {
 
 		queryStr := "update app_groups set " +

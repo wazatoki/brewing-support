@@ -25,7 +25,8 @@ func insertTestData(db *sqlx.DB) error {
 		"('appUserId2', '22345', 'password 2', 'name 2');" +
 		"insert into app_groups (id, name) values " +
 		"('appGroupId1', 'app group name 1')," +
-		"('appGroupId2', 'app group name 2');" +
+		"('appGroupId2', 'app group name 2')," +
+		"('appGroupId3', 'app group name 3');" +
 		"insert into join_app_users_app_groups (app_users_id, app_groups_id) values " +
 		"('appUserId1', 'appGroupId1')," +
 		"('appUserId1', 'appGroupId2')," +

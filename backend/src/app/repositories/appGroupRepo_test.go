@@ -222,7 +222,7 @@ func TestAppGroupRepo_Select(t *testing.T) {
 		{
 			name:   "select test data",
 			fields: fields(*NewAppGroupRepo()),
-			want:   createExpectedAppGroupEntity1Slice(),
+			want:   *createExpectedAppGroupEntity2Slice(),
 		},
 	}
 	for _, tt := range tests {
@@ -378,9 +378,18 @@ func TestAppGroupRepo_Delete(t *testing.T) {
 		{name: "delete test data",
 			fields: fields(*NewAppGroupRepo()),
 			args: args{
+				id:        "appGroupId3",
+				opeUserID: "appUserId1",
+			},
+			wantErr: false,
+		},
+		{name: "delete test refarenced data",
+			fields: fields(*NewAppGroupRepo()),
+			args: args{
 				id:        "appGroupId1",
 				opeUserID: "appUserId1",
 			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
@@ -409,16 +418,24 @@ func TestAppGroupRepo_Delete(t *testing.T) {
 				t.Errorf("AppGroupRepo.Delete() error = %v", e)
 			}
 
-			if err := repo.Delete(tt.args.id, tt.args.opeUserID); (err != nil) != tt.wantErr {
+			err := repo.Delete(tt.args.id, tt.args.opeUserID)
+			if (err != nil) != tt.wantErr {
 				t.Errorf("AppGroupRepo.Delete() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			user, err1 := repo.SelectByID("appGroupId1")
-			if err1.Error() != "your search yielded no data" {
-				t.Errorf("AppGroupRepo.Delete() error = %v, wantErr %v", err1, tt.wantErr)
-			}
 
-			if user != nil {
-				t.Errorf("AppGroupRepo.Delete() = %v, want %v", user.ID, "")
+			user, err1 := repo.SelectByID(tt.args.id)
+			if tt.wantErr {
+				if err.Error() != "group has referenced data" {
+					t.Errorf("AppGroupRepo.Delete() error = %v, wantErr %v", err, tt.wantErr)
+				}
+			} else {
+				if err1 != nil && err1.Error() != "your search yielded no data" {
+					t.Errorf("AppGroupRepo.Delete() error = %v, wantErr %v", err1, tt.wantErr)
+				}
+
+				if err1 == nil && user != nil {
+					t.Errorf("AppGroupRepo.Delete() = %v, want %v", user.ID, "")
+				}
 			}
 		})
 	}
