@@ -29,11 +29,11 @@ npm install
 ## create db
 
 ```
-curl -X PUT http://brewing_support:brewing_support@127.0.0.1:5984/brewing_support_db
+curl -X PUT https://brewing_support:brewing_support@127.0.0.1:5984/brewing_support_db
 ```
 
 #### setup cors
-http://127.0.0.1:5984/_utils/
+https://127.0.0.1:5984/_utils/
 
 config cors
 
