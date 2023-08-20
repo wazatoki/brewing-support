@@ -1,11 +1,15 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { genFileId } from "element-plus";
+import * as brewEventRepo from "@/repositories/brewEventRepo";
+import * as brewPlanRepo from "@/repositories/brewPlanRepo";
 import * as ingredientClassificationRepo from "@/repositories/ingredientClassificationRepo";
 import * as ingredientGrainRepo from "@/repositories/ingredientGrainRepo";
 import * as ingredientHopRepo from "@/repositories/ingredientHopRepo";
 import * as ingredientRepo from "@/repositories/ingredientRepo";
 import * as ingredientYeastRepo from "@/repositories/ingredientYeastRepo";
+import * as inventoryRepo from "@/repositories/inventoryRepo";
+import * as recieveEventRepo from "@/repositories/recieveEventRepo";
 import * as supplierRepo from "@/repositories/supplierRepo";
 import * as unitRepo from "@/repositories/unitRepo";
 
@@ -70,6 +74,8 @@ const saveData = (dataArray, repository) => {
 };
 
 const createBackupData = async () => {
+  const brewEvents = (await brewEventRepo.fetchAll()).result;
+  const brewPlans = (await brewPlanRepo.fetchAll()).result;
   const ingredientClassifications = (
     await ingredientClassificationRepo.fetchAll()
   ).result;
@@ -77,13 +83,19 @@ const createBackupData = async () => {
   const ingredientHops = (await ingredientHopRepo.fetchAll()).result;
   const ingredients = (await ingredientRepo.fetchAll()).result;
   const ingredientYeasts = (await ingredientYeastRepo.fetchAll()).result;
+  const inventories = (await inventoryRepo.fetchAll()).result;
+  const recieveEvents = (await recieveEventRepo.fetchAll()).result;
   const suppliers = (await supplierRepo.fetchAll()).result;
   const units = (await unitRepo.fetchAll()).result;
+  backupData["brewEvents"] = brewEvents;
+  backupData["brewPlans"] = brewPlans;
   backupData["ingredientClassifications"] = ingredientClassifications;
   backupData["ingredientGrains"] = ingredientGrains;
   backupData["ingredientHops"] = ingredientHops;
   backupData["ingredientYeasts"] = ingredientYeasts;
   backupData["ingredients"] = ingredients;
+  backupData["inventories"] = inventories;
+  backupData["recieveEvents"] = recieveEvents;
   backupData["suppliers"] = suppliers;
   backupData["units"] = units;
 };
