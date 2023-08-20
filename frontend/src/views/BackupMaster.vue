@@ -36,6 +36,12 @@ const importData = async () => {
 
       Object.keys(json).forEach((key) => {
         switch (key) {
+          case "brewEvents":
+            saveData(json[key], brewEventRepo);
+            break;
+          case "brewPlans":
+            saveData(json[key], brewPlanRepo);
+            break;
           case "ingredientClassifications":
             saveData(json[key], ingredientClassificationRepo);
             break;
@@ -50,6 +56,12 @@ const importData = async () => {
             break;
           case "ingredients":
             saveData(json[key], ingredientRepo);
+            break;
+          case "inventories":
+            saveData(json[key], inventoryRepo);
+            break;
+          case "recieveEvents":
+            saveData(json[key], recieveEventRepo);
             break;
           case "suppliers":
             saveData(json[key], supplierRepo);
