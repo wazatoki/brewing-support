@@ -119,8 +119,17 @@ const createBackupData = async () => {
 const downloadFile = () => {
   const blob = new Blob([JSON.stringify(backupData)], { type: "text/plain" });
   const a = document.createElement("a");
+  const d = new Date();
+  const dateStr =
+    String(d.getFullYear()) +
+    String(d.getMonth() + 1) +
+    String(d.getDate()) +
+    String(d.getHours()) +
+    String(d.getMinutes()) +
+    String(d.getSeconds()) +
+    String(d.getMilliseconds());
   a.href = (window.URL || window.webkitURL).createObjectURL(blob);
-  a.download = `backup.json`;
+  a.download = `backup_${dateStr}.json`;
   a.click();
   a.remove();
 };
