@@ -12,6 +12,7 @@ import * as inventoryRepo from "@/repositories/inventoryRepo";
 import * as recieveEventRepo from "@/repositories/recieveEventRepo";
 import * as supplierRepo from "@/repositories/supplierRepo";
 import * as unitRepo from "@/repositories/unitRepo";
+import * as pouchdb from "@/repositories/pouchdb";
 
 const backupData = {};
 const upload = ref();
@@ -31,8 +32,11 @@ const onFileChange = (e) => {
 const importData = async () => {
   if (sourceFile) {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const json = JSON.parse(e.target.result);
+
+      await pouchdb.destroyDatabase();
+      await pouchdb.createDatabase();
 
       Object.keys(json).forEach((key) => {
         switch (key) {
